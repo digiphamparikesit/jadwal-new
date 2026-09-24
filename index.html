@@ -208,7 +208,6 @@
   .jenis-absensieror{background:#E0E7FF;color:#4F46E5}
   .jenis-tukar_shift{background:#CFFAFE;color:#0E7490}
 
-  /* Form Pengajuan */
   .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start;max-width:1100px;margin:0 auto}
   @media (max-width:900px){.form-grid{grid-template-columns:1fr}}
   .form-panel{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);box-shadow:var(--shadow-xs);overflow:hidden}
@@ -264,7 +263,6 @@
   .preview-staff .k{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:14px}
   .preview-arrow{font-size:20px;color:#92400E;font-weight:700}
 
-  /* Import */
   .import-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start}
   @media (max-width:1100px){.import-grid{grid-template-columns:1fr}}
   .import-panel{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);box-shadow:var(--shadow-xs);overflow:hidden}
@@ -302,7 +300,6 @@
   .empty-preview b{display:block;font-size:13.5px;font-weight:600;color:var(--ink-2);margin-bottom:4px}
   .empty-preview span{font-size:12px}
 
-  /* Modal */
   .modal-bg{position:fixed;inset:0;z-index:100;background:rgba(15,23,42,.5);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:20px}
   .modal-bg.open{display:flex}
   .modal-m{background:var(--card);border-radius:var(--r-xl);max-width:480px;width:100%;box-shadow:var(--shadow-xl);overflow:hidden;animation:modalIn .2s ease;max-height:90vh;display:flex;flex-direction:column}
@@ -422,21 +419,21 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
         <span>Jadwal Lengkap</span>
       </button>
-      <button class="nav-item" data-tab="jamkerja">
+
+      <div class="nav-label" style="margin-top:12px" data-role="admin">Admin</div>
+      <button class="nav-item" data-role="admin" data-tab="jamkerja">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
         <span>Rekap Jam Kerja</span>
       </button>
-      <button class="nav-item" data-tab="kehadiran">
+      <button class="nav-item" data-role="admin" data-tab="kehadiran">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M20 8v6M23 11h-6"/></svg>
         <span>Rekap Kehadiran</span>
       </button>
-
-      <div class="nav-label" style="margin-top:12px">Admin</div>
-      <button class="nav-item" data-tab="import">
+      <button class="nav-item" data-role="admin" data-tab="import">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v12"/></svg>
         <span>Import Jadwal</span>
       </button>
-      <button class="nav-item" data-tab="pengajuan">
+      <button class="nav-item" data-role="admin" data-tab="pengajuan">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8M16 17H8M10 9H8"/></svg>
         <span>Daftar Pengajuan</span>
       </button>
@@ -446,7 +443,7 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>
         <span>Muat ulang data</span>
       </button>
-      <button class="nav-item" id="settingsSide">
+      <button class="nav-item" data-role="admin" id="settingsSide">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
         <span>Pengaturan</span>
       </button>
@@ -476,13 +473,12 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>
         <span class="btn-label">Muat ulang</span>
       </button>
-      <button class="btn btn-primary" id="editModeBtn" title="Mode Edit Admin">
+      <button class="btn btn-primary" data-role="admin" id="editModeBtn" title="Mode Edit Admin">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
         <span class="btn-label" id="editBtnLabel">Mode Edit</span>
       </button>
     </div>
 
-    <!-- ============================ FORM PENGAJUAN STAFF ============================ -->
     <section id="tab-form" class="hidden">
       <div class="page-head">
         <div>
@@ -541,7 +537,6 @@
               </div>
             </div>
 
-            <!-- Form fields depend on jenis -->
             <div id="formFields"></div>
 
             <div class="form-group">
@@ -572,7 +567,6 @@
       </div>
     </section>
 
-    <!-- ============================ REKAP ============================ -->
     <section id="tab-rekap">
       <div class="page-head">
         <div>
@@ -841,7 +835,7 @@
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
     <span>Jadwal</span>
   </button>
-  <button class="mobile-nav" data-tab="kehadiran">
+  <button class="mobile-nav" data-role="admin" data-tab="kehadiran">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M20 8v6M23 11h-6"/></svg>
     <span>Hadir</span>
   </button>
@@ -999,6 +993,21 @@ function monthStartISO(){ var d = new Date(); return new Date(d.getFullYear(), d
 function monthEndISO(){ var d = new Date(); return new Date(d.getFullYear(), d.getMonth()+1, 0).toISOString().slice(0,10); }
 
 /* ============================================================
+   MENU VISIBILITY (role-based)
+   ============================================================ */
+function updateMenuVisibility(){
+  var showAdmin = !!(state.user && state.isAdmin);
+
+  document.querySelectorAll('.nav-item[data-role="admin"], .mobile-nav[data-role="admin"], .nav-label[data-role="admin"]')
+    .forEach(function(el){ el.classList.toggle('hidden', !showAdmin); });
+
+  var activeNav = document.querySelector('.nav-item.active[data-tab]');
+  if(activeNav && activeNav.dataset.role === 'admin' && !showAdmin){
+    setTab('rekap');
+  }
+}
+
+/* ============================================================
    LOAD DATA
    ============================================================ */
 
@@ -1033,6 +1042,7 @@ async function loadStaffList(){
 
 function renderStaffDropdown(){
   var sel = document.getElementById('formNip');
+  if(!sel) return;
   sel.innerHTML = '<option value="">— Pilih nama —</option>' +
     state.staffList.map(function(s){ return '<option value="' + esc(s.nip) + '">' + esc(s.nama) + ' (' + esc(s.nip) + ')</option>'; }).join('');
 }
@@ -1064,10 +1074,6 @@ function populateFilters(){
   document.getElementById('filterRuangan').innerHTML = '<option value="">Semua ruangan</option>' + rooms.map(function(r){ return '<option value="'+esc(r)+'">'+esc(r)+'</option>'; }).join('');
   document.getElementById('filterStatus').innerHTML = '<option value="">Semua status</option>' + statuses.map(function(s){ return '<option value="'+esc(s)+'">'+esc(s)+'</option>'; }).join('');
 }
-
-/* ============================================================
-   RENDER REKAP
-   ============================================================ */
 
 function renderRekap(){
   if(!state.data || !state.data.dates || state.data.dates.length === 0) return;
@@ -1198,10 +1204,7 @@ function renderJadwal(){
   }).join('');
 }
 
-/* ============================================================
-   JAM KERJA
-   ============================================================ */
-
+/* JAM KERJA */
 async function loadJamKerja(year){
   document.getElementById('yearInput').value = year;
   try{
@@ -1255,7 +1258,7 @@ function renderJamKerja(){
       return '<td>'+(n ? '<span class="mono" style="font-weight:600">'+n+'</span>' : '<span class="code-empty">–</span>')+'</td>';
     }).join('');
     var namaAttr = s.nama.replace(/"/g,'&quot;');
-    return '<tr><td><button class="staff-link" data-nama="'+namaAttr+'" data-source="jamkerja">'+esc(s.nama)+'</button></td>'+cells+'<td class="mono" style="font-weight:700;color:var(--primary)">'+s.totalJam+' jam</td></tr>';
+    return '<tr><td><button class="staff-link" data-nama="'+namaAttr+'">'+esc(s.nama)+'</button></td>'+cells+'<td class="mono" style="font-weight:700;color:var(--primary)">'+s.totalJam+' jam</td></tr>';
   }).join('');
 }
 
@@ -1291,10 +1294,7 @@ function openDetailJamKerja(nama){
   document.getElementById('detailModal').classList.add('open');
 }
 
-/* ============================================================
-   REKAP KEHADIRAN
-   ============================================================ */
-
+/* KEHADIRAN */
 async function loadKehadiran(){
   var start = document.getElementById('kehadiranStart').value;
   var end = document.getElementById('kehadiranEnd').value;
@@ -1323,10 +1323,8 @@ function renderKehadiran(){
     document.getElementById('kehadiranTotal').textContent = '—';
     return;
   }
-
   var q = document.getElementById('searchNameKehadiran').value.toLowerCase().trim();
   var rows = d.staff.filter(function(s){ return !q || s.nama.toLowerCase().indexOf(q) !== -1; });
-
   if(rows.length === 0){
     document.getElementById('kehadiranBody').innerHTML = '<tr><td colspan="10" style="text-align:center;padding:32px;color:var(--ink-muted)">Tidak ada staf cocok</td></tr>';
     document.getElementById('kehadiranTotal').textContent = '—';
@@ -1341,7 +1339,7 @@ function renderKehadiran(){
     }).join('');
     var namaAttr = s.nama.replace(/"/g, '&quot;');
     return '<tr>' +
-      '<td><button class="staff-link" data-nama="' + namaAttr + '" data-source="kehadiran">' + esc(s.nama) + '</button></td>' +
+      '<td><button class="staff-link" data-nama="' + namaAttr + '">' + esc(s.nama) + '</button></td>' +
       '<td>' + esc(s.ruangan || '') + '</td>' + cells +
       '<td class="mono" style="font-weight:600">' + (s.hariKerja || 0) + '</td>' +
       '<td class="mono" style="font-weight:600">' + (s.hariOff || 0) + '</td>' +
@@ -1387,10 +1385,7 @@ function openDetailKehadiran(nama){
   document.getElementById('detailModal').classList.add('open');
 }
 
-/* ============================================================
-   DAFTAR PENGAJUAN
-   ============================================================ */
-
+/* DAFTAR PENGAJUAN */
 async function loadPengajuan(){
   if(!state.user || !state.isAdmin) return;
   var start = document.getElementById('pengajuanStart').value;
@@ -1400,10 +1395,7 @@ async function loadPengajuan(){
   document.getElementById('pengajuanBody').innerHTML = '<tr><td colspan="5" style="text-align:center;padding:32px;color:var(--ink-muted)">Memuat…</td></tr>';
 
   try{
-   var q = sb.from('pengajuan')
-      .select('*, staff(nama)')
-      .order('created_at', { ascending: false })
-      .limit(2000);
+    var q = sb.from('pengajuan').select('*, staff(nama)').order('created_at', { ascending: false }).limit(2000);
     if(start) q = q.gte('created_at', start + 'T00:00:00');
     if(end) q = q.lte('created_at', end + 'T23:59:59');
     if(jenis) q = q.eq('jenis', jenis);
@@ -1425,7 +1417,7 @@ function renderPengajuan(){
   var q = document.getElementById('searchNamePengajuan').value.toLowerCase().trim();
   var rows = d.filter(function(p){
     if(!q) return true;
-    return (p.nip || '').toLowerCase().indexOf(q) !== -1 || (p.nama || '').toLowerCase().indexOf(q) !== -1;
+    return (p.nip || '').toLowerCase().indexOf(q) !== -1 || ((p.staff && p.staff.nama) || p.nama || '').toLowerCase().indexOf(q) !== -1;
   });
 
   if(rows.length === 0){
@@ -1440,11 +1432,11 @@ function renderPengajuan(){
     else if(p.jenis === 'absensieror') periode = (p.tanggal_absensi || '—') + (p.waktu_absensi ? ' · ' + p.waktu_absensi : '');
     else periode = (p.tanggal_mulai || '—') + (p.tanggal_selesai ? ' s/d ' + p.tanggal_selesai : '');
     var jenisLabel = JENIS_LABEL[p.jenis] || p.jenis;
-    var jenisPillClass = p.jenis === 'tukar_shift' ? 'jenis-tukar_shift' : 'jenis-' + p.jenis;
+    var namaTampil = (p.staff && p.staff.nama) || p.nama || '—';
     return '<tr>' +
       '<td style="text-align:left">' + tgl + '</td>' +
-      '<td style="text-align:left"><b>' + esc((p.staff && p.staff.nama) || p.nama || '—') + '</b><div style="font-size:11px;color:var(--ink-faint)">' + esc(p.nip || '') + '</div></td>' +
-      '<td><span class="jenis-pill ' + jenisPillClass + '">' + esc(jenisLabel) + '</span></td>' +
+      '<td style="text-align:left"><b>' + esc(namaTampil) + '</b><div style="font-size:11px;color:var(--ink-faint)">' + esc(p.nip || '') + '</div></td>' +
+      '<td><span class="jenis-pill jenis-' + esc(p.jenis) + '">' + esc(jenisLabel) + '</span></td>' +
       '<td style="text-align:left">' + esc(periode) + '</td>' +
       '<td style="text-align:left;white-space:normal;max-width:300px">' + esc(p.keterangan || '—') + '</td>' +
     '</tr>';
@@ -1452,10 +1444,7 @@ function renderPengajuan(){
   document.getElementById('pengajuanBody').innerHTML = html;
 }
 
-/* ============================================================
-   FORM PENGAJUAN STAFF
-   ============================================================ */
-
+/* FORM PENGAJUAN */
 function selectJenisForm(jenis){
   state.formJenis = jenis;
   document.querySelectorAll('.jenis-btn').forEach(function(b){ b.classList.toggle('active', b.dataset.jenis === jenis); });
@@ -1501,19 +1490,10 @@ function renderFormFields(){
       '<div class="lbl">Setelah Tukar Shift</div>' +
       '<div class="preview-swap" id="swapPreviewInner"></div>' +
       '</div>';
-    setTimeout(function(){ bindSwapPreview(); }, 50);
   } else {
     el.innerHTML = '<div class="info-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg><div>Pilih jenis pengajuan di atas untuk menampilkan isian.</div></div>';
   }
   checkFormReady();
-}
-
-function bindSwapPreview(){
-  var inputNama = document.getElementById('fNamaPengganti');
-  var inputTanggal = document.getElementById('fTanggalTukar');
-  if(!inputNama || !inputTanggal) return;
-  inputNama.addEventListener('change', updateSwapPreview);
-  inputTanggal.addEventListener('change', updateSwapPreview);
 }
 
 async function updateSwapPreview(){
@@ -1534,8 +1514,8 @@ async function updateSwapPreview(){
     if(!d.kode_a){ card.innerHTML = '<div class="lbl">Setelah Tukar Shift</div><div style="font-size:12px;color:#991B1B;text-align:center">⚠️ Jadwal Anda di tanggal ini tidak ditemukan</div>'; return; }
     if(!d.kode_b){ card.innerHTML = '<div class="lbl">Setelah Tukar Shift</div><div style="font-size:12px;color:#991B1B;text-align:center">⚠️ Jadwal ' + esc(namaB) + ' di tanggal ini tidak ditemukan</div>'; return; }
 
-    function metaKode(k){ return state.legend[k] || { label: k, color: '#64748B' }; }
-    var mA = metaKode(d.kode_a), mB = metaKode(d.kode_b);
+    var mA = state.legend[d.kode_a] || { color: '#64748B' };
+    var mB = state.legend[d.kode_b] || { color: '#64748B' };
 
     card.innerHTML = '<div class="lbl">Setelah Tukar Shift</div>' +
       '<div class="preview-swap">' +
@@ -1552,7 +1532,7 @@ async function updateSwapPreview(){
         '</div>' +
       '</div>';
   }catch(err){
-    card.innerHTML = '<div class="lbl">Setelah Tukar Shift</div><div style="font-size:12px;color:#991B1B;text-align:center">⚠️ ' + esc(err.message || 'Gagal memuat') + '</div>';
+    card.innerHTML = '<div class="lbl">Setelah Tukar Shift</div><div style="font-size:12px;color:#991B1B;text-align:center">⚠️ ' + esc(err.message || 'Gagal') + '</div>';
   }
 }
 
@@ -1569,7 +1549,6 @@ function updateFormPreview(){
     el.innerHTML = '<div class="empty-preview"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8M16 17H8M10 9H8"/></svg><b>Belum ada data</b><span>Isi form di sebelah kiri untuk melihat preview</span></div>';
     return;
   }
-
   stepBadge.style.opacity = '1';
   var jenisLabel = JENIS_LABEL[jenis] || (jenis === 'tukar_shift' ? 'Tukar Shift' : jenis);
   var detailRows = '';
@@ -1577,8 +1556,9 @@ function updateFormPreview(){
   if(jenis === 'izin' || jenis === 'sakit' || jenis === 'cuti'){
     var tglM = (document.getElementById('fTanggalMulai') || {}).value || '—';
     var tglS = (document.getElementById('fTanggalSelesai') || {}).value || '—';
+    var kodeBaru = jenis === 'izin' ? 'IZIN' : jenis === 'sakit' ? 'SKT' : 'CT';
     detailRows = '<div class="preview-stat"><div class="lbl">Periode</div><div class="val" style="font-size:13px">' + tglM + ' s/d ' + tglS + '</div></div>' +
-      '<div class="preview-stat"><div class="lbl">Kode Jadwal Baru</div><div class="val" style="font-size:14px;color:' + state.legend[jenis === 'izin' ? 'IZIN' : jenis === 'sakit' ? 'SKT' : 'CT'].color + '">' + (jenis === 'izin' ? 'IZIN' : jenis === 'sakit' ? 'SKT' : 'CT') + '</div></div>';
+      '<div class="preview-stat"><div class="lbl">Kode Jadwal Baru</div><div class="val" style="font-size:14px;color:' + state.legend[kodeBaru].color + '">' + kodeBaru + '</div></div>';
   } else if(jenis === 'telat'){
     var tgl = (document.getElementById('fTanggal') || {}).value || '—';
     var jt = (document.getElementById('fJenisTelat') || {}).value || '—';
@@ -1612,7 +1592,6 @@ function checkFormReady(){
   var jenis = state.formJenis;
   var btn = document.getElementById('submitFormBtn');
   var ready = false;
-
   if(nip && jenis){
     if(jenis === 'tukar_shift'){
       var nb = (document.getElementById('fNamaPengganti') || {}).value;
@@ -1630,7 +1609,6 @@ async function submitForm(){
   var jenis = state.formJenis;
   var ket = document.getElementById('formKeterangan').value.trim();
   if(!nip || !jenis) return;
-
   var payload = { nip: nip, jenis: jenis, keterangan: ket };
 
   if(jenis === 'izin' || jenis === 'sakit' || jenis === 'cuti'){
@@ -1662,15 +1640,11 @@ async function submitForm(){
     if(r.error) throw r.error;
     if(!r.data.success) throw new Error(r.data.error || 'Gagal submit');
 
-    // Tampilkan sukses
     var jenisLabel = JENIS_LABEL[jenis] || (jenis === 'tukar_shift' ? 'Tukar Shift' : jenis);
     var extra = '';
     if(r.data.detail && jenis === 'tukar_shift'){
       var d = r.data.detail;
-      extra = '<br><br><b>Detail tukar:</b><br>' +
-        d.nama_a + ': ' + d.kode_a_lama + ' → ' + d.kode_a_baru + '<br>' +
-        d.nama_b + ': ' + d.kode_b_lama + ' → ' + d.kode_b_baru + '<br>' +
-        'Tanggal: ' + d.tanggal;
+      extra = '<br><br><b>Detail tukar:</b><br>' + d.nama_a + ': ' + d.kode_a_lama + ' → ' + d.kode_a_baru + '<br>' + d.nama_b + ': ' + d.kode_b_lama + ' → ' + d.kode_b_baru + '<br>Tanggal: ' + d.tanggal;
     } else if(r.data.jadwal_terupdate !== undefined){
       extra = '<br><br>✅ ' + r.data.jadwal_terupdate + ' sel jadwal berhasil diupdate otomatis.';
     }
@@ -1682,10 +1656,7 @@ async function submitForm(){
       '<button class="btn btn-secondary" id="resetFormBtn" style="width:100%;justify-content:center">Buat Pengajuan Baru</button>';
 
     document.getElementById('resetFormBtn').addEventListener('click', resetForm);
-
-    // Reload data
     setTimeout(function(){ loadData(); if(state.kehadiran.loaded) loadKehadiran(); }, 500);
-
   }catch(err){
     document.getElementById('formPreview').innerHTML =
       '<div class="alert-box error"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg><div><b>Gagal Kirim</b><br>' + esc(err.message) + '</div></div>';
@@ -1703,10 +1674,7 @@ function resetForm(){
   updateFormPreview();
 }
 
-/* ============================================================
-   NAVIGASI
-   ============================================================ */
-
+/* NAVIGASI */
 function setTab(t){
   document.querySelectorAll('.nav-item[data-tab]').forEach(function(b){ b.classList.toggle('active', b.dataset.tab===t); });
   document.querySelectorAll('.mobile-nav').forEach(function(b){ b.classList.toggle('active', b.dataset.tab===t); });
@@ -1722,10 +1690,7 @@ function setTab(t){
   document.getElementById('sidebarBackdrop').classList.remove('open');
 }
 
-/* ============================================================
-   AUTH
-   ============================================================ */
-
+/* AUTH */
 async function checkIsAdmin(userId){
   try{
     var r = await sb.from('admin_users').select('user_id').eq('user_id', userId).maybeSingle();
@@ -1741,6 +1706,7 @@ async function refreshSession(){
     state.user = s ? s.user : null;
     state.isAdmin = s ? await checkIsAdmin(s.user.id) : false;
     updateUserUI(); updateEditModeUI(); updateImportLock(); updatePengajuanLock();
+    updateMenuVisibility();
   }catch(e){ console.warn(e); }
 }
 
@@ -1750,6 +1716,7 @@ async function doLogin(email, password){
   state.user = r.data.user;
   state.isAdmin = await checkIsAdmin(r.data.user.id);
   updateUserUI(); updateEditModeUI(); updateImportLock(); updatePengajuanLock();
+  updateMenuVisibility();
   if(!state.isAdmin) throw new Error('Login berhasil, tapi akun ini belum terdaftar sebagai admin.');
 }
 
@@ -1758,6 +1725,7 @@ async function doLogout(){
   state.user = null; state.isAdmin = false; state.editMode = false;
   state.pengajuan = { data: null, loaded: false };
   updateUserUI(); updateEditModeUI(); renderJadwal(); updateImportLock(); updatePengajuanLock();
+  updateMenuVisibility();
 }
 
 function updateUserUI(){
@@ -1778,6 +1746,7 @@ function updateUserUI(){
 function updateEditModeUI(){
   var btn = document.getElementById('editModeBtn');
   var label = document.getElementById('editBtnLabel');
+  if(!btn) return;
   if(state.editMode){
     btn.classList.add('edit-active'); btn.classList.remove('btn-primary');
     label.textContent = 'Keluar Edit';
@@ -1827,10 +1796,7 @@ function updatePengajuanLock(){
   }
 }
 
-/* ============================================================
-   IMPORT JADWAL (fungsi sama seperti sebelumnya)
-   ============================================================ */
-
+/* IMPORT JADWAL */
 function isDateLike(v){
   if(!v) return false;
   var s = String(v).trim();
@@ -1942,10 +1908,7 @@ async function doImport(){
   }
 }
 
-/* ============================================================
-   PENGATURAN JAM
-   ============================================================ */
-
+/* PENGATURAN JAM */
 async function loadPengaturanJam(){
   try{
     var r = await sb.from('pengaturan_jam').select('kode,label,jam');
@@ -1974,19 +1937,13 @@ document.querySelectorAll('[data-tab]').forEach(function(b){ b.addEventListener(
 document.getElementById('hamburgerBtn').addEventListener('click', function(){ document.getElementById('sidebar').classList.toggle('open'); document.getElementById('sidebarBackdrop').classList.toggle('open'); });
 document.getElementById('sidebarBackdrop').addEventListener('click', function(){ document.getElementById('sidebar').classList.remove('open'); this.classList.remove('open'); });
 
-// Form events
-document.getElementById('jenisPicker').addEventListener('click', function(e){
-  var btn = e.target.closest('.jenis-btn');
-  if(!btn) return;
-  selectJenisForm(btn.dataset.jenis);
-});
+document.getElementById('jenisPicker').addEventListener('click', function(e){ var btn = e.target.closest('.jenis-btn'); if(!btn) return; selectJenisForm(btn.dataset.jenis); });
 document.getElementById('formNip').addEventListener('change', function(){ updateFormPreview(); if(state.formJenis === 'tukar_shift') updateSwapPreview(); });
 document.getElementById('formKeterangan').addEventListener('input', updateFormPreview);
 document.getElementById('formFields').addEventListener('input', function(){ updateFormPreview(); });
 document.getElementById('formFields').addEventListener('change', function(){ updateFormPreview(); if(state.formJenis === 'tukar_shift') updateSwapPreview(); });
 document.getElementById('submitFormBtn').addEventListener('click', submitForm);
 
-// Rekap
 document.getElementById('prevDay').addEventListener('click', function(){ if(!state.selectedDate) return; var d = new Date(state.selectedDate+'T00:00:00'); d.setDate(d.getDate()-1); state.selectedDate = d.toISOString().slice(0,10); document.getElementById('dateInput').value = state.selectedDate; renderRekap(); });
 document.getElementById('nextDay').addEventListener('click', function(){ if(!state.selectedDate) return; var d = new Date(state.selectedDate+'T00:00:00'); d.setDate(d.getDate()+1); state.selectedDate = d.toISOString().slice(0,10); document.getElementById('dateInput').value = state.selectedDate; renderRekap(); });
 document.getElementById('dateInput').addEventListener('change', function(e){ state.selectedDate = e.target.value; renderRekap(); });
@@ -2134,6 +2091,7 @@ sb.auth.onAuthStateChange(function(event, session){
   state.user = session ? session.user : null;
   if(!session){ state.isAdmin = false; state.editMode = false; }
   updateUserUI(); updateEditModeUI(); renderJadwal(); updateImportLock(); updatePengajuanLock();
+  updateMenuVisibility();
 });
 
 document.addEventListener('keydown', function(e){ if(e.key === 'Escape'){ ['loginModal','settingsModal','detailModal'].forEach(closeModal); } });
@@ -2148,6 +2106,7 @@ function closeModal(id){ document.getElementById(id).classList.remove('open'); }
   document.getElementById('pengajuanStart').value = monthStartISO();
   document.getElementById('pengajuanEnd').value = monthEndISO();
   await refreshSession();
+  updateMenuVisibility();
   await loadStaffList();
   await loadData();
 })();
