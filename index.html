@@ -236,9 +236,7 @@
   }
   .jenis-btn:hover{border-color:var(--primary-600);background:var(--primary-tint)}
   .jenis-btn.active{border-color:var(--primary);background:var(--primary-tint);box-shadow:0 0 0 3px rgba(15,118,110,.1)}
-  .jenis-btn .icon{
-    width:32px;height:32px;border-radius:8px;display:grid;place-items:center;color:#fff;
-  }
+  .jenis-btn .icon{width:32px;height:32px;border-radius:8px;display:grid;place-items:center;color:#fff}
   .jenis-btn .icon svg{width:16px;height:16px}
   .jenis-btn .lbl{font-size:12px;font-weight:600;color:var(--ink)}
   .jenis-btn.active .lbl{color:var(--primary)}
@@ -386,6 +384,16 @@
     .preview-summary{grid-template-columns:1fr 1fr}
     .jenis-picker{grid-template-columns:repeat(2,1fr)}
   }
+
+  .row-action-btn{
+    display:inline-grid;place-items:center;width:30px;height:30px;
+    border-radius:8px;background:var(--bg-soft);color:var(--ink-muted);
+    border:1px solid var(--border);margin:0 2px;
+    transition:all .15s;vertical-align:middle;
+  }
+  .row-action-btn:hover{background:var(--primary-tint);color:var(--primary);border-color:var(--primary)}
+  .row-action-btn.danger:hover{background:#FEE2E2;color:#B91C1C;border-color:#FCA5A5}
+  .row-action-btn svg{width:14px;height:14px}
 </style>
 </head>
 <body>
@@ -740,6 +748,7 @@
                   <th style="position:static;box-shadow:none">Jenis</th>
                   <th style="text-align:left;min-width:200px;position:static;box-shadow:none">Periode / Jam</th>
                   <th style="text-align:left;min-width:200px;position:static;box-shadow:none">Keterangan</th>
+                  <th style="text-align:center;min-width:100px;position:static;box-shadow:none">Aksi</th>
                 </tr>
               </thead>
               <tbody id="pengajuanBody"></tbody>
@@ -897,6 +906,31 @@
   </div>
 </div>
 
+<div class="modal-bg" id="editPengajuanModal">
+  <div class="modal-m">
+    <div class="modal-head">
+      <h3>Edit / Hapus Pengajuan</h3>
+      <button class="modal-close" id="closeEditPengajuan">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="alert-box info" id="editPengajuanInfo" style="margin-bottom:14px"></div>
+      <div id="editPengajuanFields"></div>
+      <label style="margin-top:14px">Keterangan</label>
+      <textarea id="editPengajuanKeterangan" placeholder="Keterangan / alasan" style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:var(--r-md);font-size:13.5px;outline:none;min-height:80px;font-family:inherit;resize:vertical"></textarea>
+      <p class="error-text hidden" id="editPengajuanError"></p>
+    </div>
+    <div class="modal-foot space">
+      <button class="btn btn-danger" id="deletePengajuanBtn">Hapus</button>
+      <div style="display:flex;gap:10px">
+        <button class="btn btn-secondary" id="cancelEditPengajuan">Batal</button>
+        <button class="btn btn-primary" id="saveEditPengajuan">Simpan</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="modal-bg" id="detailModal">
   <div class="modal-m wide">
     <div class="modal-head dark">
@@ -966,6 +1000,8 @@ var state = {
   formJenis: null
 };
 
+var editingPengajuanId = null;
+
 function loadSettings(){
   try{
     var raw = localStorage.getItem('aps_legend_v2');
@@ -992,24 +1028,13 @@ function todayISO(){ return new Date().toISOString().slice(0,10); }
 function monthStartISO(){ var d = new Date(); return new Date(d.getFullYear(), d.getMonth(), 1).toISOString().slice(0,10); }
 function monthEndISO(){ var d = new Date(); return new Date(d.getFullYear(), d.getMonth()+1, 0).toISOString().slice(0,10); }
 
-/* ============================================================
-   MENU VISIBILITY (role-based)
-   ============================================================ */
 function updateMenuVisibility(){
   var showAdmin = !!(state.user && state.isAdmin);
-
   document.querySelectorAll('.nav-item[data-role="admin"], .mobile-nav[data-role="admin"], .nav-label[data-role="admin"]')
     .forEach(function(el){ el.classList.toggle('hidden', !showAdmin); });
-
   var activeNav = document.querySelector('.nav-item.active[data-tab]');
-  if(activeNav && activeNav.dataset.role === 'admin' && !showAdmin){
-    setTab('rekap');
-  }
+  if(activeNav && activeNav.dataset.role === 'admin' && !showAdmin){ setTab('rekap'); }
 }
-
-/* ============================================================
-   LOAD DATA
-   ============================================================ */
 
 function renderSkeletons(){
   var skel = '<div class="room-modern"><div style="padding:16px 18px"><div class="skeleton" style="height:32px;width:60%;margin-bottom:12px"></div><div class="skeleton" style="height:14px;width:40%"></div></div></div>';
@@ -1204,7 +1229,6 @@ function renderJadwal(){
   }).join('');
 }
 
-/* JAM KERJA */
 async function loadJamKerja(year){
   document.getElementById('yearInput').value = year;
   try{
@@ -1294,7 +1318,6 @@ function openDetailJamKerja(nama){
   document.getElementById('detailModal').classList.add('open');
 }
 
-/* KEHADIRAN */
 async function loadKehadiran(){
   var start = document.getElementById('kehadiranStart').value;
   var end = document.getElementById('kehadiranEnd').value;
@@ -1385,14 +1408,13 @@ function openDetailKehadiran(nama){
   document.getElementById('detailModal').classList.add('open');
 }
 
-/* DAFTAR PENGAJUAN */
 async function loadPengajuan(){
   if(!state.user || !state.isAdmin) return;
   var start = document.getElementById('pengajuanStart').value;
   var end = document.getElementById('pengajuanEnd').value;
   var jenis = document.getElementById('pengajuanJenis').value;
 
-  document.getElementById('pengajuanBody').innerHTML = '<tr><td colspan="5" style="text-align:center;padding:32px;color:var(--ink-muted)">Memuat…</td></tr>';
+  document.getElementById('pengajuanBody').innerHTML = '<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--ink-muted)">Memuat…</td></tr>';
 
   try{
     var q = sb.from('pengajuan').select('*, staff(nama)').order('created_at', { ascending: false }).limit(2000);
@@ -1406,7 +1428,7 @@ async function loadPengajuan(){
     renderPengajuan();
   }catch(err){
     console.error('Gagal load pengajuan:', err);
-    document.getElementById('pengajuanBody').innerHTML = '<tr><td colspan="5" style="text-align:center;padding:32px;color:var(--ink-muted)">Gagal memuat: ' + esc(err.message||'Error') + '</td></tr>';
+    document.getElementById('pengajuanBody').innerHTML = '<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--ink-muted)">Gagal memuat: ' + esc(err.message||'Error') + '</td></tr>';
   }
 }
 
@@ -1421,7 +1443,7 @@ function renderPengajuan(){
   });
 
   if(rows.length === 0){
-    document.getElementById('pengajuanBody').innerHTML = '<tr><td colspan="5" style="text-align:center;padding:32px;color:var(--ink-muted)">Tidak ada pengajuan</td></tr>';
+    document.getElementById('pengajuanBody').innerHTML = '<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--ink-muted)">Tidak ada pengajuan</td></tr>';
     return;
   }
 
@@ -1439,12 +1461,124 @@ function renderPengajuan(){
       '<td><span class="jenis-pill jenis-' + esc(p.jenis) + '">' + esc(jenisLabel) + '</span></td>' +
       '<td style="text-align:left">' + esc(periode) + '</td>' +
       '<td style="text-align:left;white-space:normal;max-width:300px">' + esc(p.keterangan || '—') + '</td>' +
+      '<td style="text-align:center;white-space:nowrap">' +
+        '<button class="row-action-btn" data-action="edit" data-id="' + p.id + '" title="Edit">' +
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>' +
+        '</button>' +
+        '<button class="row-action-btn danger" data-action="delete" data-id="' + p.id + '" title="Hapus">' +
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>' +
+        '</button>' +
+      '</td>' +
     '</tr>';
   }).join('');
   document.getElementById('pengajuanBody').innerHTML = html;
 }
 
-/* FORM PENGAJUAN */
+function openEditPengajuan(id){
+  var p = (state.pengajuan.data || []).find(function(x){ return String(x.id) === String(id); });
+  if(!p) return;
+  editingPengajuanId = id;
+
+  var namaTampil = (p.staff && p.staff.nama) || p.nama || '—';
+  var jenisLabel = JENIS_LABEL[p.jenis] || p.jenis;
+
+  document.getElementById('editPengajuanInfo').innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg><div><b>' + esc(namaTampil) + '</b> · ' + esc(p.nip || '') + '<br>Jenis: <b>' + esc(jenisLabel) + '</b> · dibuat ' + (p.created_at ? new Date(p.created_at).toLocaleString('id-ID') : '—') + '</div>';
+
+  var el = document.getElementById('editPengajuanFields');
+  var inputStyle = 'width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:var(--r-md);font-size:13.5px;outline:none';
+  var fields = '';
+
+  if(p.jenis === 'izin' || p.jenis === 'sakit' || p.jenis === 'cuti'){
+    fields =
+      '<label>Tanggal Mulai</label>' +
+      '<input type="date" id="epTanggalMulai" value="' + (p.tanggal_mulai || '') + '" style="' + inputStyle + '">' +
+      '<label style="margin-top:14px">Tanggal Selesai</label>' +
+      '<input type="date" id="epTanggalSelesai" value="' + (p.tanggal_selesai || p.tanggal_mulai || '') + '" style="' + inputStyle + '">';
+  } else if(p.jenis === 'telat'){
+    fields =
+      '<label>Tanggal</label>' +
+      '<input type="date" id="epTanggal" value="' + (p.tanggal_mulai || '') + '" style="' + inputStyle + '">' +
+      '<label style="margin-top:14px">Jenis</label>' +
+      '<select id="epJenisTelat" style="' + inputStyle + '">' +
+        '<option value="Telat Datang"' + (p.jenis_telat === 'Telat Datang' ? ' selected' : '') + '>Telat Datang</option>' +
+        '<option value="Pulang Cepat"' + (p.jenis_telat === 'Pulang Cepat' ? ' selected' : '') + '>Pulang Cepat</option>' +
+        '<option value="Tidak Absen"' + (p.jenis_telat === 'Tidak Absen' ? ' selected' : '') + '>Tidak Absen</option>' +
+      '</select>' +
+      '<label style="margin-top:14px">Jam</label>' +
+      '<input type="time" id="epJam" value="' + (p.jam || '') + '" style="' + inputStyle + '">';
+  } else if(p.jenis === 'absensieror'){
+    fields =
+      '<label>Tanggal Absensi</label>' +
+      '<input type="date" id="epTanggalAbsensi" value="' + (p.tanggal_absensi || p.tanggal_mulai || '') + '" style="' + inputStyle + '">' +
+      '<label style="margin-top:14px">Waktu</label>' +
+      '<select id="epWaktuAbsensi" style="' + inputStyle + '">' +
+        '<option value="masuk"' + (p.waktu_absensi === 'masuk' ? ' selected' : '') + '>Absen Masuk</option>' +
+        '<option value="pulang"' + (p.waktu_absensi === 'pulang' ? ' selected' : '') + '>Absen Pulang</option>' +
+      '</select>';
+  }
+
+  el.innerHTML = fields;
+  document.getElementById('editPengajuanKeterangan').value = p.keterangan || '';
+  document.getElementById('editPengajuanError').classList.add('hidden');
+  openModal('editPengajuanModal');
+}
+
+async function saveEditPengajuan(){
+  if(!editingPengajuanId) return;
+  var p = (state.pengajuan.data || []).find(function(x){ return String(x.id) === String(editingPengajuanId); });
+  if(!p) return;
+
+  var updates = { keterangan: document.getElementById('editPengajuanKeterangan').value.trim() };
+
+  if(p.jenis === 'izin' || p.jenis === 'sakit' || p.jenis === 'cuti'){
+    updates.tanggal_mulai = document.getElementById('epTanggalMulai').value || null;
+    updates.tanggal_selesai = document.getElementById('epTanggalSelesai').value || null;
+  } else if(p.jenis === 'telat'){
+    updates.tanggal_mulai = document.getElementById('epTanggal').value || null;
+    updates.jenis_telat = document.getElementById('epJenisTelat').value;
+    updates.jam = document.getElementById('epJam').value || null;
+  } else if(p.jenis === 'absensieror'){
+    updates.tanggal_absensi = document.getElementById('epTanggalAbsensi').value || null;
+    updates.waktu_absensi = document.getElementById('epWaktuAbsensi').value;
+  }
+
+  var btn = document.getElementById('saveEditPengajuan');
+  btn.disabled = true; btn.textContent = 'Menyimpan…';
+  try{
+    var r = await sb.from('pengajuan').update(updates).eq('id', editingPengajuanId);
+    if(r.error) throw r.error;
+    closeModal('editPengajuanModal');
+    editingPengajuanId = null;
+    await loadPengajuan();
+  }catch(err){
+    var errEl = document.getElementById('editPengajuanError');
+    errEl.textContent = err.message || 'Gagal menyimpan.';
+    errEl.classList.remove('hidden');
+  }finally{ btn.disabled = false; btn.textContent = 'Simpan'; }
+}
+
+async function confirmDeletePengajuan(){
+  if(!editingPengajuanId) return;
+  var p = (state.pengajuan.data || []).find(function(x){ return String(x.id) === String(editingPengajuanId); });
+  if(!p) return;
+  var namaTampil = (p.staff && p.staff.nama) || p.nama || p.nip;
+  if(!confirm('Hapus pengajuan ini?\n\nNama: ' + namaTampil + '\nJenis: ' + (JENIS_LABEL[p.jenis] || p.jenis) + '\n\nTindakan ini tidak bisa dibatalkan.')) return;
+
+  var btn = document.getElementById('deletePengajuanBtn');
+  btn.disabled = true; btn.textContent = 'Menghapus…';
+  try{
+    var r = await sb.from('pengajuan').delete().eq('id', editingPengajuanId);
+    if(r.error) throw r.error;
+    closeModal('editPengajuanModal');
+    editingPengajuanId = null;
+    await loadPengajuan();
+  }catch(err){
+    var errEl = document.getElementById('editPengajuanError');
+    errEl.textContent = err.message || 'Gagal menghapus.';
+    errEl.classList.remove('hidden');
+  }finally{ btn.disabled = false; btn.textContent = 'Hapus'; }
+}
+
 function selectJenisForm(jenis){
   state.formJenis = jenis;
   document.querySelectorAll('.jenis-btn').forEach(function(b){ b.classList.toggle('active', b.dataset.jenis === jenis); });
@@ -1674,7 +1808,6 @@ function resetForm(){
   updateFormPreview();
 }
 
-/* NAVIGASI */
 function setTab(t){
   document.querySelectorAll('.nav-item[data-tab]').forEach(function(b){ b.classList.toggle('active', b.dataset.tab===t); });
   document.querySelectorAll('.mobile-nav').forEach(function(b){ b.classList.toggle('active', b.dataset.tab===t); });
@@ -1690,7 +1823,6 @@ function setTab(t){
   document.getElementById('sidebarBackdrop').classList.remove('open');
 }
 
-/* AUTH */
 async function checkIsAdmin(userId){
   try{
     var r = await sb.from('admin_users').select('user_id').eq('user_id', userId).maybeSingle();
@@ -1796,7 +1928,6 @@ function updatePengajuanLock(){
   }
 }
 
-/* IMPORT JADWAL */
 function isDateLike(v){
   if(!v) return false;
   var s = String(v).trim();
@@ -1908,7 +2039,6 @@ async function doImport(){
   }
 }
 
-/* PENGATURAN JAM */
 async function loadPengaturanJam(){
   try{
     var r = await sb.from('pengaturan_jam').select('kode,label,jam');
@@ -1928,10 +2058,6 @@ function renderJamEditor(){
     return '<div class="jam-row"><span class="k">'+k+'</span><span class="lbl">'+esc(m.label)+'</span><input type="number" step="0.25" min="0" data-jam-kode="'+k+'" value="'+(m.jam)+'"></div>';
   }).join('');
 }
-
-/* ============================================================
-   EVENT LISTENERS
-   ============================================================ */
 
 document.querySelectorAll('[data-tab]').forEach(function(b){ b.addEventListener('click', function(){ setTab(b.dataset.tab); }); });
 document.getElementById('hamburgerBtn').addEventListener('click', function(){ document.getElementById('sidebar').classList.toggle('open'); document.getElementById('sidebarBackdrop').classList.toggle('open'); });
@@ -2007,6 +2133,30 @@ document.getElementById('tableBody').addEventListener('change', async function(e
     setTimeout(function(){ sel.style.background = ''; }, 700);
   }catch(err){ sel.disabled = false; sel.value = kodeLama; alert('Gagal: ' + (err.message||'Error')); }
 });
+
+document.getElementById('pengajuanBody').addEventListener('click', function(e){
+  var btn = e.target.closest('.row-action-btn');
+  if(!btn) return;
+  var id = btn.dataset.id;
+  if(btn.dataset.action === 'edit'){
+    openEditPengajuan(id);
+  } else if(btn.dataset.action === 'delete'){
+    var p = (state.pengajuan.data || []).find(function(x){ return String(x.id) === String(id); });
+    if(!p) return;
+    var namaTampil = (p.staff && p.staff.nama) || p.nama || p.nip;
+    if(!confirm('Hapus pengajuan ini?\n\nNama: ' + namaTampil + '\nJenis: ' + (JENIS_LABEL[p.jenis] || p.jenis) + '\n\nTindakan ini tidak bisa dibatalkan.')) return;
+    sb.from('pengajuan').delete().eq('id', id).then(function(r){
+      if(r.error){ alert('Gagal hapus: ' + r.error.message); return; }
+      loadPengajuan();
+    });
+  }
+});
+
+document.getElementById('closeEditPengajuan').addEventListener('click', function(){ closeModal('editPengajuanModal'); editingPengajuanId = null; });
+document.getElementById('cancelEditPengajuan').addEventListener('click', function(){ closeModal('editPengajuanModal'); editingPengajuanId = null; });
+document.getElementById('editPengajuanModal').addEventListener('click', function(e){ if(e.target === this){ closeModal('editPengajuanModal'); editingPengajuanId = null; } });
+document.getElementById('saveEditPengajuan').addEventListener('click', saveEditPengajuan);
+document.getElementById('deletePengajuanBtn').addEventListener('click', confirmDeletePengajuan);
 
 document.getElementById('jamKerjaBody').addEventListener('click', function(e){ var l = e.target.closest('.staff-link'); if(!l) return; openDetailJamKerja(l.dataset.nama); });
 document.getElementById('kehadiranBody').addEventListener('click', function(e){ var l = e.target.closest('.staff-link'); if(!l) return; openDetailKehadiran(l.dataset.nama); });
@@ -2094,7 +2244,7 @@ sb.auth.onAuthStateChange(function(event, session){
   updateMenuVisibility();
 });
 
-document.addEventListener('keydown', function(e){ if(e.key === 'Escape'){ ['loginModal','settingsModal','detailModal'].forEach(closeModal); } });
+document.addEventListener('keydown', function(e){ if(e.key === 'Escape'){ ['loginModal','settingsModal','detailModal','editPengajuanModal'].forEach(function(id){ closeModal(id); }); editingPengajuanId = null; } });
 function openModal(id){ document.getElementById(id).classList.add('open'); }
 function closeModal(id){ document.getElementById(id).classList.remove('open'); }
 
