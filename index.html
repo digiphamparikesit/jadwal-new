@@ -24,6 +24,7 @@
     --c-CM:#DB2777; --c-CM-bg:#FCE7F3;
     --c-SKT:#DC2626;--c-SKT-bg:#FEE2E2;
     --c-IZIN:#4F46E5;--c-IZIN-bg:#E0E7FF;
+    --c-DL:#0891B2; --c-DL-bg:#CFFAFE;
     --shadow-xs:0 1px 2px rgba(15,23,42,.04);
     --shadow-sm:0 1px 3px rgba(15,23,42,.06), 0 1px 2px rgba(15,23,42,.04);
     --shadow-md:0 4px 6px -1px rgba(15,23,42,.06), 0 2px 4px -2px rgba(15,23,42,.04);
@@ -407,6 +408,23 @@
   .legend-row input{flex:1;padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:12.5px;font-family:'Inter',sans-serif;outline:none}
   .legend-row input:focus{border-color:var(--primary-600);box-shadow:0 0 0 3px rgba(13,148,136,.12)}
 
+  /* ===== JAM EDITOR ===== */
+  .jam-row{
+    display:grid;grid-template-columns:56px 1fr 90px;gap:10px;align-items:center;
+    padding:8px 12px;background:var(--bg-soft);border-radius:8px;border:1px solid var(--border-soft);
+  }
+  .jam-row .k{
+    font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:var(--ink-2);
+    display:grid;place-items:center;height:22px;border-radius:6px;background:var(--card);
+  }
+  .jam-row .lbl{font-size:12.5px;color:var(--ink-2);font-weight:500}
+  .jam-row input{
+    width:100%;padding:6px 10px;border:1px solid var(--border);border-radius:6px;
+    font-family:'JetBrains Mono',monospace;font-size:12.5px;text-align:right;
+    outline:none;background:var(--card);
+  }
+  .jam-row input:focus{border-color:var(--primary-600);box-shadow:0 0 0 3px rgba(13,148,136,.12)}
+
   .detail-table{width:100%;border-collapse:collapse;font-size:13px}
   .detail-table thead th{
     text-align:left;padding:8px 6px;border-bottom:1px solid var(--border);
@@ -462,6 +480,7 @@
     .mobile-nav svg{width:20px;height:20px}
     .modal-m{max-height:95vh}
     .paste-zone{min-height:180px;font-size:11px}
+    .jam-row{grid-template-columns:48px 1fr 76px;gap:8px;padding:6px 10px}
   }
   @media (max-width:480px){
     .stats-bento{grid-template-columns:1fr 1fr;gap:8px}
@@ -652,7 +671,6 @@
 
       <div id="importUnlocked" class="hidden">
         <div class="import-grid">
-          <!-- PANEL 1: Paste -->
           <div class="import-panel">
             <div class="import-panel-head">
               <h3>1. Paste Data Excel</h3>
@@ -689,7 +707,6 @@ Budi	BLUD	S	S	P	…	IGD
             </div>
           </div>
 
-          <!-- PANEL 2: Preview -->
           <div class="import-panel">
             <div class="import-panel-head">
               <h3>2. Review & Import</h3>
@@ -768,10 +785,14 @@ Budi	BLUD	S	S	P	…	IGD
       <label style="margin-top:20px">Label Kode Jadwal</label>
       <div id="legendEditor"></div>
       <p class="help-text">Sesuaikan label tiap kode dengan istilah yang dipakai di tempat Anda.</p>
+
+      <label style="margin-top:20px">Jam Kerja per Kode</label>
+      <p class="help-text" style="margin-top:-2px;margin-bottom:10px">Ubah durasi jam untuk tiap kode. Gunakan desimal (contoh: <b>8.5</b> = 8 jam 30 menit). Nilai ini dipakai untuk hitung total jam di tab Rekap Jam Kerja.</p>
+      <div id="jamEditor" style="display:grid;grid-template-columns:1fr;gap:6px"></div>
     </div>
     <div class="modal-foot space">
       <button class="btn btn-ghost" id="resetData">Muat ulang data</button>
-      <button class="btn btn-primary" id="saveSettings">Simpan Label</button>
+      <button class="btn btn-primary" id="saveSettings">Simpan</button>
     </div>
   </div>
 </div>
@@ -817,23 +838,26 @@ var sb = window.supabase.createClient(
 );
 
 var DEFAULT_LEGEND = {
-  P:{label:'Pagi',color:'var(--c-P)',bg:'var(--c-P-bg)',shift:true},
-  TS:{label:'Middle',color:'var(--c-TS)',bg:'var(--c-TS-bg)',shift:true},
-  S:{label:'Sore',color:'var(--c-S)',bg:'var(--c-S-bg)',shift:true},
-  M:{label:'Malam',color:'var(--c-M)',bg:'var(--c-M-bg)',shift:true},
-  L:{label:'Libur',color:'var(--c-L)',bg:'var(--c-L-bg)',shift:false},
-  CT:{label:'Cuti Tahunan',color:'var(--c-CT)',bg:'var(--c-CT-bg)',shift:false},
-  CM:{label:'Cuti Melahirkan',color:'var(--c-CM)',bg:'var(--c-CM-bg)',shift:false},
-  SKT:{label:'Sakit',color:'var(--c-SKT)',bg:'var(--c-SKT-bg)',shift:false},
-  IZIN:{label:'Izin',color:'var(--c-IZIN)',bg:'var(--c-IZIN-bg)',shift:false}
+  P:    { label:'Pagi',            color:'var(--c-P)',   bg:'var(--c-P-bg)',   shift:true  },
+  TS:   { label:'Middle',          color:'var(--c-TS)',  bg:'var(--c-TS-bg)',  shift:true  },
+  S:    { label:'Siang',           color:'var(--c-S)',   bg:'var(--c-S-bg)',   shift:true  },
+  M:    { label:'Malam',           color:'var(--c-M)',   bg:'var(--c-M-bg)',   shift:true  },
+  L:    { label:'Libur',           color:'var(--c-L)',   bg:'var(--c-L-bg)',   shift:false },
+  SKT:  { label:'Sakit',           color:'var(--c-SKT)', bg:'var(--c-SKT-bg)', shift:false },
+  IZIN: { label:'Izin',            color:'var(--c-IZIN)',bg:'var(--c-IZIN-bg)',shift:false },
+  DL:   { label:'Dinas Luar',      color:'var(--c-DL)',  bg:'var(--c-DL-bg)',  shift:false },
+  CT:   { label:'Cuti Tahunan',    color:'var(--c-CT)',  bg:'var(--c-CT-bg)',  shift:false },
+  CM:   { label:'Cuti Bersalin',   color:'var(--c-CM)',  bg:'var(--c-CM-bg)',  shift:false }
 };
 var SHIFT_CODES = ['P','TS','S','M'];
+var URUTAN_KODE = ['P','TS','S','M','L','SKT','IZIN','DL','CT','CM'];
 
 var state = {
   data: null, selectedDate: null, legend: null,
   user: null, isAdmin: false, editMode: false,
   jamKerja: { year: new Date().getFullYear(), loadedYear: null, data: null },
-  importPreview: null
+  importPreview: null,
+  jamPerKode: {}
 };
 
 function loadSettings(){
@@ -842,7 +866,10 @@ function loadSettings(){
     var legend = JSON.parse(JSON.stringify(DEFAULT_LEGEND));
     if(raw){
       var saved = JSON.parse(raw);
-      Object.keys(saved).forEach(function(k){ if(legend[k]) legend[k].label = saved[k].label; });
+      Object.keys(saved).forEach(function(k){
+        if(legend[k]) legend[k].label = saved[k].label;
+        else if(DEFAULT_LEGEND[k]) legend[k] = { label: saved[k].label, color: DEFAULT_LEGEND[k].color, bg: DEFAULT_LEGEND[k].bg, shift: DEFAULT_LEGEND[k].shift };
+      });
     }
     state.legend = legend;
   }catch(e){ state.legend = JSON.parse(JSON.stringify(DEFAULT_LEGEND)); }
@@ -945,7 +972,8 @@ function renderRekap(){
   }).join('');
 
   var chips = ['<div class="chip-modern"><span class="chip-dot" style="background:var(--primary)">✓</span>Bertugas <b>'+totalOnDuty+'</b></div>'];
-  Object.keys(state.legend).forEach(function(code){
+  URUTAN_KODE.forEach(function(code){
+    if(!state.legend[code]) return;
     if(state.legend[code].shift) return;
     var n = codeCounts[code]||0;
     var m = state.legend[code];
@@ -1019,7 +1047,7 @@ function renderJadwal(){
     var cells = e.codes.map(function(code, i){
       var dateStr = dates[i];
       if(state.editMode){
-        var validCodes = Object.keys(state.legend);
+        var validCodes = URUTAN_KODE.filter(function(k){ return state.legend[k]; });
         var opts = ['<option value=""' + (!code ? ' selected' : '') + '>– kosong</option>'];
         validCodes.forEach(function(k){
           opts.push('<option value="'+k+'"'+(k===code?' selected':'')+'>'+k+' — '+esc(state.legend[k].label)+'</option>');
@@ -1071,7 +1099,13 @@ function renderJamKerja(){
   emptyBox.classList.add('hidden');
   tableCard.classList.remove('hidden');
 
-  var kodeList = Object.keys(d.jamPerKode || {});
+  // Urutan kolom tetap: P, TS, S, M, L, SKT, IZIN, DL, CT, CM
+  var kodeList = URUTAN_KODE.filter(function(k){ return d.jamPerKode && d.jamPerKode[k] !== undefined; });
+  // Tambahkan kode lain yang mungkin belum terdaftar di urutan
+  Object.keys(d.jamPerKode || {}).forEach(function(k){
+    if(kodeList.indexOf(k) === -1) kodeList.push(k);
+  });
+
   headRow.innerHTML = '<th>Nama</th>' + kodeList.map(function(k){
     return '<th>'+esc(d.labelKode[k]||k)+'<br><span style="font-weight:500;opacity:.6">'+d.jamPerKode[k]+' jam</span></th>';
   }).join('') + '<th>Total</th>';
@@ -1246,7 +1280,6 @@ function isDateLike(v){
   var s = String(v).trim();
   if(/^\d{4}[-/]\d{1,2}[-/]\d{1,2}$/.test(s)) return true;
   if(/^\d{1,2}[-/]\d{1,2}[-/]\d{2,4}$/.test(s)) return true;
-  // Format: 1-Oct, 01-Okt, Oct-1, 1 Oct 2026
   if(/^\d{1,2}[-/ ][A-Za-z]{3,}/.test(s)) return true;
   if(/^[A-Za-z]{3,}[-/ ]\d{1,2}/.test(s)) return true;
   return false;
@@ -1271,11 +1304,9 @@ function parseDate(v){
   var s = String(v||'').trim();
   if(!s) return null;
 
-  // ISO: 2026-10-01
   var m = s.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})$/);
   if(m) return m[1] + '-' + m[2].padStart(2,'0') + '-' + m[3].padStart(2,'0');
 
-  // Format: 1-Oct-2026, 01-Okt-2026, 1 Oct 2026
   m = s.match(/^(\d{1,2})[-/ ]([A-Za-z]+)(?:[-/ ](\d{2,4}))?$/);
   if(m){
     var day = parseInt(m[1],10);
@@ -1285,14 +1316,12 @@ function parseDate(v){
     if(mon) return year + '-' + String(mon).padStart(2,'0') + '-' + String(day).padStart(2,'0');
   }
 
-  // Format: Oct-1, Okt-1
   m = s.match(/^([A-Za-z]+)[-/ ](\d{1,2})$/);
   if(m){
     var mon2 = MONTH_MAP[m[1].toLowerCase()];
     if(mon2) return new Date().getFullYear() + '-' + String(mon2).padStart(2,'0') + '-' + String(parseInt(m[2],10)).padStart(2,'0');
   }
 
-  // Format: 1/10/2026 (DD/MM/YYYY)
   m = s.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{2,4})$/);
   if(m){
     var day2 = parseInt(m[1],10);
@@ -1303,7 +1332,6 @@ function parseDate(v){
     return year2 + '-' + String(mon3).padStart(2,'0') + '-' + String(day2).padStart(2,'0');
   }
 
-  // Fallback
   var d = new Date(s);
   if(!isNaN(d.getTime())) return d.toISOString().slice(0,10);
   return null;
@@ -1315,7 +1343,6 @@ function parseExcelData(text){
 
   var rows = lines.map(function(line){ return line.split('\t'); });
 
-  // Cari baris header: cari baris dengan >= 5 kolom tanggal
   var headerIdx = -1, depoCol = -1, dateCols = [];
   for(var r = 0; r < Math.min(3, rows.length); r++){
     var row = rows[r];
@@ -1323,7 +1350,7 @@ function parseExcelData(text){
     var depoIdx = -1;
     for(var c = 0; c < row.length; c++){
       var v = String(row[c]||'').trim();
-      if(v.toUpperCase() === 'DEPO') depoIdx = c;
+      if(v.toUpperCase() === 'DEPO' || v.toUpperCase().indexOf('LOKASI') !== -1) depoIdx = c;
       if(isDateLike(v)){
         var pd = parseDate(v);
         if(pd) localDateCols.push(c);
@@ -1338,7 +1365,7 @@ function parseExcelData(text){
   }
 
   if(headerIdx === -1){
-    throw new Error('Tidak bisa menemukan baris header dengan kolom tanggal. Pastikan baris pertama/kedua punya header Nama, Status, tanggal-tanggal, dan DEPO.');
+    throw new Error('Tidak bisa menemukan baris header dengan kolom tanggal. Pastikan header tanggal pakai format seperti "1 Oktober 2026", "01/10/2026", atau "1-Okt-2026".');
   }
 
   var header = rows[headerIdx];
@@ -1360,14 +1387,15 @@ function parseExcelData(text){
     var nama = String(row2[0]||'').trim();
     var status = String(row2[1]||'').trim();
     if(!nama) { skippedNames.push(r2 + 1); continue; }
+    if(/lokasi|depo/i.test(nama)) continue;
 
     var ruangan = depoCol >= 0 ? String(row2[depoCol]||'').trim() : '';
-    staffSet[nama] = (staffSet[nama] || 0) + 1;
+    staffSet[nama] = true;
 
     for(var i2 = 0; i2 < validDates.length; i2++){
       var code = String(row2[validCols[i2]]||'').trim().toUpperCase();
       if(!code) continue;
-      var validKodes = ['P','TS','S','M','L','CT','CM','SKT','IZIN'];
+      var validKodes = URUTAN_KODE;
       if(validKodes.indexOf(code) === -1){
         invalidCodes[code] = (invalidCodes[code]||0) + 1;
         continue;
@@ -1384,15 +1412,12 @@ function parseExcelData(text){
 
   if(parsedRows.length === 0) throw new Error('Tidak ada sel jadwal yang bisa diimport.');
 
-  // Rentang tanggal
   var sortedDates = validDates.slice().sort();
   var dateMin = sortedDates[0], dateMax = sortedDates[sortedDates.length-1];
 
-  // Ruangan unik
   var ruanganSet = {};
   parsedRows.forEach(function(r){ ruanganSet[r.ruangan] = true; });
 
-  // Kode breakdown
   var kodeCount = {};
   parsedRows.forEach(function(r){ kodeCount[r.kode] = (kodeCount[r.kode]||0)+1; });
 
@@ -1421,7 +1446,6 @@ function renderPreview(preview){
     '<div class="preview-stat"><div class="lbl">Tanggal Akhir</div><div class="val" style="font-size:14px">' + preview.dateMax + '</div></div>' +
   '</div>';
 
-  // Warnings
   var warnings = [];
   if(preview.skippedNames.length > 0){
     warnings.push('⚠️ ' + preview.skippedNames.length + ' baris tanpa nama (di-skip)');
@@ -1439,7 +1463,6 @@ function renderPreview(preview){
 
   var infoHtml = '<div class="alert-box info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg><div><b>Ruangan:</b> ' + preview.ruanganList.join(', ') + '</div></div>';
 
-  // Sample 8 rows
   var sample = preview.parsedRows.slice(0, 8);
   var tableHtml = '<div class="preview-table-wrap"><table class="preview-table">' +
     '<thead><tr><th>Tanggal</th><th>Nama</th><th>Ruangan</th><th>Kode</th></tr></thead><tbody>' +
@@ -1485,9 +1508,7 @@ async function doImport(){
   try{
     var r = await sb.rpc('rpc_import_jadwal', { p_rows: state.importPreview.parsedRows });
     if(r.error) throw r.error;
-    if(!r.data.success){
-      throw new Error(r.data.error || 'Import gagal.');
-    }
+    if(!r.data.success) throw new Error(r.data.error || 'Import gagal.');
 
     var res = r.data;
     document.getElementById('previewPanel').innerHTML =
@@ -1513,6 +1534,32 @@ async function doImport(){
       if(state.importPreview) renderPreview(state.importPreview);
     });
   }
+}
+
+/* ============================================================
+   PENGATURAN JAM KERJA
+   ============================================================ */
+
+async function loadPengaturanJam(){
+  try{
+    var r = await sb.from('pengaturan_jam').select('kode,label,jam');
+    if(r.error) throw r.error;
+    state.jamPerKode = {};
+    (r.data || []).forEach(function(x){
+      state.jamPerKode[x.kode] = { label: x.label, jam: Number(x.jam) || 0 };
+    });
+  }catch(e){ console.warn('loadPengaturanJam error:', e); }
+}
+
+function renderJamEditor(){
+  var el = document.getElementById('jamEditor');
+  if(!el) return;
+  var extra = Object.keys(state.jamPerKode).filter(function(k){ return URUTAN_KODE.indexOf(k) === -1; });
+  var list = URUTAN_KODE.concat(extra);
+  el.innerHTML = list.map(function(k){
+    var m = state.jamPerKode[k] || { label: state.legend[k] ? state.legend[k].label : k, jam: 0 };
+    return '<div class="jam-row"><span class="k">'+k+'</span><span class="lbl">'+esc(m.label)+'</span><input type="number" step="0.25" min="0" data-jam-kode="'+k+'" value="'+(m.jam)+'"></div>';
+  }).join('');
 }
 
 /* ============================================================
@@ -1633,9 +1680,8 @@ document.getElementById('confirmLogin').addEventListener('click', async function
   try{
     await doLogin(email, pwd);
     closeModal('loginModal');
-    if(document.querySelector('.nav-item.active[data-tab]')?.dataset.tab === 'import'){
-      // stay on import tab
-    } else {
+    var activeTab = document.querySelector('.nav-item.active[data-tab]');
+    if(activeTab && activeTab.dataset.tab !== 'import'){
       state.editMode = true;
       setTab('jadwal');
       renderJadwal();
@@ -1651,23 +1697,61 @@ document.getElementById('settingsTop').addEventListener('click', openSettings);
 document.getElementById('closeSettings').addEventListener('click', function(){ closeModal('settingsModal'); });
 document.getElementById('settingsModal').addEventListener('click', function(e){ if(e.target === this) closeModal('settingsModal'); });
 
-function openSettings(){
-  renderLegendEditor(); updateSessionBox(); openModal('settingsModal');
+async function openSettings(){
+  renderLegendEditor();
+  updateSessionBox();
+  await loadPengaturanJam();
+  renderJamEditor();
+  openModal('settingsModal');
 }
+
 function renderLegendEditor(){
   var c = document.getElementById('legendEditor');
-  c.innerHTML = Object.keys(state.legend).map(function(code){
+  var list = URUTAN_KODE.filter(function(k){ return state.legend[k]; });
+  Object.keys(state.legend).forEach(function(k){ if(list.indexOf(k) === -1) list.push(k); });
+  c.innerHTML = list.map(function(code){
     var m = state.legend[code];
     return '<div class="legend-row"><span class="dot" style="background:'+m.color+'">'+code.slice(0,2)+'</span><span class="code-name">'+code+'</span><input type="text" data-code="'+code+'" value="'+esc(m.label)+'"></div>';
   }).join('');
 }
 
-document.getElementById('saveSettings').addEventListener('click', function(){
-  document.querySelectorAll('#legendEditor input').forEach(function(inp){
-    state.legend[inp.dataset.code].label = inp.value.trim() || inp.dataset.code;
-  });
-  saveLegend(); closeModal('settingsModal');
-  renderRekap(); renderJadwal(); renderJamKerja();
+document.getElementById('saveSettings').addEventListener('click', async function(){
+  var btn = this;
+  btn.disabled = true;
+  btn.textContent = 'Menyimpan…';
+  try{
+    // 1. Simpan label legend lokal
+    document.querySelectorAll('#legendEditor input').forEach(function(inp){
+      var k = inp.dataset.code;
+      if(state.legend[k]) state.legend[k].label = inp.value.trim() || k;
+    });
+    saveLegend();
+
+    // 2. Simpan jam ke Supabase (hanya jika user admin)
+    if(state.user && state.isAdmin){
+      var items = [];
+      document.querySelectorAll('#jamEditor input[data-jam-kode]').forEach(function(inp){
+        var k = inp.dataset.jamKode;
+        var meta = state.jamPerKode[k] || { label: (state.legend[k] ? state.legend[k].label : k) };
+        var j = parseFloat(inp.value);
+        if(isNaN(j) || j < 0) j = 0;
+        items.push({ kode: k, label: meta.label || k, jam: j });
+      });
+      var r = await sb.rpc('rpc_update_pengaturan_jam', { p_items: items });
+      if(r.error) throw r.error;
+      if(!r.data || !r.data.success) throw new Error((r.data && r.data.error) || 'Gagal simpan jam');
+      await loadPengaturanJam();
+    }
+
+    closeModal('settingsModal');
+    renderRekap(); renderJadwal();
+    if(state.jamKerja.loadedYear) await loadJamKerja(state.jamKerja.loadedYear);
+  }catch(err){
+    alert('Gagal menyimpan: ' + (err.message || err));
+  }finally{
+    btn.disabled = false;
+    btn.textContent = 'Simpan';
+  }
 });
 
 document.getElementById('resetData').addEventListener('click', function(){ closeModal('settingsModal'); loadData(); });
@@ -1702,7 +1786,6 @@ document.getElementById('importLoginBtn').addEventListener('click', function(){
   openModal('loginModal');
 });
 
-/* Import events */
 document.getElementById('pasteArea').addEventListener('input', function(e){
   var hasContent = e.target.value.trim().length > 0;
   e.target.classList.toggle('filled', hasContent);
@@ -1717,10 +1800,7 @@ document.getElementById('clearPasteBtn').addEventListener('click', function(){
 
 document.getElementById('previewBtn').addEventListener('click', function(){
   var text = document.getElementById('pasteArea').value;
-  if(!text.trim()){
-    alert('Paste data Excel dulu di kotak sebelah.');
-    return;
-  }
+  if(!text.trim()){ alert('Paste data Excel dulu di kotak sebelah.'); return; }
   try{
     var preview = parseExcelData(text);
     state.importPreview = preview;
