@@ -1400,7 +1400,10 @@ async function loadPengajuan(){
   document.getElementById('pengajuanBody').innerHTML = '<tr><td colspan="5" style="text-align:center;padding:32px;color:var(--ink-muted)">Memuat…</td></tr>';
 
   try{
-    var q = sb.from('pengajuan').select('*').order('created_at', { ascending: false }).limit(2000);
+   var q = sb.from('pengajuan')
+      .select('*, staff(nama)')
+      .order('created_at', { ascending: false })
+      .limit(2000);
     if(start) q = q.gte('created_at', start + 'T00:00:00');
     if(end) q = q.lte('created_at', end + 'T23:59:59');
     if(jenis) q = q.eq('jenis', jenis);
@@ -1440,7 +1443,7 @@ function renderPengajuan(){
     var jenisPillClass = p.jenis === 'tukar_shift' ? 'jenis-tukar_shift' : 'jenis-' + p.jenis;
     return '<tr>' +
       '<td style="text-align:left">' + tgl + '</td>' +
-      '<td style="text-align:left"><b>' + esc(p.nama || '') + '</b><div style="font-size:11px;color:var(--ink-faint)">' + esc(p.nip || '') + '</div></td>' +
+      '<td style="text-align:left"><b>' + esc((p.staff && p.staff.nama) || p.nama || '—') + '</b><div style="font-size:11px;color:var(--ink-faint)">' + esc(p.nip || '') + '</div></td>' +
       '<td><span class="jenis-pill ' + jenisPillClass + '">' + esc(jenisLabel) + '</span></td>' +
       '<td style="text-align:left">' + esc(periode) + '</td>' +
       '<td style="text-align:left;white-space:normal;max-width:300px">' + esc(p.keterangan || '—') + '</td>' +
