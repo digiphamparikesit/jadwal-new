@@ -125,13 +125,14 @@
   }
   .page-head p.eyebrow::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--primary);display:inline-block}
 
-  .date-nav{display:flex;gap:6px;align-items:center}
+  .date-nav{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
   .date-nav input{
     padding:10px 14px;background:var(--card);border:1px solid var(--border);
     border-radius:var(--r-md);font-size:13px;font-family:'JetBrains Mono',monospace;
     box-shadow:var(--shadow-xs);outline:none;
   }
   .date-nav input:focus{border-color:var(--primary-600);box-shadow:0 0 0 3px rgba(13,148,136,.12)}
+  .date-nav .sep{font-size:12px;color:var(--ink-muted);padding:0 2px}
 
   .stats-bento{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
   .stat-bento{
@@ -260,10 +261,21 @@
   }
   .staff-link:hover{text-decoration-color:var(--primary)}
 
+  /* Jenis pengajuan pill */
+  .jenis-pill{
+    display:inline-flex;align-items:center;justify-content:center;
+    padding:3px 10px;border-radius:var(--r-full);
+    font-size:11px;font-weight:600;white-space:nowrap;
+  }
+  .jenis-izin{background:#DBEAFE;color:#1D4ED8}
+  .jenis-sakit{background:#FEE2E2;color:#991B1B}
+  .jenis-cuti{background:#F3E8FF;color:#6D28D9}
+  .jenis-telat{background:#FEF3C7;color:#92400E}
+  .jenis-absensieror{background:#E0E7FF;color:#4F46E5}
+
   /* ===== IMPORT SECTION ===== */
   .import-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start}
   @media (max-width:1100px){.import-grid{grid-template-columns:1fr}}
-
   .import-panel{
     background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);
     box-shadow:var(--shadow-xs);overflow:hidden;
@@ -408,7 +420,7 @@
   .legend-row input{flex:1;padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:12.5px;font-family:'Inter',sans-serif;outline:none}
   .legend-row input:focus{border-color:var(--primary-600);box-shadow:0 0 0 3px rgba(13,148,136,.12)}
 
-  /* ===== JAM EDITOR ===== */
+  /* JAM EDITOR */
   .jam-row{
     display:grid;grid-template-columns:56px 1fr 90px;gap:10px;align-items:center;
     padding:8px 12px;background:var(--bg-soft);border-radius:8px;border:1px solid var(--border-soft);
@@ -445,6 +457,12 @@
     color:var(--primary);font-weight:600;
   }
 
+  .total-bar{
+    padding:14px 18px;background:var(--primary-tint);
+    border-top:1px solid var(--border);
+    font-size:12.5px;color:var(--ink-2);
+  }
+
   .empty-state{padding:56px 24px;text-align:center}
   .empty-state svg{width:48px;height:48px;color:var(--ink-faint);margin:0 auto 12px;display:block;opacity:.5}
   .empty-state b{display:block;font-size:14px;font-weight:600;color:var(--ink-2);margin-bottom:4px}
@@ -455,9 +473,11 @@
 
   .mobile-bottom{display:none}
   .mobile-only{display:none}
+  .hamburger{display:none}
 
   @media (max-width:900px){
     aside.sidebar{transform:translateX(-100%)}
+    aside.sidebar.open{transform:translateX(0);box-shadow:0 0 40px rgba(0,0,0,.3)}
     main.content{margin-left:0;padding:16px 16px 88px}
     .stats-bento{grid-template-columns:repeat(2,1fr);gap:10px}
     .page-head h2{font-size:20px}
@@ -465,22 +485,28 @@
     .topbar-m .btn-label{display:none}
     .topbar-m .btn{padding:10px 12px}
     .mobile-only{display:grid}
+    .hamburger{display:grid;place-items:center;width:40px;height:40px;border-radius:10px;background:var(--card);border:1px solid var(--border);box-shadow:var(--shadow-xs);flex:none}
+    .hamburger svg{width:18px;height:18px;color:var(--ink-2)}
+    .sidebar-backdrop{position:fixed;inset:0;background:rgba(15,23,42,.4);z-index:45;display:none}
+    .sidebar-backdrop.open{display:block}
     .mobile-bottom{
       display:flex;position:fixed;bottom:0;left:0;right:0;z-index:60;
       background:var(--card);border-top:1px solid var(--border);
-      padding:8px 6px calc(8px + env(safe-area-inset-bottom));
+      padding:8px 4px calc(8px + env(safe-area-inset-bottom));
       box-shadow:0 -4px 16px rgba(15,23,42,.06);justify-content:space-around;
     }
     .mobile-nav{
       flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
-      padding:8px 4px;border-radius:10px;font-size:10.5px;font-weight:600;
+      padding:6px 2px;border-radius:10px;font-size:10px;font-weight:600;
       color:var(--ink-muted);transition:all .15s;
     }
     .mobile-nav.active{color:var(--primary);background:var(--primary-tint)}
-    .mobile-nav svg{width:20px;height:20px}
+    .mobile-nav svg{width:18px;height:18px}
     .modal-m{max-height:95vh}
     .paste-zone{min-height:180px;font-size:11px}
     .jam-row{grid-template-columns:48px 1fr 76px;gap:8px;padding:6px 10px}
+    .date-nav{width:100%}
+    .date-nav input{flex:1}
   }
   @media (max-width:480px){
     .stats-bento{grid-template-columns:1fr 1fr;gap:8px}
@@ -494,8 +520,10 @@
 </head>
 <body>
 
+<div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
 <div class="app">
-  <aside class="sidebar">
+  <aside class="sidebar" id="sidebar">
     <div class="logo-row">
       <div class="logo-mark">Rx</div>
       <div class="logo-text">
@@ -518,11 +546,20 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
         <span>Rekap Jam Kerja</span>
       </button>
+      <button class="nav-item" data-tab="kehadiran">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M20 8v6M23 11h-6"/></svg>
+        <span>Rekap Kehadiran</span>
+        <span class="badge-new">NEW</span>
+      </button>
 
       <div class="nav-label" style="margin-top:12px">Admin</div>
       <button class="nav-item" data-tab="import">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v12"/></svg>
         <span>Import Jadwal</span>
+      </button>
+      <button class="nav-item" data-tab="pengajuan">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8M16 17H8M10 9H8"/></svg>
+        <span>Daftar Pengajuan</span>
         <span class="badge-new">NEW</span>
       </button>
 
@@ -550,6 +587,9 @@
 
   <main class="content">
     <div class="topbar-m">
+      <button class="hamburger" id="hamburgerBtn" type="button" title="Menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
       <div class="search-box">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
         <input type="text" id="globalSearch" placeholder="Cari nama staf…">
@@ -557,9 +597,6 @@
       <button class="btn btn-secondary" id="refreshTop" title="Muat ulang data">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>
         <span class="btn-label">Muat ulang</span>
-      </button>
-      <button class="btn btn-secondary mobile-only" id="settingsTop" title="Pengaturan" style="display:none">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
       </button>
       <button class="btn btn-primary" id="editModeBtn" title="Mode Edit Admin">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
@@ -583,7 +620,6 @@
           </button>
         </div>
       </div>
-
       <div class="stats-bento" id="statRow"></div>
       <div class="chips-row" id="chipRow"></div>
       <div class="room-grid" id="roomGrid"></div>
@@ -647,6 +683,109 @@
       </div>
     </section>
 
+    <section id="tab-kehadiran" class="hidden">
+      <div class="page-head">
+        <div>
+          <p class="eyebrow">Cuti / Izin / Sakit / Dinas Luar</p>
+          <h2>Rekap Kehadiran per Staf</h2>
+        </div>
+        <div class="date-nav">
+          <input type="date" id="kehadiranStart">
+          <span class="sep">s/d</span>
+          <input type="date" id="kehadiranEnd">
+          <button class="btn btn-primary" id="kehadiranLoadBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>
+            Muat
+          </button>
+        </div>
+      </div>
+      <div class="filter-row">
+        <input type="text" id="searchNameKehadiran" placeholder="Cari nama staf…" style="min-width:220px">
+      </div>
+      <div class="table-card">
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr id="kehadiranHeadRow">
+                <th style="text-align:left">Nama</th>
+                <th>Ruangan</th>
+                <th>Cuti</th>
+                <th>Izin</th>
+                <th>Sakit</th>
+                <th>Dinas Luar</th>
+                <th>Cuti Bersalin</th>
+                <th>Libur</th>
+                <th>Hari Kerja</th>
+                <th>Hari Off</th>
+              </tr>
+            </thead>
+            <tbody id="kehadiranBody"></tbody>
+          </table>
+        </div>
+        <div class="total-bar" id="kehadiranTotal">—</div>
+      </div>
+    </section>
+
+    <section id="tab-pengajuan" class="hidden">
+      <div class="page-head">
+        <div>
+          <p class="eyebrow">Pengajuan dari staff</p>
+          <h2>Daftar Pengajuan</h2>
+        </div>
+      </div>
+
+      <div id="pengajuanLocked" class="table-card hidden">
+        <div class="empty-state">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <b>Login sebagai admin untuk melihat daftar pengajuan</b>
+          <span>Klik tombol di bawah untuk login</span>
+          <div style="margin-top:20px">
+            <button class="btn btn-primary" id="pengajuanLoginBtn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="m10 17 5-5-5-5"/><path d="M15 12H3"/></svg>
+              Login Admin
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div id="pengajuanUnlocked" class="hidden">
+        <div class="filter-row">
+          <input type="date" id="pengajuanStart">
+          <span style="display:flex;align-items:center;padding:0 4px;color:var(--ink-muted);font-size:12px">s/d</span>
+          <input type="date" id="pengajuanEnd">
+          <select id="pengajuanJenis">
+            <option value="">Semua jenis</option>
+            <option value="izin">Izin</option>
+            <option value="sakit">Sakit</option>
+            <option value="cuti">Cuti Tahunan</option>
+            <option value="telat">Telat / Pulang Cepat</option>
+            <option value="absensieror">Absensi Eror</option>
+          </select>
+          <input type="text" id="searchNamePengajuan" placeholder="Cari nama / NIP…" style="min-width:200px">
+          <button class="btn btn-primary" id="pengajuanLoadBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>
+            Muat
+          </button>
+        </div>
+        <div class="table-card">
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th style="text-align:left;min-width:120px;position:static;box-shadow:none">Tgl Ajuan</th>
+                  <th style="text-align:left;min-width:180px;position:static;box-shadow:none">Nama</th>
+                  <th style="position:static;box-shadow:none">Jenis</th>
+                  <th style="text-align:left;min-width:200px;position:static;box-shadow:none">Periode / Jam</th>
+                  <th style="text-align:left;min-width:200px;position:static;box-shadow:none">Keterangan</th>
+                </tr>
+              </thead>
+              <tbody id="pengajuanBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <section id="tab-import" class="hidden">
       <div class="page-head">
         <div>
@@ -687,16 +826,10 @@
                   <li>Klik <b>Preview</b></li>
                 </ol>
                 <div style="margin-top:8px;font-size:11.5px">
-                  💡 Format yang didukung: baris 1 = header (Nama, Status, tanggal…, DEPO). Baris berikutnya = data staf.
+                  💡 Header tanggal yang didukung: <b>1 Oktober 2026</b>, <b>1-Okt-2026</b>, <b>01/10/2026</b>, atau <b>2026-10-01</b>.
                 </div>
               </div>
-              <textarea class="paste-zone" id="pasteArea" placeholder="Paste data Excel di sini (Ctrl+V)…
-
-Contoh:
-Nama	Status	1-Oct	2-Oct	3-Oct	…	DEPO
-Ahmad	PPPK	P	P	L	…	IGD
-Budi	BLUD	S	S	P	…	IGD
-"></textarea>
+              <textarea class="paste-zone" id="pasteArea" placeholder="Paste data Excel di sini (Ctrl+V)…"></textarea>
               <div class="import-actions">
                 <button class="btn btn-secondary" id="clearPasteBtn">Clear</button>
                 <button class="btn btn-primary" id="previewBtn">
@@ -738,6 +871,10 @@ Budi	BLUD	S	S	P	…	IGD
   <button class="mobile-nav" data-tab="jamkerja">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
     <span>Jam Kerja</span>
+  </button>
+  <button class="mobile-nav" data-tab="kehadiran">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M20 8v6M23 11h-6"/></svg>
+    <span>Hadir</span>
   </button>
 </div>
 
@@ -787,7 +924,7 @@ Budi	BLUD	S	S	P	…	IGD
       <p class="help-text">Sesuaikan label tiap kode dengan istilah yang dipakai di tempat Anda.</p>
 
       <label style="margin-top:20px">Jam Kerja per Kode</label>
-      <p class="help-text" style="margin-top:-2px;margin-bottom:10px">Ubah durasi jam untuk tiap kode. Gunakan desimal (contoh: <b>8.5</b> = 8 jam 30 menit). Nilai ini dipakai untuk hitung total jam di tab Rekap Jam Kerja.</p>
+      <p class="help-text" style="margin-top:-2px;margin-bottom:10px">Ubah durasi jam untuk tiap kode. Gunakan desimal (contoh: <b>8.5</b> = 8 jam 30 menit).</p>
       <div id="jamEditor" style="display:grid;grid-template-columns:1fr;gap:6px"></div>
     </div>
     <div class="modal-foot space">
@@ -808,15 +945,9 @@ Budi	BLUD	S	S	P	…	IGD
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><path d="M18 6 6 18M6 6l12 12"/></svg>
       </button>
     </div>
-    <div class="modal-body" style="padding:8px 22px 4px">
+    <div class="modal-body" style="padding:8px 22px 4px" id="detailBodyWrap">
       <table class="detail-table">
-        <thead>
-          <tr>
-            <th>BULAN</th><th>RUANGAN</th>
-            <th style="text-align:right">HARI KERJA</th>
-            <th style="text-align:right">JAM</th>
-          </tr>
-        </thead>
+        <thead id="detailThead"></thead>
         <tbody id="detailBody"></tbody>
       </table>
       <div class="detail-total" id="detailTotal">—</div>
@@ -851,11 +982,21 @@ var DEFAULT_LEGEND = {
 };
 var SHIFT_CODES = ['P','TS','S','M'];
 var URUTAN_KODE = ['P','TS','S','M','L','SKT','IZIN','DL','CT','CM'];
+var KEHADIRAN_COLS = [
+  { kode: 'CT',   label: 'Cuti' },
+  { kode: 'IZIN', label: 'Izin' },
+  { kode: 'SKT',  label: 'Sakit' },
+  { kode: 'DL',   label: 'Dinas Luar' },
+  { kode: 'CM',   label: 'Cuti Bersalin' },
+  { kode: 'L',    label: 'Libur' }
+];
 
 var state = {
   data: null, selectedDate: null, legend: null,
   user: null, isAdmin: false, editMode: false,
   jamKerja: { year: new Date().getFullYear(), loadedYear: null, data: null },
+  kehadiran: { data: null, loaded: false },
+  pengajuan: { data: null, loaded: false },
   importPreview: null,
   jamPerKode: {}
 };
@@ -868,7 +1009,6 @@ function loadSettings(){
       var saved = JSON.parse(raw);
       Object.keys(saved).forEach(function(k){
         if(legend[k]) legend[k].label = saved[k].label;
-        else if(DEFAULT_LEGEND[k]) legend[k] = { label: saved[k].label, color: DEFAULT_LEGEND[k].color, bg: DEFAULT_LEGEND[k].bg, shift: DEFAULT_LEGEND[k].shift };
       });
     }
     state.legend = legend;
@@ -888,7 +1028,11 @@ function initials(n){
 function fmtDateLong(d){ return new Date(d+'T00:00:00').toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long',year:'numeric'}); }
 function fmtDateShort(d){ return new Date(d+'T00:00:00').toLocaleDateString('id-ID',{day:'numeric',month:'short'}); }
 function fmtDayShort(d){ return new Date(d+'T00:00:00').toLocaleDateString('id-ID',{weekday:'short'}); }
+function fmtDateFull(d){ return new Date(d+'T00:00:00').toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long',year:'numeric'}); }
 function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function todayISO(){ return new Date().toISOString().slice(0,10); }
+function monthStartISO(){ var d = new Date(); return new Date(d.getFullYear(), d.getMonth(), 1).toISOString().slice(0,10); }
+function monthEndISO(){ var d = new Date(); return new Date(d.getFullYear(), d.getMonth()+1, 0).toISOString().slice(0,10); }
 
 function renderSkeletons(){
   var skel = '<div class="room-modern"><div style="padding:16px 18px"><div class="skeleton" style="height:32px;width:60%;margin-bottom:12px"></div><div class="skeleton" style="height:14px;width:40%"></div></div></div>';
@@ -921,7 +1065,7 @@ function onDataReady(){
     document.getElementById('rekapEyebrow').textContent = 'Belum ada data jadwal';
     return;
   }
-  var today = new Date().toISOString().slice(0,10);
+  var today = todayISO();
   state.selectedDate = dates.indexOf(today) >= 0 ? today : dates[dates.length-1];
   var di = document.getElementById('dateInput');
   di.min = dates[0]; di.max = dates[dates.length-1]; di.value = state.selectedDate;
@@ -1067,6 +1211,10 @@ function renderJadwal(){
   }).join('');
 }
 
+/* ============================================================
+   REKAP JAM KERJA
+   ============================================================ */
+
 async function loadJamKerja(year){
   document.getElementById('yearInput').value = year;
   try{
@@ -1099,9 +1247,7 @@ function renderJamKerja(){
   emptyBox.classList.add('hidden');
   tableCard.classList.remove('hidden');
 
-  // Urutan kolom tetap: P, TS, S, M, L, SKT, IZIN, DL, CT, CM
   var kodeList = URUTAN_KODE.filter(function(k){ return d.jamPerKode && d.jamPerKode[k] !== undefined; });
-  // Tambahkan kode lain yang mungkin belum terdaftar di urutan
   Object.keys(d.jamPerKode || {}).forEach(function(k){
     if(kodeList.indexOf(k) === -1) kodeList.push(k);
   });
@@ -1124,19 +1270,20 @@ function renderJamKerja(){
       return '<td>'+(n ? '<span class="mono" style="font-weight:600">'+n+'</span>' : '<span class="code-empty">–</span>')+'</td>';
     }).join('');
     var namaAttr = s.nama.replace(/"/g,'&quot;');
-    return '<tr><td><button class="staff-link" data-nama="'+namaAttr+'">'+esc(s.nama)+'</button></td>'+cells+'<td class="mono" style="font-weight:700;color:var(--primary)">'+s.totalJam+' jam</td></tr>';
+    return '<tr><td><button class="staff-link" data-nama="'+namaAttr+'" data-source="jamkerja">'+esc(s.nama)+'</button></td>'+cells+'<td class="mono" style="font-weight:700;color:var(--primary)">'+s.totalJam+' jam</td></tr>';
   }).join('');
 }
 
 var BULAN_LABEL = ['','Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
 
-function openDetail(nama){
+function openDetailJamKerja(nama){
   var d = state.jamKerja.data;
   if(!d) return;
   var s = d.staff.find(function(x){ return x.nama === nama; });
   if(!s) return;
   document.getElementById('detailTitle').textContent = nama;
   document.getElementById('detailSub').textContent = 'Tahun ' + d.tahun + ' — riwayat ruangan per bulan';
+  document.getElementById('detailThead').innerHTML = '<tr><th>BULAN</th><th>RUANGAN</th><th style="text-align:right">HARI KERJA</th><th style="text-align:right">JAM</th></tr>';
   var rows = [];
   for(var b = 1; b <= 12; b++){
     var mData = s.perBulan[String(b)];
@@ -1160,16 +1307,204 @@ function openDetail(nama){
   document.getElementById('detailModal').classList.add('open');
 }
 
+/* ============================================================
+   REKAP KEHADIRAN
+   ============================================================ */
+
+async function loadKehadiran(){
+  var start = document.getElementById('kehadiranStart').value;
+  var end = document.getElementById('kehadiranEnd').value;
+  if(!start || !end){ alert('Isi tanggal mulai dan tanggal akhir.'); return; }
+  if(start > end){ alert('Tanggal mulai harus sebelum tanggal akhir.'); return; }
+
+  document.getElementById('kehadiranBody').innerHTML = '<tr><td colspan="10" style="text-align:center;padding:32px;color:var(--ink-muted)">Memuat…</td></tr>';
+  document.getElementById('kehadiranTotal').textContent = '—';
+
+  try{
+    var r = await sb.rpc('rpc_rekap_kehadiran', { p_start: start, p_end: end });
+    if(r.error) throw r.error;
+    state.kehadiran.data = r.data;
+    state.kehadiran.loaded = true;
+    renderKehadiran();
+  }catch(err){
+    console.error('Gagal load kehadiran:', err);
+    document.getElementById('kehadiranBody').innerHTML = '<tr><td colspan="10" style="text-align:center;padding:32px;color:var(--ink-muted)">Gagal memuat: ' + esc(err.message||'Error') + '</td></tr>';
+  }
+}
+
+function renderKehadiran(){
+  var d = state.kehadiran.data;
+  if(!d || !d.staff || d.staff.length === 0){
+    document.getElementById('kehadiranBody').innerHTML = '<tr><td colspan="10" style="text-align:center;padding:32px;color:var(--ink-muted)">Tidak ada data kehadiran untuk periode ini</td></tr>';
+    document.getElementById('kehadiranTotal').textContent = '—';
+    return;
+  }
+
+  var q = document.getElementById('searchNameKehadiran').value.toLowerCase().trim();
+  var rows = d.staff.filter(function(s){ return !q || s.nama.toLowerCase().indexOf(q) !== -1; });
+
+  if(rows.length === 0){
+    document.getElementById('kehadiranBody').innerHTML = '<tr><td colspan="10" style="text-align:center;padding:32px;color:var(--ink-muted)">Tidak ada staf cocok</td></tr>';
+    document.getElementById('kehadiranTotal').textContent = '—';
+    return;
+  }
+
+  var html = rows.map(function(s){
+    var cells = KEHADIRAN_COLS.map(function(col){
+      var n = (s.breakdown && s.breakdown[col.kode]) || 0;
+      var m = state.legend[col.kode] || { color: 'inherit' };
+      return '<td>' + (n ? '<span class="mono" style="font-weight:600;color:' + m.color + '">' + n + '</span>' : '<span class="code-empty">–</span>') + '</td>';
+    }).join('');
+    var namaAttr = s.nama.replace(/"/g, '&quot;');
+    return '<tr>' +
+      '<td><button class="staff-link" data-nama="' + namaAttr + '" data-source="kehadiran">' + esc(s.nama) + '</button></td>' +
+      '<td>' + esc(s.ruangan || '') + '</td>' +
+      cells +
+      '<td class="mono" style="font-weight:600">' + (s.hariKerja || 0) + '</td>' +
+      '<td class="mono" style="font-weight:600">' + (s.hariOff || 0) + '</td>' +
+    '</tr>';
+  }).join('');
+  document.getElementById('kehadiranBody').innerHTML = html;
+
+  // Total row
+  var total = { hariKerja: 0, hariOff: 0 };
+  KEHADIRAN_COLS.forEach(function(c){ total[c.kode] = 0; });
+  rows.forEach(function(s){
+    KEHADIRAN_COLS.forEach(function(c){ total[c.kode] += (s.breakdown && s.breakdown[c.kode]) || 0; });
+    total.hariKerja += s.hariKerja || 0;
+    total.hariOff += s.hariOff || 0;
+  });
+
+  var parts = ['<span style="font-weight:700;color:var(--primary)">TOTAL (' + rows.length + ' staf):</span>'];
+  KEHADIRAN_COLS.forEach(function(c){ parts.push(c.label + '=' + total[c.kode]); });
+  parts.push('Hari Kerja=' + total.hariKerja);
+  parts.push('Hari Off=' + total.hariOff);
+  document.getElementById('kehadiranTotal').innerHTML = parts.join(' · ');
+}
+
+function openDetailKehadiran(nama){
+  var d = state.kehadiran.data;
+  if(!d) return;
+  var s = d.staff.find(function(x){ return x.nama === nama; });
+  if(!s) return;
+
+  document.getElementById('detailTitle').textContent = nama;
+  document.getElementById('detailSub').textContent = 'Detail ketidakhadiran · ' + d.start + ' s/d ' + d.end;
+  document.getElementById('detailThead').innerHTML = '<tr><th>TANGGAL</th><th>HARI</th><th>KETERANGAN</th></tr>';
+
+  var detail = s.detailOff || [];
+  if(detail.length === 0){
+    document.getElementById('detailBody').innerHTML = '<tr><td colspan="3" style="text-align:center;padding:32px;color:var(--ink-muted)">Tidak ada catatan cuti / izin / sakit / dinas luar di periode ini</td></tr>';
+    document.getElementById('detailTotal').textContent = (s.hariKerja||0) + ' hari kerja · ' + (s.hariOff||0) + ' hari off total';
+    document.getElementById('detailModal').classList.add('open');
+    return;
+  }
+
+  var html = detail.map(function(x){
+    var m = state.legend[x.kode] || { label: x.kode, color: 'inherit', bg: '#eee' };
+    return '<tr><td class="mono">' + x.tanggal + '</td><td>' + fmtDayShort(x.tanggal) + ', ' + fmtDateShort(x.tanggal) + '</td>' +
+      '<td><span class="code-pill" style="background:' + m.bg + ';color:' + m.color + '">' + x.kode + '</span> ' + esc(m.label) + '</td></tr>';
+  }).join('');
+  document.getElementById('detailBody').innerHTML = html;
+  document.getElementById('detailTotal').textContent = (s.hariKerja||0) + ' hari kerja · ' + (s.hariOff||0) + ' hari off · ' + detail.length + ' catatan';
+  document.getElementById('detailModal').classList.add('open');
+}
+
+/* ============================================================
+   DAFTAR PENGAJUAN
+   ============================================================ */
+
+async function loadPengajuan(){
+  if(!state.user || !state.isAdmin) return;
+  var start = document.getElementById('pengajuanStart').value;
+  var end = document.getElementById('pengajuanEnd').value;
+  var jenis = document.getElementById('pengajuanJenis').value;
+
+  document.getElementById('pengajuanBody').innerHTML = '<tr><td colspan="5" style="text-align:center;padding:32px;color:var(--ink-muted)">Memuat…</td></tr>';
+
+  try{
+    var q = sb.from('pengajuan').select('*').order('created_at', { ascending: false }).limit(2000);
+    if(start) q = q.gte('created_at', start + 'T00:00:00');
+    if(end) q = q.lte('created_at', end + 'T23:59:59');
+    if(jenis) q = q.eq('jenis', jenis);
+
+    var r = await q;
+    if(r.error) throw r.error;
+    state.pengajuan.data = r.data || [];
+    state.pengajuan.loaded = true;
+    renderPengajuan();
+  }catch(err){
+    console.error('Gagal load pengajuan:', err);
+    document.getElementById('pengajuanBody').innerHTML = '<tr><td colspan="5" style="text-align:center;padding:32px;color:var(--ink-muted)">Gagal memuat: ' + esc(err.message||'Error') + '</td></tr>';
+  }
+}
+
+var JENIS_LABEL = { izin: 'Izin', sakit: 'Sakit', cuti: 'Cuti Tahunan', telat: 'Telat/Pulang Cepat', absensieror: 'Absensi Eror' };
+
+function renderPengajuan(){
+  var d = state.pengajuan.data || [];
+  var q = document.getElementById('searchNamePengajuan').value.toLowerCase().trim();
+  var rows = d.filter(function(p){
+    if(!q) return true;
+    return (p.nip || '').toLowerCase().indexOf(q) !== -1 || (p.nama || '').toLowerCase().indexOf(q) !== -1;
+  });
+
+  if(rows.length === 0){
+    document.getElementById('pengajuanBody').innerHTML = '<tr><td colspan="5" style="text-align:center;padding:32px;color:var(--ink-muted)">Tidak ada pengajuan</td></tr>';
+    return;
+  }
+
+  var html = rows.map(function(p){
+    var tgl = p.created_at ? new Date(p.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
+    var periode = '';
+    if(p.jenis === 'telat'){
+      periode = (p.tanggal_mulai || '—') + (p.jenis_telat ? ' · ' + p.jenis_telat : '') + (p.jam ? ' · ' + p.jam : '');
+    } else if(p.jenis === 'absensieror'){
+      periode = (p.tanggal_absensi || '—') + (p.waktu_absensi ? ' · ' + p.waktu_absensi : '');
+    } else {
+      var mulai = p.tanggal_mulai || '—';
+      var selesai = p.tanggal_selesai;
+      periode = mulai + (selesai ? ' s/d ' + selesai : '');
+    }
+    var jenisLabel = JENIS_LABEL[p.jenis] || p.jenis;
+    return '<tr>' +
+      '<td style="text-align:left">' + tgl + '</td>' +
+      '<td style="text-align:left"><b>' + esc(p.nama || '') + '</b><div style="font-size:11px;color:var(--ink-faint)">' + esc(p.nip || '') + '</div></td>' +
+      '<td><span class="jenis-pill jenis-' + esc(p.jenis) + '">' + esc(jenisLabel) + '</span></td>' +
+      '<td style="text-align:left">' + esc(periode) + '</td>' +
+      '<td style="text-align:left;white-space:normal;max-width:300px">' + esc(p.keterangan || '—') + '</td>' +
+    '</tr>';
+  }).join('');
+  document.getElementById('pengajuanBody').innerHTML = html;
+}
+
+/* ============================================================
+   TAB NAVIGASI
+   ============================================================ */
+
 function setTab(t){
   document.querySelectorAll('.nav-item[data-tab]').forEach(function(b){ b.classList.toggle('active', b.dataset.tab===t); });
   document.querySelectorAll('.mobile-nav').forEach(function(b){ b.classList.toggle('active', b.dataset.tab===t); });
-  document.getElementById('tab-rekap').classList.toggle('hidden', t!=='rekap');
-  document.getElementById('tab-jadwal').classList.toggle('hidden', t!=='jadwal');
-  document.getElementById('tab-jamkerja').classList.toggle('hidden', t!=='jamkerja');
-  document.getElementById('tab-import').classList.toggle('hidden', t!=='import');
+  ['rekap','jadwal','jamkerja','kehadiran','pengajuan','import'].forEach(function(name){
+    document.getElementById('tab-'+name).classList.toggle('hidden', name!==t);
+  });
+
   if(t==='jamkerja' && !state.jamKerja.loadedYear) loadJamKerja(state.jamKerja.year);
+  if(t==='kehadiran' && !state.kehadiran.loaded){
+    // default sudah di-set di init
+    loadKehadiran();
+  }
   if(t==='import') updateImportLock();
+  if(t==='pengajuan') updatePengajuanLock();
+
+  // Auto close sidebar on mobile
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarBackdrop').classList.remove('open');
 }
+
+/* ============================================================
+   AUTH
+   ============================================================ */
 
 async function checkIsAdmin(userId){
   try{
@@ -1188,6 +1523,7 @@ async function refreshSession(){
     updateUserUI();
     updateEditModeUI();
     updateImportLock();
+    updatePengajuanLock();
   }catch(e){ console.warn(e); }
 }
 
@@ -1199,13 +1535,15 @@ async function doLogin(email, password){
   updateUserUI();
   updateEditModeUI();
   updateImportLock();
+  updatePengajuanLock();
   if(!state.isAdmin) throw new Error('Login berhasil, tapi akun ini belum terdaftar sebagai admin.');
 }
 
 async function doLogout(){
   try{ await sb.auth.signOut(); }catch(e){}
   state.user = null; state.isAdmin = false; state.editMode = false;
-  updateUserUI(); updateEditModeUI(); renderJadwal(); updateImportLock();
+  state.pengajuan = { data: null, loaded: false };
+  updateUserUI(); updateEditModeUI(); renderJadwal(); updateImportLock(); updatePengajuanLock();
 }
 
 function updateUserUI(){
@@ -1271,6 +1609,20 @@ function updateImportLock(){
   }
 }
 
+function updatePengajuanLock(){
+  var locked = document.getElementById('pengajuanLocked');
+  var unlocked = document.getElementById('pengajuanUnlocked');
+  if(!locked) return;
+  if(state.user && state.isAdmin){
+    locked.classList.add('hidden');
+    unlocked.classList.remove('hidden');
+    if(!state.pengajuan.loaded) loadPengajuan();
+  }else{
+    locked.classList.remove('hidden');
+    unlocked.classList.add('hidden');
+  }
+}
+
 /* ============================================================
    IMPORT JADWAL
    ============================================================ */
@@ -1303,10 +1655,8 @@ var MONTH_MAP = {
 function parseDate(v){
   var s = String(v||'').trim();
   if(!s) return null;
-
   var m = s.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})$/);
   if(m) return m[1] + '-' + m[2].padStart(2,'0') + '-' + m[3].padStart(2,'0');
-
   m = s.match(/^(\d{1,2})[-/ ]([A-Za-z]+)(?:[-/ ](\d{2,4}))?$/);
   if(m){
     var day = parseInt(m[1],10);
@@ -1315,13 +1665,11 @@ function parseDate(v){
     if(year < 100) year += (year > 50 ? 1900 : 2000);
     if(mon) return year + '-' + String(mon).padStart(2,'0') + '-' + String(day).padStart(2,'0');
   }
-
   m = s.match(/^([A-Za-z]+)[-/ ](\d{1,2})$/);
   if(m){
     var mon2 = MONTH_MAP[m[1].toLowerCase()];
     if(mon2) return new Date().getFullYear() + '-' + String(mon2).padStart(2,'0') + '-' + String(parseInt(m[2],10)).padStart(2,'0');
   }
-
   m = s.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{2,4})$/);
   if(m){
     var day2 = parseInt(m[1],10);
@@ -1331,7 +1679,6 @@ function parseDate(v){
     if(mon3 > 12){ var tmp = day2; day2 = mon3; mon3 = tmp; }
     return year2 + '-' + String(mon3).padStart(2,'0') + '-' + String(day2).padStart(2,'0');
   }
-
   var d = new Date(s);
   if(!isNaN(d.getTime())) return d.toISOString().slice(0,10);
   return null;
@@ -1340,7 +1687,6 @@ function parseDate(v){
 function parseExcelData(text){
   var lines = text.replace(/\r/g,'').split('\n').filter(function(l){ return l.trim().length > 0; });
   if(lines.length < 2) throw new Error('Butuh minimal 2 baris (header + data).');
-
   var rows = lines.map(function(line){ return line.split('\t'); });
 
   var headerIdx = -1, depoCol = -1, dateCols = [];
@@ -1363,133 +1709,71 @@ function parseExcelData(text){
       break;
     }
   }
-
-  if(headerIdx === -1){
-    throw new Error('Tidak bisa menemukan baris header dengan kolom tanggal. Pastikan header tanggal pakai format seperti "1 Oktober 2026", "01/10/2026", atau "1-Okt-2026".');
-  }
+  if(headerIdx === -1) throw new Error('Tidak bisa menemukan baris header dengan kolom tanggal. Format: "1 Oktober 2026", "1-Okt-2026", "01/10/2026", atau "2026-10-01".');
 
   var header = rows[headerIdx];
   var dates = dateCols.map(function(c){ return parseDate(header[c]); });
-  var validIdx = [], validDates = [], validCols = [];
-  dates.forEach(function(d, i){
-    if(d){ validIdx.push(i); validDates.push(d); validCols.push(dateCols[i]); }
-  });
-
+  var validDates = [], validCols = [];
+  dates.forEach(function(d, i){ if(d){ validDates.push(d); validCols.push(dateCols[i]); } });
   if(validDates.length === 0) throw new Error('Tidak ada tanggal valid di header.');
 
-  var parsedRows = [];
-  var skippedNames = [];
-  var invalidCodes = {};
-  var staffSet = {};
-
+  var parsedRows = [], skippedNames = [], invalidCodes = {}, staffSet = {};
   for(var r2 = headerIdx + 1; r2 < rows.length; r2++){
     var row2 = rows[r2];
     var nama = String(row2[0]||'').trim();
     var status = String(row2[1]||'').trim();
     if(!nama) { skippedNames.push(r2 + 1); continue; }
     if(/lokasi|depo/i.test(nama)) continue;
-
     var ruangan = depoCol >= 0 ? String(row2[depoCol]||'').trim() : '';
     staffSet[nama] = true;
-
     for(var i2 = 0; i2 < validDates.length; i2++){
       var code = String(row2[validCols[i2]]||'').trim().toUpperCase();
       if(!code) continue;
-      var validKodes = URUTAN_KODE;
-      if(validKodes.indexOf(code) === -1){
-        invalidCodes[code] = (invalidCodes[code]||0) + 1;
-        continue;
-      }
-      parsedRows.push({
-        tanggal: validDates[i2],
-        nama: nama,
-        status_kepegawaian: status,
-        ruangan: ruangan || 'Belum diisi',
-        kode: code
-      });
+      if(URUTAN_KODE.indexOf(code) === -1){ invalidCodes[code] = (invalidCodes[code]||0) + 1; continue; }
+      parsedRows.push({ tanggal: validDates[i2], nama: nama, status_kepegawaian: status, ruangan: ruangan || 'Belum diisi', kode: code });
     }
   }
-
   if(parsedRows.length === 0) throw new Error('Tidak ada sel jadwal yang bisa diimport.');
 
   var sortedDates = validDates.slice().sort();
-  var dateMin = sortedDates[0], dateMax = sortedDates[sortedDates.length-1];
-
   var ruanganSet = {};
   parsedRows.forEach(function(r){ ruanganSet[r.ruangan] = true; });
-
   var kodeCount = {};
   parsedRows.forEach(function(r){ kodeCount[r.kode] = (kodeCount[r.kode]||0)+1; });
 
   return {
-    dates: validDates,
-    dateMin: dateMin,
-    dateMax: dateMax,
-    staffCount: Object.keys(staffSet).length,
-    ruanganList: Object.keys(ruanganSet).sort(),
-    kodeCount: kodeCount,
-    parsedRows: parsedRows,
-    skippedNames: skippedNames,
-    invalidCodes: invalidCodes
+    dates: validDates, dateMin: sortedDates[0], dateMax: sortedDates[sortedDates.length-1],
+    staffCount: Object.keys(staffSet).length, ruanganList: Object.keys(ruanganSet).sort(),
+    kodeCount: kodeCount, parsedRows: parsedRows, skippedNames: skippedNames, invalidCodes: invalidCodes
   };
 }
 
 function renderPreview(preview){
   var el = document.getElementById('previewPanel');
-  var badge = document.getElementById('step2Badge');
-  badge.style.opacity = '1';
-
+  document.getElementById('step2Badge').style.opacity = '1';
   var summaryHtml = '<div class="preview-summary">' +
     '<div class="preview-stat"><div class="lbl">Staff</div><div class="val">' + preview.staffCount + '<small>orang</small></div></div>' +
     '<div class="preview-stat"><div class="lbl">Total Sel</div><div class="val">' + preview.parsedRows.length + '<small>baris</small></div></div>' +
     '<div class="preview-stat"><div class="lbl">Tanggal Mulai</div><div class="val" style="font-size:14px">' + preview.dateMin + '</div></div>' +
     '<div class="preview-stat"><div class="lbl">Tanggal Akhir</div><div class="val" style="font-size:14px">' + preview.dateMax + '</div></div>' +
   '</div>';
-
   var warnings = [];
-  if(preview.skippedNames.length > 0){
-    warnings.push('⚠️ ' + preview.skippedNames.length + ' baris tanpa nama (di-skip)');
-  }
+  if(preview.skippedNames.length > 0) warnings.push('⚠️ ' + preview.skippedNames.length + ' baris tanpa nama (di-skip)');
   var invalidKodeKeys = Object.keys(preview.invalidCodes);
   if(invalidKodeKeys.length > 0){
     var detail = invalidKodeKeys.map(function(k){ return '"' + k + '" (' + preview.invalidCodes[k] + ')'; }).join(', ');
     warnings.push('⚠️ Kode tidak dikenal (di-skip): ' + detail);
   }
-
-  var warningHtml = '';
-  if(warnings.length > 0){
-    warningHtml = '<div class="alert-box warn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg><div>' + warnings.join('<br>') + '</div></div>';
-  }
-
+  var warningHtml = warnings.length > 0 ? '<div class="alert-box warn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg><div>' + warnings.join('<br>') + '</div></div>' : '';
   var infoHtml = '<div class="alert-box info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg><div><b>Ruangan:</b> ' + preview.ruanganList.join(', ') + '</div></div>';
-
   var sample = preview.parsedRows.slice(0, 8);
-  var tableHtml = '<div class="preview-table-wrap"><table class="preview-table">' +
-    '<thead><tr><th>Tanggal</th><th>Nama</th><th>Ruangan</th><th>Kode</th></tr></thead><tbody>' +
-    sample.map(function(r){
-      return '<tr><td>' + r.tanggal + '</td><td>' + esc(r.nama) + '</td><td>' + esc(r.ruangan) + '</td><td><b>' + esc(r.kode) + '</b></td></tr>';
-    }).join('') +
+  var tableHtml = '<div class="preview-table-wrap"><table class="preview-table"><thead><tr><th>Tanggal</th><th>Nama</th><th>Ruangan</th><th>Kode</th></tr></thead><tbody>' +
+    sample.map(function(r){ return '<tr><td>' + r.tanggal + '</td><td>' + esc(r.nama) + '</td><td>' + esc(r.ruangan) + '</td><td><b>' + esc(r.kode) + '</b></td></tr>'; }).join('') +
     '</tbody></table></div>';
-
-  if(preview.parsedRows.length > 8){
-    tableHtml += '<div style="text-align:center;font-size:11.5px;color:var(--ink-muted);margin-top:-8px;margin-bottom:12px">… dan ' + (preview.parsedRows.length - 8) + ' baris lainnya</div>';
-  }
-
-  var actionsHtml = '<div class="import-actions">' +
-    '<button class="btn btn-secondary" id="cancelImportBtn">Kembali</button>' +
-    '<button class="btn btn-primary" id="confirmImportBtn">' +
-      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v12"/></svg>' +
-      'Import ke Database' +
-    '</button>' +
-  '</div>';
-
+  if(preview.parsedRows.length > 8) tableHtml += '<div style="text-align:center;font-size:11.5px;color:var(--ink-muted);margin-top:-8px;margin-bottom:12px">… dan ' + (preview.parsedRows.length - 8) + ' baris lainnya</div>';
+  var actionsHtml = '<div class="import-actions"><button class="btn btn-secondary" id="cancelImportBtn">Kembali</button><button class="btn btn-primary" id="confirmImportBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v12"/></svg>Import ke Database</button></div>';
   el.innerHTML = summaryHtml + warningHtml + infoHtml + tableHtml + actionsHtml;
-
-  document.getElementById('cancelImportBtn').addEventListener('click', function(){
-    state.importPreview = null;
-    renderEmptyPreview();
-  });
-
+  document.getElementById('cancelImportBtn').addEventListener('click', function(){ state.importPreview = null; renderEmptyPreview(); });
   document.getElementById('confirmImportBtn').addEventListener('click', doImport);
 }
 
@@ -1503,22 +1787,14 @@ async function doImport(){
   var btn = document.getElementById('confirmImportBtn');
   if(btn.disabled) return;
   btn.disabled = true;
-  btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10" opacity=".3"/><path d="M12 2a10 10 0 0 1 10 10"/></svg> Memproses…';
-
+  btn.innerHTML = 'Memproses…';
   try{
     var r = await sb.rpc('rpc_import_jadwal', { p_rows: state.importPreview.parsedRows });
     if(r.error) throw r.error;
     if(!r.data.success) throw new Error(r.data.error || 'Import gagal.');
-
     var res = r.data;
     document.getElementById('previewPanel').innerHTML =
-      '<div class="alert-box success" style="font-size:13px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg><div><b>Import Berhasil!</b><br>' +
-      '✅ ' + res.inserted + ' baris baru<br>' +
-      '🔄 ' + res.updated + ' baris diupdate<br>' +
-      '⚠️ ' + res.skipped + ' baris di-skip<br><br>' +
-      '<button class="btn btn-secondary" id="doneImportBtn" style="margin-top:6px">Selesai</button>' +
-      '</div></div>';
-
+      '<div class="alert-box success" style="font-size:13px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg><div><b>Import Berhasil!</b><br>✅ ' + res.inserted + ' baris baru<br>🔄 ' + res.updated + ' baris diupdate<br>⚠️ ' + res.skipped + ' baris di-skip<br><br><button class="btn btn-secondary" id="doneImportBtn" style="margin-top:6px">Selesai</button></div></div>';
     document.getElementById('doneImportBtn').addEventListener('click', function(){
       document.getElementById('pasteArea').value = '';
       document.getElementById('pasteArea').classList.remove('filled');
@@ -1526,18 +1802,14 @@ async function doImport(){
       renderEmptyPreview();
       loadData();
     });
-
   }catch(err){
-    document.getElementById('previewPanel').innerHTML =
-      '<div class="alert-box error"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg><div><b>Import Gagal</b><br>' + esc(err.message||'Error tidak diketahui') + '<br><br><button class="btn btn-secondary" id="retryBtn" style="margin-top:6px">Coba Lagi</button></div></div>';
-    document.getElementById('retryBtn').addEventListener('click', function(){
-      if(state.importPreview) renderPreview(state.importPreview);
-    });
+    document.getElementById('previewPanel').innerHTML = '<div class="alert-box error"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg><div><b>Import Gagal</b><br>' + esc(err.message||'Error') + '<br><br><button class="btn btn-secondary" id="retryBtn" style="margin-top:6px">Coba Lagi</button></div></div>';
+    document.getElementById('retryBtn').addEventListener('click', function(){ if(state.importPreview) renderPreview(state.importPreview); });
   }
 }
 
 /* ============================================================
-   PENGATURAN JAM KERJA
+   PENGATURAN JAM
    ============================================================ */
 
 async function loadPengaturanJam(){
@@ -1548,7 +1820,7 @@ async function loadPengaturanJam(){
     (r.data || []).forEach(function(x){
       state.jamPerKode[x.kode] = { label: x.label, jam: Number(x.jam) || 0 };
     });
-  }catch(e){ console.warn('loadPengaturanJam error:', e); }
+  }catch(e){ console.warn(e); }
 }
 
 function renderJamEditor(){
@@ -1568,6 +1840,15 @@ function renderJamEditor(){
 
 document.querySelectorAll('[data-tab]').forEach(function(b){
   b.addEventListener('click', function(){ setTab(b.dataset.tab); });
+});
+
+document.getElementById('hamburgerBtn').addEventListener('click', function(){
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarBackdrop').classList.toggle('open');
+});
+document.getElementById('sidebarBackdrop').addEventListener('click', function(){
+  document.getElementById('sidebar').classList.remove('open');
+  this.classList.remove('open');
 });
 
 document.getElementById('prevDay').addEventListener('click', function(){
@@ -1592,10 +1873,14 @@ document.getElementById('globalSearch').addEventListener('input', function(e){
   var q = e.target.value;
   document.getElementById('searchName').value = q;
   document.getElementById('searchNameJam').value = q;
+  document.getElementById('searchNameKehadiran').value = q;
+  document.getElementById('searchNamePengajuan').value = q;
   var active = document.querySelector('.nav-item.active[data-tab]');
   if(active){
     if(active.dataset.tab==='jadwal') renderJadwal();
     if(active.dataset.tab==='jamkerja') renderJamKerja();
+    if(active.dataset.tab==='kehadiran') renderKehadiran();
+    if(active.dataset.tab==='pengajuan') renderPengajuan();
   }
 });
 
@@ -1603,13 +1888,27 @@ document.getElementById('searchName').addEventListener('input', renderJadwal);
 document.getElementById('filterRuangan').addEventListener('change', renderJadwal);
 document.getElementById('filterStatus').addEventListener('change', renderJadwal);
 document.getElementById('searchNameJam').addEventListener('input', renderJamKerja);
+document.getElementById('searchNameKehadiran').addEventListener('input', renderKehadiran);
+document.getElementById('searchNamePengajuan').addEventListener('input', renderPengajuan);
 
 document.getElementById('prevYear').addEventListener('click', function(){ loadJamKerja((state.jamKerja.loadedYear||state.jamKerja.year)-1); });
 document.getElementById('nextYear').addEventListener('click', function(){ loadJamKerja((state.jamKerja.loadedYear||state.jamKerja.year)+1); });
 document.getElementById('yearInput').addEventListener('change', function(e){ loadJamKerja(parseInt(e.target.value,10)||new Date().getFullYear()); });
 
-document.getElementById('refreshTop').addEventListener('click', loadData);
-document.getElementById('refreshSide').addEventListener('click', loadData);
+document.getElementById('kehadiranLoadBtn').addEventListener('click', loadKehadiran);
+document.getElementById('pengajuanLoadBtn').addEventListener('click', loadPengajuan);
+document.getElementById('pengajuanJenis').addEventListener('change', loadPengajuan);
+
+document.getElementById('refreshTop').addEventListener('click', function(){
+  loadData();
+  if(state.kehadiran.loaded) loadKehadiran();
+  if(state.pengajuan.loaded) loadPengajuan();
+});
+document.getElementById('refreshSide').addEventListener('click', function(){
+  loadData();
+  if(state.kehadiran.loaded) loadKehadiran();
+  if(state.pengajuan.loaded) loadPengajuan();
+});
 
 document.getElementById('roomGrid').addEventListener('click', function(e){
   var h = e.target.closest('.room-head');
@@ -1660,8 +1959,14 @@ document.getElementById('tableBody').addEventListener('change', async function(e
 document.getElementById('jamKerjaBody').addEventListener('click', function(e){
   var link = e.target.closest('.staff-link');
   if(!link) return;
-  openDetail(link.dataset.nama);
+  openDetailJamKerja(link.dataset.nama);
 });
+document.getElementById('kehadiranBody').addEventListener('click', function(e){
+  var link = e.target.closest('.staff-link');
+  if(!link) return;
+  openDetailKehadiran(link.dataset.nama);
+});
+
 document.getElementById('closeDetail').addEventListener('click', function(){ closeModal('detailModal'); });
 document.getElementById('closeDetailBtn').addEventListener('click', function(){ closeModal('detailModal'); });
 document.getElementById('detailModal').addEventListener('click', function(e){ if(e.target === this) closeModal('detailModal'); });
@@ -1681,7 +1986,7 @@ document.getElementById('confirmLogin').addEventListener('click', async function
     await doLogin(email, pwd);
     closeModal('loginModal');
     var activeTab = document.querySelector('.nav-item.active[data-tab]');
-    if(activeTab && activeTab.dataset.tab !== 'import'){
+    if(activeTab && activeTab.dataset.tab !== 'import' && activeTab.dataset.tab !== 'pengajuan'){
       state.editMode = true;
       setTab('jadwal');
       renderJadwal();
@@ -1693,7 +1998,6 @@ document.getElementById('confirmLogin').addEventListener('click', async function
 });
 
 document.getElementById('settingsSide').addEventListener('click', openSettings);
-document.getElementById('settingsTop').addEventListener('click', openSettings);
 document.getElementById('closeSettings').addEventListener('click', function(){ closeModal('settingsModal'); });
 document.getElementById('settingsModal').addEventListener('click', function(e){ if(e.target === this) closeModal('settingsModal'); });
 
@@ -1717,17 +2021,14 @@ function renderLegendEditor(){
 
 document.getElementById('saveSettings').addEventListener('click', async function(){
   var btn = this;
-  btn.disabled = true;
-  btn.textContent = 'Menyimpan…';
+  btn.disabled = true; btn.textContent = 'Menyimpan…';
   try{
-    // 1. Simpan label legend lokal
     document.querySelectorAll('#legendEditor input').forEach(function(inp){
       var k = inp.dataset.code;
       if(state.legend[k]) state.legend[k].label = inp.value.trim() || k;
     });
     saveLegend();
 
-    // 2. Simpan jam ke Supabase (hanya jika user admin)
     if(state.user && state.isAdmin){
       var items = [];
       document.querySelectorAll('#jamEditor input[data-jam-kode]').forEach(function(inp){
@@ -1746,12 +2047,10 @@ document.getElementById('saveSettings').addEventListener('click', async function
     closeModal('settingsModal');
     renderRekap(); renderJadwal();
     if(state.jamKerja.loadedYear) await loadJamKerja(state.jamKerja.loadedYear);
+    if(state.kehadiran.loaded) renderKehadiran();
   }catch(err){
     alert('Gagal menyimpan: ' + (err.message || err));
-  }finally{
-    btn.disabled = false;
-    btn.textContent = 'Simpan';
-  }
+  }finally{ btn.disabled = false; btn.textContent = 'Simpan'; }
 });
 
 document.getElementById('resetData').addEventListener('click', function(){ closeModal('settingsModal'); loadData(); });
@@ -1785,29 +2084,31 @@ document.getElementById('importLoginBtn').addEventListener('click', function(){
   document.getElementById('loginError').classList.add('hidden');
   openModal('loginModal');
 });
-
-document.getElementById('pasteArea').addEventListener('input', function(e){
-  var hasContent = e.target.value.trim().length > 0;
-  e.target.classList.toggle('filled', hasContent);
+document.getElementById('pengajuanLoginBtn').addEventListener('click', function(){
+  document.getElementById('loginEmail').value = '';
+  document.getElementById('loginPassword').value = '';
+  document.getElementById('loginError').classList.add('hidden');
+  openModal('loginModal');
 });
 
+document.getElementById('pasteArea').addEventListener('input', function(e){
+  e.target.classList.toggle('filled', e.target.value.trim().length > 0);
+});
 document.getElementById('clearPasteBtn').addEventListener('click', function(){
   document.getElementById('pasteArea').value = '';
   document.getElementById('pasteArea').classList.remove('filled');
   state.importPreview = null;
   renderEmptyPreview();
 });
-
 document.getElementById('previewBtn').addEventListener('click', function(){
   var text = document.getElementById('pasteArea').value;
-  if(!text.trim()){ alert('Paste data Excel dulu di kotak sebelah.'); return; }
+  if(!text.trim()){ alert('Paste data Excel dulu.'); return; }
   try{
     var preview = parseExcelData(text);
     state.importPreview = preview;
     renderPreview(preview);
   }catch(err){
-    document.getElementById('previewPanel').innerHTML =
-      '<div class="alert-box error"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg><div><b>Tidak bisa parse data</b><br>' + esc(err.message) + '</div></div>';
+    document.getElementById('previewPanel').innerHTML = '<div class="alert-box error"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg><div><b>Tidak bisa parse data</b><br>' + esc(err.message) + '</div></div>';
     document.getElementById('step2Badge').style.opacity = '1';
   }
 });
@@ -1816,7 +2117,7 @@ sb.auth.onAuthStateChange(function(event, session){
   state.user = session ? session.user : null;
   if(!session){ state.isAdmin = false; state.editMode = false; }
   updateUserUI(); updateEditModeUI(); renderJadwal();
-  updateImportLock();
+  updateImportLock(); updatePengajuanLock();
 });
 
 document.addEventListener('keydown', function(e){
@@ -1826,9 +2127,19 @@ document.addEventListener('keydown', function(e){
 function openModal(id){ document.getElementById(id).classList.add('open'); }
 function closeModal(id){ document.getElementById(id).classList.remove('open'); }
 
+/* ============================================================
+   INIT
+   ============================================================ */
 (async function init(){
   loadSettings();
   document.getElementById('yearInput').value = state.jamKerja.year;
+
+  // Set default date range untuk kehadiran & pengajuan = bulan berjalan
+  document.getElementById('kehadiranStart').value = monthStartISO();
+  document.getElementById('kehadiranEnd').value = monthEndISO();
+  document.getElementById('pengajuanStart').value = monthStartISO();
+  document.getElementById('pengajuanEnd').value = monthEndISO();
+
   await refreshSession();
   await loadData();
 })();
