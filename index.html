@@ -1639,24 +1639,80 @@ function renderChartDistribusi(dist){
   if(!dist) return;
   destroyChart('distribusi');
 
+  // Mapping warna hex langsung (Chart.js tidak bisa baca CSS variable)
+  var COLOR_MAP = {
+    P:    '#0F766E',  // teal
+    TS:   '#2563EB',  // blue
+    S:    '#EA580C',  // orange
+    M:    '#7C3AED',  // purple
+    L:    '#64748B',  // gray
+    SKT:  '#DC2626',  // red
+    IZIN: '#4F46E5',  // indigo
+    DL:   '#0891B2',  // cyan
+    CT:   '#9333EA',  // violet
+    CM:   '#DB2777'   // pink
+  };
+
   var codeOrder = ['P','TS','S','M','L','SKT','IZIN','DL','CT','CM'];
   var labels = [], data = [], colors = [];
   codeOrder.forEach(function(k){
     if(dist[k] !== undefined){
       labels.push((state.legend[k] ? state.legend[k].label : k) + ' (' + k + ')');
       data.push(dist[k]);
-      colors.push(state.legend[k] ? state.legend[k].color : '#94A3B8');
+      colors.push(COLOR_MAP[k] || '#94A3B8');
     }
   });
 
   var ctx = document.getElementById('chartDistribusi');
   dashState.charts.distribusi = new Chart(ctx, {
     type: 'doughnut',
-    data: { labels: labels, datasets: [{ data: data, backgroundColor: colors, borderColor: '#fff', borderWidth: 2 }] },
+    data: {
+      labels: labels,
+      datasets: [{
+        data: data,
+        backgroundColor: colors,
+        borderColor: '#fff',
+        borderWidth: 2,
+        hoverOffset: 8
+      }]
+    },
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      plugins: { legend: { position: 'right', labels: { font: { size: 11 }, boxWidth: 12, padding: 8 } } },
+      plugins: {
+        legend: {
+          position: 'right',
+          labels: {
+            font: { size: 11 },
+            boxWidth: 12,
+            padding: 8,
+            generateLabels: function(chart){
+              var data = chart.data;
+              return data.labels.map(function(label, i){
+                var val = data.datasets[0].data[i];
+                var total = data.datasets[0].data.reduce(function(a,b){ return a+b; }, 0);
+                var pct = total > 0 ? Math.round((val/total)*100) : 0;
+                return {
+                  text: label + ' — ' + val + ' (' + pct + '%)',
+                  fillStyle: data.datasets[0].backgroundColor[i],
+                  strokeStyle: data.datasets[0].backgroundColor[i],
+                  lineWidth: 0,
+                  index: i
+                };
+              });
+            }
+          }
+        },
+        tooltip: {
+          callbacks: {
+            label: function(context){
+              var total = context.dataset.data.reduce(function(a,b){ return a+b; }, 0);
+              var pct = total > 0 ? Math.round((context.parsed/total)*100) : 0;
+              return context.label + ': ' + context.parsed + ' (' + pct + '%)';
+            }
+          }
+        }
+      },
       cutout: '60%'
     }
   });
