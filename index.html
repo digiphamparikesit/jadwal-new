@@ -2660,6 +2660,7 @@ document.getElementById('saveSettings').addEventListener('click', async function
       if(ruanganItems.length > 0){
         var r2 = await sb.rpc('rpc_update_jam_ruangan', { p_items: ruanganItems });
         if(r2.error) throw r2.error;
+      }
     }
     closeModal('settingsModal'); renderRekap(); renderJadwal();
     if(state.jamKerja.loadedYear) await loadJamKerja(state.jamKerja.loadedYear);
