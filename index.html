@@ -1078,7 +1078,7 @@ async function loadData(){
 
 async function loadStaffList(){
   try{
-    var r = await sb.from('staff').select('nip,nama').order('nama');
+    var r = await sb.from('staff').select('nip,nama,nama_jadwal').order('nama');
     if(r.error) throw r.error;
     state.staffList = r.data || [];
     renderStaffDropdown();
@@ -1089,7 +1089,9 @@ function renderStaffDropdown(){
   var sel = document.getElementById('formNip');
   if(!sel) return;
   sel.innerHTML = '<option value="">— Pilih nama —</option>' +
-    state.staffList.map(function(s){ return '<option value="' + esc(s.nip) + '">' + esc(s.nama) + ' (' + esc(s.nip) + ')</option>'; }).join('');
+    state.staffList.map(function(s){
+      return '<option value="' + esc(s.nip) + '" data-nama-jadwal="' + esc(s.nama_jadwal || s.nama) + '">' + esc(s.nama) + ' (' + esc(s.nip) + ')</option>';
+    }).join('');
 }
 
 function onDataReady(){
@@ -1642,7 +1644,7 @@ function renderFormFields(){
       '<div class="form-group"><label>Waktu <span class="req">*</span></label>' +
       '<select id="fWaktuAbsensi"><option value="masuk">Absen Masuk</option><option value="pulang">Absen Pulang</option></select></div>';
   } else if(jenis === 'tukar_shift'){
-    var opts = state.staffList.map(function(s){ return '<option value="' + esc(s.nama) + '">' + esc(s.nama) + '</option>'; }).join('');
+    var opts = state.staffList.map(function(s){ return '<option value="' + esc(s.nama_jadwal || s.nama) + '">' + esc(s.nama) + '</option>'; }).join('');
     el.innerHTML =
       '<div class="form-group"><label>Tanggal Tukar <span class="req">*</span></label>' +
       '<input type="date" id="fTanggalTukar" value="' + today + '"></div>' +
