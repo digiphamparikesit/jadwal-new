@@ -351,6 +351,14 @@
   .jam-row input:focus{border-color:var(--primary-600);box-shadow:0 0 0 3px rgba(13,148,136,.12)}
   .jam-row .hdr{font-size:9.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-muted);font-weight:600;text-align:center}
 
+  .jam-ruangan-card{background:var(--bg-soft);border-radius:8px;padding:10px 12px;border:1px solid var(--border-soft);margin-bottom:6px}
+  .jam-ruangan-title{font-size:12px;font-weight:600;color:var(--ink);margin-bottom:8px}
+  .jam-ruangan-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+  .jam-ruangan-field{font-size:10.5px;color:var(--ink-muted);font-weight:600}
+  .jam-ruangan-field span{display:block;margin-bottom:2px}
+  .jam-ruangan-field input{width:100%;padding:5px 8px;border:1px solid var(--border);border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:11px;text-align:center;outline:none;background:var(--card)}
+  .jam-ruangan-field input:focus{border-color:var(--primary-600);box-shadow:0 0 0 3px rgba(13,148,136,.12)}
+
   .detail-table{width:100%;border-collapse:collapse;font-size:13px}
   .detail-table thead th{text-align:left;padding:8px 6px;border-bottom:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--ink-muted);font-weight:600;letter-spacing:.04em;background:transparent;position:static;box-shadow:none !important;min-width:auto}
   .detail-table tbody td{padding:9px 6px;border-bottom:1px solid var(--border-soft);text-align:left;font-size:12.5px;background:transparent !important;position:static !important;box-shadow:none !important;color:var(--ink-2)}
@@ -1116,11 +1124,12 @@
       <label style="margin-top:20px">Label Kode Jadwal</label>
       <div id="legendEditor"></div>
       <p class="help-text">Sesuaikan label tiap kode dengan istilah yang dipakai di tempat Anda.</p>
+
       <label style="margin-top:20px">Jam Kerja per Ruangan</label>
       <p class="help-text" style="margin-top:-2px;margin-bottom:10px">
         Atur jam kerja untuk tiap kombinasi <b>Ruangan × Kode Shift</b>. Nilai ini diprioritaskan di atas pengaturan jam global.
       </p>
-      <div id="jamRuanganEditor" style="display:grid;grid-template-columns:1fr;gap:6px;max-height:400px;overflow-y:auto;padding-right:4px"></div>
+      <div id="jamRuanganEditor" style="max-height:400px;overflow-y:auto;padding-right:4px"></div>
 
       <label style="margin-top:20px">Jam Kerja per Kode</label>
       <p class="help-text" style="margin-top:-2px;margin-bottom:10px">
@@ -1235,6 +1244,7 @@ var state = {
   pengajuan: { data: null, loaded: false },
   importPreview: null,
   jamPerKode: {},
+  jamRuangan: [],
   staffList: [],
   formJenis: null
 };
@@ -2436,42 +2446,56 @@ function renderJamEditor(){
   }).join('');
   el.innerHTML = header + rows;
 }
+
 async function loadJamRuangan(){
   try{
     var r = await sb.from('pengaturan_jam_ruangan').select('ruangan,kode,jam').order('ruangan');
     if(r.error) throw r.error;
     state.jamRuangan = r.data || [];
-  }catch(e){ console.warn(e); state.jamRuangan = []; }
+  }catch(e){ console.warn('loadJamRuangan error:', e); state.jamRuangan = []; }
 }
 
 function renderJamRuanganEditor(){
   var el = document.getElementById('jamRuanganEditor');
   if(!el) return;
-  var ruanganList = Array.from(new Set((state.data && state.data.employees || []).map(function(e){ return e.ruangan; }).filter(Boolean))).sort();
+
+  // Ambil ruangan dari 2 sumber:
+  // 1. Dari data jadwal yang sedang tampil (state.data.employees)
+  // 2. Dari tabel pengaturan_jam_ruangan sendiri (state.jamRuangan)
+  var ruanganSet = {};
+  if(state.data && state.data.employees){
+    state.data.employees.forEach(function(e){ if(e.ruangan) ruanganSet[e.ruangan] = true; });
+  }
+  (state.jamRuangan || []).forEach(function(x){ if(x.ruangan) ruanganSet[x.ruangan] = true; });
+
+  var ruanganList = Object.keys(ruanganSet).sort();
+
   if(ruanganList.length === 0){
-    el.innerHTML = '<div style="padding:12px;color:var(--ink-muted);font-size:12px">Belum ada data ruangan. Import jadwal dulu.</div>';
+    el.innerHTML = '<div style="padding:12px;color:var(--ink-muted);font-size:12px">Belum ada data ruangan. Import jadwal dulu atau isi di SQL.</div>';
     return;
   }
+
   var map = {};
-  state.jamRuangan.forEach(function(x){ map[x.ruangan + '|' + x.kode] = x.jam; });
+  (state.jamRuangan || []).forEach(function(x){ map[x.ruangan + '|' + x.kode] = x.jam; });
 
   var html = '';
   ruanganList.forEach(function(ruangan){
-    html += '<div style="background:var(--bg-soft);border-radius:8px;padding:10px 12px;border:1px solid var(--border-soft)">';
-    html += '<div style="font-size:12px;font-weight:600;color:var(--ink);margin-bottom:8px">' + esc(ruangan) + '</div>';
-    html += '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px">';
+    html += '<div class="jam-ruangan-card">';
+    html += '<div class="jam-ruangan-title">' + esc(ruangan) + '</div>';
+    html += '<div class="jam-ruangan-grid">';
     ['P','TS','S','M'].forEach(function(kode){
       var jam = map[ruangan + '|' + kode];
       var val = (jam === undefined || jam === null) ? '' : jam;
-      html += '<label style="font-size:10.5px;color:var(--ink-muted);font-weight:600">';
-      html += '<span style="display:block;margin-bottom:2px">' + kode + '</span>';
-      html += '<input type="number" step="0.1" min="0" data-ruangan="' + esc(ruangan) + '" data-kode="' + kode + '" value="' + val + '" placeholder="—" style="width:100%;padding:5px 8px;border:1px solid var(--border);border-radius:6px;font-family:\'JetBrains Mono\',monospace;font-size:11px;text-align:center;outline:none;background:var(--card)">';
+      html += '<label class="jam-ruangan-field">';
+      html += '<span>' + kode + '</span>';
+      html += '<input type="number" step="0.1" min="0" data-ruangan="' + esc(ruangan) + '" data-kode="' + kode + '" value="' + val + '" placeholder="—">';
       html += '</label>';
     });
     html += '</div></div>';
   });
   el.innerHTML = html;
 }
+
 document.querySelectorAll('[data-tab]').forEach(function(b){ b.addEventListener('click', function(){ setTab(b.dataset.tab); }); });
 document.getElementById('hamburgerBtn').addEventListener('click', function(){ document.getElementById('sidebar').classList.toggle('open'); document.getElementById('sidebarBackdrop').classList.toggle('open'); });
 document.getElementById('sidebarBackdrop').addEventListener('click', function(){ document.getElementById('sidebar').classList.remove('open'); this.classList.remove('open'); });
@@ -2619,19 +2643,34 @@ document.getElementById('confirmLogin').addEventListener('click', async function
 document.getElementById('settingsSide').addEventListener('click', openSettings);
 document.getElementById('closeSettings').addEventListener('click', function(){ closeModal('settingsModal'); });
 document.getElementById('settingsModal').addEventListener('click', function(e){ if(e.target === this) closeModal('settingsModal'); });
-async function openSettings(){ renderLegendEditor(); updateSessionBox(); await loadPengaturanJam(); renderJamEditor(); openModal('settingsModal'); }
+
+async function openSettings(){
+  renderLegendEditor();
+  updateSessionBox();
+  await loadPengaturanJam();
+  renderJamEditor();
+  await loadJamRuangan();
+  renderJamRuanganEditor();
+  openModal('settingsModal');
+}
+
 function renderLegendEditor(){
   var c = document.getElementById('legendEditor');
   var list = URUTAN_KODE.filter(function(k){ return state.legend[k]; });
   Object.keys(state.legend).forEach(function(k){ if(list.indexOf(k) === -1) list.push(k); });
   c.innerHTML = list.map(function(code){ var m = state.legend[code]; return '<div class="legend-row"><span class="dot" style="background:'+m.color+'">'+code.slice(0,2)+'</span><span class="code-name">'+code+'</span><input type="text" data-code="'+code+'" value="'+esc(m.label)+'"></div>'; }).join('');
 }
+
 document.getElementById('saveSettings').addEventListener('click', async function(){
   var btn = this; btn.disabled = true; btn.textContent = 'Menyimpan…';
   try{
+    // 1. Simpan label legend lokal
     document.querySelectorAll('#legendEditor input').forEach(function(inp){ var k = inp.dataset.code; if(state.legend[k]) state.legend[k].label = inp.value.trim() || k; });
     saveLegend();
+
+    // 2. Simpan jam global + jam per ruangan (hanya jika admin)
     if(state.user && state.isAdmin){
+      // 2a. Jam global per kode
       var items = [];
       var jamInputs = document.querySelectorAll('#jamEditor input[data-jam-kode]');
       jamInputs.forEach(function(inp){
@@ -2646,9 +2685,10 @@ document.getElementById('saveSettings').addEventListener('click', async function
       });
       var r = await sb.rpc('rpc_update_pengaturan_jam', { p_items: items });
       if(r.error) throw r.error;
-      if(!r.data || !r.data.success) throw new Error((r.data && r.data.error) || 'Gagal');
+      if(!r.data || !r.data.success) throw new Error((r.data && r.data.error) || 'Gagal simpan jam global');
       await loadPengaturanJam();
-      // Save jam per ruangan
+
+      // 2b. Jam per ruangan
       var ruanganItems = [];
       document.querySelectorAll('#jamRuanganEditor input[data-ruangan]').forEach(function(inp){
         var v = inp.value.trim();
@@ -2660,15 +2700,24 @@ document.getElementById('saveSettings').addEventListener('click', async function
       if(ruanganItems.length > 0){
         var r2 = await sb.rpc('rpc_update_jam_ruangan', { p_items: ruanganItems });
         if(r2.error) throw r2.error;
+        if(!r2.data || !r2.data.success) throw new Error((r2.data && r2.data.error) || 'Gagal simpan jam ruangan');
+        await loadJamRuangan();
       }
     }
-    closeModal('settingsModal'); renderRekap(); renderJadwal();
+
+    closeModal('settingsModal');
+    renderRekap();
+    renderJadwal();
     if(state.jamKerja.loadedYear) await loadJamKerja(state.jamKerja.loadedYear);
     if(state.kehadiran.loaded) renderKehadiran();
     if(dashState.data) loadDashboard(dashState.year, dashState.month);
-  }catch(err){ alert('Gagal: ' + (err.message || err)); }
-  finally{ btn.disabled = false; btn.textContent = 'Simpan'; }
+  }catch(err){
+    alert('Gagal: ' + (err.message || err));
+  }finally{
+    btn.disabled = false; btn.textContent = 'Simpan';
+  }
 });
+
 document.getElementById('resetData').addEventListener('click', function(){ closeModal('settingsModal'); loadDataJadwalBulan(state.jadwalTahun, state.jadwalBulan); });
 document.getElementById('sessionActionBtn').addEventListener('click', async function(){
   if(state.user){ await doLogout(); closeModal('settingsModal'); }
