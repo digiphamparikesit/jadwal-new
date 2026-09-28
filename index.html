@@ -1116,6 +1116,11 @@
       <label style="margin-top:20px">Label Kode Jadwal</label>
       <div id="legendEditor"></div>
       <p class="help-text">Sesuaikan label tiap kode dengan istilah yang dipakai di tempat Anda.</p>
+      <label style="margin-top:20px">Jam Kerja per Ruangan</label>
+      <p class="help-text" style="margin-top:-2px;margin-bottom:10px">
+        Atur jam kerja untuk tiap kombinasi <b>Ruangan × Kode Shift</b>. Nilai ini diprioritaskan di atas pengaturan jam global.
+      </p>
+      <div id="jamRuanganEditor" style="display:grid;grid-template-columns:1fr;gap:6px;max-height:400px;overflow-y:auto;padding-right:4px"></div>
 
       <label style="margin-top:20px">Jam Kerja per Kode</label>
       <p class="help-text" style="margin-top:-2px;margin-bottom:10px">
@@ -2431,7 +2436,42 @@ function renderJamEditor(){
   }).join('');
   el.innerHTML = header + rows;
 }
+async function loadJamRuangan(){
+  try{
+    var r = await sb.from('pengaturan_jam_ruangan').select('ruangan,kode,jam').order('ruangan');
+    if(r.error) throw r.error;
+    state.jamRuangan = r.data || [];
+  }catch(e){ console.warn(e); state.jamRuangan = []; }
+}
 
+function renderJamRuanganEditor(){
+  var el = document.getElementById('jamRuanganEditor');
+  if(!el) return;
+  var ruanganList = Array.from(new Set((state.data && state.data.employees || []).map(function(e){ return e.ruangan; }).filter(Boolean))).sort();
+  if(ruanganList.length === 0){
+    el.innerHTML = '<div style="padding:12px;color:var(--ink-muted);font-size:12px">Belum ada data ruangan. Import jadwal dulu.</div>';
+    return;
+  }
+  var map = {};
+  state.jamRuangan.forEach(function(x){ map[x.ruangan + '|' + x.kode] = x.jam; });
+
+  var html = '';
+  ruanganList.forEach(function(ruangan){
+    html += '<div style="background:var(--bg-soft);border-radius:8px;padding:10px 12px;border:1px solid var(--border-soft)">';
+    html += '<div style="font-size:12px;font-weight:600;color:var(--ink);margin-bottom:8px">' + esc(ruangan) + '</div>';
+    html += '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px">';
+    ['P','TS','S','M'].forEach(function(kode){
+      var jam = map[ruangan + '|' + kode];
+      var val = (jam === undefined || jam === null) ? '' : jam;
+      html += '<label style="font-size:10.5px;color:var(--ink-muted);font-weight:600">';
+      html += '<span style="display:block;margin-bottom:2px">' + kode + '</span>';
+      html += '<input type="number" step="0.1" min="0" data-ruangan="' + esc(ruangan) + '" data-kode="' + kode + '" value="' + val + '" placeholder="—" style="width:100%;padding:5px 8px;border:1px solid var(--border);border-radius:6px;font-family:\'JetBrains Mono\',monospace;font-size:11px;text-align:center;outline:none;background:var(--card)">';
+      html += '</label>';
+    });
+    html += '</div></div>';
+  });
+  el.innerHTML = html;
+}
 document.querySelectorAll('[data-tab]').forEach(function(b){ b.addEventListener('click', function(){ setTab(b.dataset.tab); }); });
 document.getElementById('hamburgerBtn').addEventListener('click', function(){ document.getElementById('sidebar').classList.toggle('open'); document.getElementById('sidebarBackdrop').classList.toggle('open'); });
 document.getElementById('sidebarBackdrop').addEventListener('click', function(){ document.getElementById('sidebar').classList.remove('open'); this.classList.remove('open'); });
@@ -2608,6 +2648,18 @@ document.getElementById('saveSettings').addEventListener('click', async function
       if(r.error) throw r.error;
       if(!r.data || !r.data.success) throw new Error((r.data && r.data.error) || 'Gagal');
       await loadPengaturanJam();
+      // Save jam per ruangan
+      var ruanganItems = [];
+      document.querySelectorAll('#jamRuanganEditor input[data-ruangan]').forEach(function(inp){
+        var v = inp.value.trim();
+        if(v === '') return;
+        var j = parseFloat(v);
+        if(isNaN(j) || j < 0) return;
+        ruanganItems.push({ ruangan: inp.dataset.ruangan, kode: inp.dataset.kode, jam: j });
+      });
+      if(ruanganItems.length > 0){
+        var r2 = await sb.rpc('rpc_update_jam_ruangan', { p_items: ruanganItems });
+        if(r2.error) throw r2.error;
     }
     closeModal('settingsModal'); renderRekap(); renderJadwal();
     if(state.jamKerja.loadedYear) await loadJamKerja(state.jamKerja.loadedYear);
