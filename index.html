@@ -2088,6 +2088,64 @@ function buildKehadiranAllReport(d) {
       '<div>Sistem Jadwal Instalasi Farmasi</div>' +
     '</div>';
 }
+// Bangun HTML 1 halaman laporan "Semua Staff" dengan header berulang
+function buildKehadiranAllReportPage(d, staffChunk, pageNum, totalPages) {
+  var periode = fmtDateLong(d.start) + ' s/d ' + fmtDateLong(d.end);
+
+  var colgroupCells =
+    '<col style="width:22%">' +
+    '<col style="width:22%">' +
+    KEHADIRAN_COLS.map(function(){ return '<col style="width:6.5%">'; }).join('') +
+    '<col style="width:6%">' +
+    '<col style="width:6%">';
+
+  var headerRow =
+    '<tr>' +
+      '<th style="padding:6px 8px;border:1px solid #E2E8F0;font-size:9px;text-align:left;font-weight:700;color:#334155;text-transform:uppercase;background:#F1F5F9">Nama</th>' +
+      '<th style="padding:6px 6px;border:1px solid #E2E8F0;font-size:9px;text-align:left;font-weight:700;color:#334155;text-transform:uppercase;background:#F1F5F9">Ruangan</th>' +
+      KEHADIRAN_COLS.map(function(col) {
+        return '<th style="padding:6px 4px;border:1px solid #E2E8F0;font-size:9px;text-align:center;font-weight:700;color:#334155;text-transform:uppercase;background:#F1F5F9">' + esc(col.label) + '</th>';
+      }).join('') +
+      '<th style="padding:6px 4px;border:1px solid #E2E8F0;font-size:9px;text-align:center;font-weight:700;color:#0F766E;text-transform:uppercase;background:#F0FDFA">Kerja</th>' +
+      '<th style="padding:6px 4px;border:1px solid #E2E8F0;font-size:9px;text-align:center;font-weight:700;color:#B45309;text-transform:uppercase;background:#FEF3C7">Off</th>' +
+    '</tr>';
+
+  var rows = staffChunk.map(function(s, i) {
+    var cells = KEHADIRAN_COLS.map(function(col) {
+      var n = (s.breakdown && s.breakdown[col.kode]) || 0;
+      return '<td style="padding:5px 4px;border:1px solid #E2E8F0;font-size:9.5px;text-align:center;font-family:JetBrains Mono,monospace">' + (n || '–') + '</td>';
+    }).join('');
+    return '<tr style="background:' + (i % 2 === 0 ? '#FFFFFF' : '#FAFAFA') + '">' +
+      '<td style="padding:5px 8px;border:1px solid #E2E8F0;font-size:9.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + esc(s.nama) + '</td>' +
+      '<td style="padding:5px 6px;border:1px solid #E2E8F0;font-size:9px;color:#64748B;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + esc(s.ruangan || '-') + '</td>' +
+      cells +
+      '<td style="padding:5px 4px;border:1px solid #E2E8F0;font-size:9.5px;text-align:center;font-weight:700;color:#0F766E;font-family:JetBrains Mono,monospace">' + (s.hariKerja || 0) + '</td>' +
+      '<td style="padding:5px 4px;border:1px solid #E2E8F0;font-size:9.5px;text-align:center;font-weight:700;color:#B45309;font-family:JetBrains Mono,monospace">' + (s.hariOff || 0) + '</td>' +
+    '</tr>';
+  }).join('');
+
+  return '' +
+    '<div style="text-align:center;border-bottom:3px double #0F766E;padding-bottom:10px;margin-bottom:10px">' +
+      '<div style="font-size:10px;font-weight:700;letter-spacing:.12em;color:#64748B;text-transform:uppercase">Instalasi Farmasi</div>' +
+      '<div style="font-size:18px;font-weight:800;color:#0F766E;letter-spacing:-.01em;margin-top:4px">LAPORAN KEHADIRAN</div>' +
+      '<div style="font-size:12px;font-weight:700;color:#334155;margin-top:2px">(Semua Staff)</div>' +
+    '</div>' +
+    '<table style="width:100%;border-collapse:collapse;margin-bottom:8px;font-size:10px">' +
+      '<tr>' +
+        '<td style="padding:2px 0;width:90px;color:#64748B;font-weight:600">Total Staff</td>' +
+        '<td style="padding:2px 0">: ' + d.staff.length + ' orang</td>' +
+        '<td style="padding:2px 0;width:80px;text-align:right;color:#64748B;font-weight:600">Periode</td>' +
+        '<td style="padding:2px 0;width:290px">: ' + esc(periode) + '</td>' +
+        '<td style="padding:2px 0;width:80px;text-align:right;color:#64748B;font-weight:600">Halaman</td>' +
+        '<td style="padding:2px 0">: ' + pageNum + ' / ' + totalPages + '</td>' +
+      '</tr>' +
+    '</table>' +
+    '<table style="width:100%;border-collapse:collapse;table-layout:fixed">' +
+      '<colgroup>' + colgroupCells + '</colgroup>' +
+      '<thead>' + headerRow + '</thead>' +
+      '<tbody>' + rows + '</tbody>' +
+    '</table>';
+}  
 
 function openKehadiranPrintPreview(namaFilter) {
   if (!state.kehadiran.loaded || !state.kehadiran.data || !state.kehadiran.data.staff) {
@@ -2144,48 +2202,11 @@ async function exportKehadiranPdf() {
   loading.classList.add('open');
   txt.textContent = 'Menyiapkan PDF…';
 
-  // Simpan style asli
-  var origWidth = content.style.width;
-  var origMaxWidth = content.style.maxWidth;
-  var origPadding = content.style.padding;
-  var origBoxSizing = content.style.boxSizing;
-
   try {
-    txt.textContent = 'Mengambil gambar…';
-
-    // Paksa lebar konten agar html2canvas tidak terpotong
-    var targetW = isAllStaff ? 1600 : 1200;
-    content.style.width = targetW + 'px';
-    content.style.maxWidth = targetW + 'px';
-    content.style.boxSizing = 'border-box';
-    content.style.padding = isAllStaff ? '24px 28px' : '36px 40px';
-
-    var canvas = await html2canvas(content, {
-      scale: 2,
-      backgroundColor: '#FFFFFF',
-      logging: false,
-      useCORS: true,
-      width: targetW,
-      windowWidth: targetW,
-      scrollX: 0,
-      scrollY: 0
-    });
-
-    // Restore style
-    content.style.width = origWidth;
-    content.style.maxWidth = origMaxWidth;
-    content.style.padding = origPadding;
-    content.style.boxSizing = origBoxSizing;
-
-    txt.textContent = 'Membuat PDF…';
     var { jsPDF } = window.jspdf;
-
-    // ====== KONFIGURASI HALAMAN ======
-    // F4 / Folio Indonesia: 215 mm x 330 mm
-    //  - Semua Staff  → LANDSCAPE F4 (330 x 215 mm)
-    //  - Per Staf     → PORTRAIT A4  (210 x 297 mm)
     var pdf;
     if (isAllStaff) {
+      // F4/Folio Landscape: 330 × 215 mm
       pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: [215, 330] });
     } else {
       pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
@@ -2195,29 +2216,96 @@ async function exportKehadiranPdf() {
     var pageH = pdf.internal.pageSize.getHeight();
     var margin = isAllStaff ? 8 : 10;
     var imgW = pageW - margin * 2;
-    var imgH = (canvas.height * imgW) / canvas.width;
 
-    if (imgH > pageH - margin * 2) {
-      var pageContentH = pageH - margin * 2;
-      var totalPages = Math.ceil(imgH / pageContentH);
-      for (var i = 0; i < totalPages; i++) {
-        if (i > 0) pdf.addPage();
-        var srcY = (pageContentH * i) / imgH * canvas.height;
-        var srcH = Math.min(pageContentH / imgH * canvas.height, canvas.height - srcY);
-        var tmpCanvas = document.createElement('canvas');
-        tmpCanvas.width = canvas.width;
-        tmpCanvas.height = srcH;
-        var tmpCtx = tmpCanvas.getContext('2d');
-        tmpCtx.drawImage(canvas, 0, srcY, canvas.width, srcH, 0, 0, canvas.width, srcH);
-        var tmpData = tmpCanvas.toDataURL('image/png');
-        var tmpH = (srcH * imgW) / canvas.width;
-        pdf.addImage(tmpData, 'PNG', margin, margin, imgW, tmpH);
+    if (isAllStaff) {
+      // ====== MODE SEMUA STAFF: paginate manual, header berulang tiap halaman ======
+      var d = state.kehadiran.data;
+      var staffSorted = d.staff.slice().sort(function(a,b){ return a.nama.localeCompare(b.nama); });
+
+      // Jumlah baris per halaman. Turunkan ke 20 / 18 kalau baris terakhir terpotong.
+      var ROWS_PER_PAGE = 22;
+
+      var chunks = [];
+      for (var i = 0; i < staffSorted.length; i += ROWS_PER_PAGE) {
+        chunks.push(staffSorted.slice(i, i + ROWS_PER_PAGE));
+      }
+
+      // Container off-screen untuk render tiap halaman
+      var tempDiv = document.createElement('div');
+      tempDiv.style.position = 'absolute';
+      tempDiv.style.left = '-99999px';
+      tempDiv.style.top = '0';
+      tempDiv.style.width = '1600px';
+      tempDiv.style.background = '#FFFFFF';
+      tempDiv.style.boxSizing = 'border-box';
+      tempDiv.style.padding = '20px 24px';
+      document.body.appendChild(tempDiv);
+
+      try {
+        for (var c = 0; c < chunks.length; c++) {
+          txt.textContent = 'Render halaman ' + (c + 1) + '/' + chunks.length + '…';
+          tempDiv.innerHTML = buildKehadiranAllReportPage(d, chunks[c], c + 1, chunks.length);
+
+          var cvs = await html2canvas(tempDiv, {
+            scale: 2,
+            backgroundColor: '#FFFFFF',
+            logging: false,
+            useCORS: true,
+            width: 1600,
+            windowWidth: 1600
+          });
+
+          var imgH = (cvs.height * imgW) / cvs.width;
+          if (c > 0) pdf.addPage();
+          pdf.addImage(cvs.toDataURL('image/png'), 'PNG', margin, margin, imgW, imgH);
+        }
+      } finally {
+        if (tempDiv.parentNode) document.body.removeChild(tempDiv);
       }
     } else {
-      pdf.addImage(canvas.toDataURL('image/png'), 'PNG', margin, margin, imgW, imgH);
+      // ====== MODE PER STAF: A4 Portrait ======
+      txt.textContent = 'Mengambil gambar…';
+      var origWidth = content.style.width;
+      var origMaxWidth = content.style.maxWidth;
+      content.style.width = '1200px';
+      content.style.maxWidth = '1200px';
+
+      var canvas = await html2canvas(content, {
+        scale: 2,
+        backgroundColor: '#FFFFFF',
+        logging: false,
+        useCORS: true,
+        width: 1200,
+        windowWidth: 1200
+      });
+
+      content.style.width = origWidth;
+      content.style.maxWidth = origMaxWidth;
+
+      var imgH2 = (canvas.height * imgW) / canvas.width;
+      var pageContentH = pageH - margin * 2;
+
+      if (imgH2 > pageContentH) {
+        var totalPages = Math.ceil(imgH2 / pageContentH);
+        for (var k = 0; k < totalPages; k++) {
+          if (k > 0) pdf.addPage();
+          var srcY = (pageContentH * k) / imgH2 * canvas.height;
+          var srcH = Math.min(pageContentH / imgH2 * canvas.height, canvas.height - srcY);
+          var tmpCanvas = document.createElement('canvas');
+          tmpCanvas.width = canvas.width;
+          tmpCanvas.height = srcH;
+          var tmpCtx = tmpCanvas.getContext('2d');
+          tmpCtx.drawImage(canvas, 0, srcY, canvas.width, srcH, 0, 0, canvas.width, srcH);
+          var tmpData = tmpCanvas.toDataURL('image/png');
+          var tmpH = (srcH * imgW) / canvas.width;
+          pdf.addImage(tmpData, 'PNG', margin, margin, imgW, tmpH);
+        }
+      } else {
+        pdf.addImage(canvas.toDataURL('image/png'), 'PNG', margin, margin, imgW, imgH2);
+      }
     }
 
-    // Footer
+    // Footer di setiap halaman
     var totalPagesNum = pdf.internal.getNumberOfPages();
     var label = isAllStaff ? 'Semua Staff' : val;
     var kertasInfo = isAllStaff ? 'F4/Folio (Landscape)' : 'A4 (Portrait)';
@@ -2229,16 +2317,11 @@ async function exportKehadiranPdf() {
       pdf.text(footerText, pageW / 2, pageH - 3, { align: 'center' });
     }
 
-    var d = state.kehadiran.data;
+    var d2 = state.kehadiran.data;
     var namaFile = isAllStaff ? 'semua-staff' : val.toLowerCase().replace(/[^a-z0-9]+/g, '-');
     var suffixKertas = isAllStaff ? '-landscape-f4' : '-a4';
-    pdf.save('laporan-kehadiran-' + namaFile + suffixKertas + '-' + (d ? d.start : '') + '_sd_' + (d ? d.end : '') + '.pdf');
+    pdf.save('laporan-kehadiran-' + namaFile + suffixKertas + '-' + (d2 ? d2.start : '') + '_sd_' + (d2 ? d2.end : '') + '.pdf');
   } catch (err) {
-    // Pastikan restore style walaupun error
-    content.style.width = origWidth;
-    content.style.maxWidth = origMaxWidth;
-    content.style.padding = origPadding;
-    content.style.boxSizing = origBoxSizing;
     alert('Gagal export PDF: ' + (err.message || err));
   } finally {
     loading.classList.remove('open');
