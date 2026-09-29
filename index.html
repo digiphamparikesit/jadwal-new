@@ -2101,51 +2101,84 @@ function buildKehadiranAllReportPage(d, staffChunk, pageNum, totalPages) {
 
   var headerRow =
     '<tr>' +
-      '<th style="padding:6px 8px;border:1px solid #E2E8F0;font-size:9px;text-align:left;font-weight:700;color:#334155;text-transform:uppercase;background:#F1F5F9">Nama</th>' +
-      '<th style="padding:6px 6px;border:1px solid #E2E8F0;font-size:9px;text-align:left;font-weight:700;color:#334155;text-transform:uppercase;background:#F1F5F9">Ruangan</th>' +
+      '<th class="rp-h">Nama</th>' +
+      '<th class="rp-h">Ruangan</th>' +
       KEHADIRAN_COLS.map(function(col) {
-        return '<th style="padding:6px 4px;border:1px solid #E2E8F0;font-size:9px;text-align:center;font-weight:700;color:#334155;text-transform:uppercase;background:#F1F5F9">' + esc(col.label) + '</th>';
+        return '<th class="rp-h">' + esc(col.label) + '</th>';
       }).join('') +
-      '<th style="padding:6px 4px;border:1px solid #E2E8F0;font-size:9px;text-align:center;font-weight:700;color:#0F766E;text-transform:uppercase;background:#F0FDFA">Kerja</th>' +
-      '<th style="padding:6px 4px;border:1px solid #E2E8F0;font-size:9px;text-align:center;font-weight:700;color:#B45309;text-transform:uppercase;background:#FEF3C7">Off</th>' +
+      '<th class="rp-h rp-h-kerja">Kerja</th>' +
+      '<th class="rp-h rp-h-off">Off</th>' +
     '</tr>';
 
-  var rows = staffChunk.map(function(s, i) {
+  var rows = staffChunk.map(function(s) {
     var cells = KEHADIRAN_COLS.map(function(col) {
       var n = (s.breakdown && s.breakdown[col.kode]) || 0;
-      return '<td style="padding:5px 4px;border:1px solid #E2E8F0;font-size:9.5px;text-align:center;font-family:JetBrains Mono,monospace">' + (n || '–') + '</td>';
+      return '<td class="rp-num">' + (n || '–') + '</td>';
     }).join('');
-    return '<tr style="background:' + (i % 2 === 0 ? '#FFFFFF' : '#FAFAFA') + '">' +
-      '<td style="padding:5px 8px;border:1px solid #E2E8F0;font-size:9.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + esc(s.nama) + '</td>' +
-      '<td style="padding:5px 6px;border:1px solid #E2E8F0;font-size:9px;color:#64748B;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + esc(s.ruangan || '-') + '</td>' +
+    return '<tr>' +
+      '<td class="rp-nama">' + esc(s.nama) + '</td>' +
+      '<td class="rp-ruangan">' + esc(s.ruangan || '-') + '</td>' +
       cells +
-      '<td style="padding:5px 4px;border:1px solid #E2E8F0;font-size:9.5px;text-align:center;font-weight:700;color:#0F766E;font-family:JetBrains Mono,monospace">' + (s.hariKerja || 0) + '</td>' +
-      '<td style="padding:5px 4px;border:1px solid #E2E8F0;font-size:9.5px;text-align:center;font-weight:700;color:#B45309;font-family:JetBrains Mono,monospace">' + (s.hariOff || 0) + '</td>' +
+      '<td class="rp-kerja">' + (s.hariKerja || 0) + '</td>' +
+      '<td class="rp-off">' + (s.hariOff || 0) + '</td>' +
     '</tr>';
   }).join('');
 
-  return '' +
-    '<div style="text-align:center;border-bottom:3px double #0F766E;padding-bottom:10px;margin-bottom:10px">' +
-      '<div style="font-size:10px;font-weight:700;letter-spacing:.12em;color:#64748B;text-transform:uppercase">Instalasi Farmasi</div>' +
-      '<div style="font-size:18px;font-weight:800;color:#0F766E;letter-spacing:-.01em;margin-top:4px">LAPORAN KEHADIRAN</div>' +
-      '<div style="font-size:12px;font-weight:700;color:#334155;margin-top:2px">(Semua Staff)</div>' +
-    '</div>' +
-    '<table style="width:100%;border-collapse:collapse;margin-bottom:8px;font-size:10px">' +
-      '<tr>' +
-        '<td style="padding:2px 0;width:90px;color:#64748B;font-weight:600">Total Staff</td>' +
-        '<td style="padding:2px 0">: ' + d.staff.length + ' orang</td>' +
-        '<td style="padding:2px 0;width:80px;text-align:right;color:#64748B;font-weight:600">Periode</td>' +
-        '<td style="padding:2px 0;width:290px">: ' + esc(periode) + '</td>' +
-        '<td style="padding:2px 0;width:80px;text-align:right;color:#64748B;font-weight:600">Halaman</td>' +
-        '<td style="padding:2px 0">: ' + pageNum + ' / ' + totalPages + '</td>' +
-      '</tr>' +
-    '</table>' +
-    '<table style="width:100%;border-collapse:collapse;table-layout:fixed">' +
-      '<colgroup>' + colgroupCells + '</colgroup>' +
-      '<thead>' + headerRow + '</thead>' +
-      '<tbody>' + rows + '</tbody>' +
-    '</table>';
-}  
+  // ★ CSS RESET: netralkan aturan sticky dari stylesheet utama halaman
+  var resetCSS = '<style>' +
+    '.rp-report, .rp-report * {' +
+      'position: static !important;' +
+      'left: auto !important;' +
+      'top: auto !important;' +
+      'right: auto !important;' +
+      'bottom: auto !important;' +
+      'box-shadow: none !important;' +
+      'min-width: 0 !important;' +
+      'max-width: none !important;' +
+      'z-index: auto !important;' +
+      'transform: none !important;' +
+    '}' +
+    '.rp-report { background: #fff !important; padding: 0 !important; font-family: Inter, sans-serif !important; }' +
+    '.rp-report table { border-collapse: collapse !important; border-spacing: 0 !important; width: 100% !important; margin: 0 !important; }' +
+    '.rp-report th, .rp-report td { border: 1px solid #E2E8F0 !important; padding: 5px 6px !important; white-space: nowrap !important; }' +
+    '.rp-report .rp-h { background: #F1F5F9 !important; text-align: center !important; font-weight: 700 !important; font-size: 9px !important; text-transform: uppercase !important; color: #334155 !important; }' +
+    '.rp-report .rp-h-kerja { background: #F0FDFA !important; color: #0F766E !important; }' +
+    '.rp-report .rp-h-off { background: #FEF3C7 !important; color: #B45309 !important; }' +
+    '.rp-report .rp-nama { text-align: left !important; font-weight: 600 !important; font-size: 9.5px !important; color: #0F172A !important; overflow: hidden !important; text-overflow: ellipsis !important; }' +
+    '.rp-report .rp-ruangan { text-align: left !important; color: #64748B !important; font-size: 9px !important; overflow: hidden !important; text-overflow: ellipsis !important; }' +
+    '.rp-report .rp-num { text-align: center !important; font-family: JetBrains Mono, monospace !important; font-size: 9.5px !important; color: #0F172A !important; }' +
+    '.rp-report .rp-kerja { text-align: center !important; font-weight: 700 !important; color: #0F766E !important; font-family: JetBrains Mono, monospace !important; font-size: 9.5px !important; }' +
+    '.rp-report .rp-off { text-align: center !important; font-weight: 700 !important; color: #B45309 !important; font-family: JetBrains Mono, monospace !important; font-size: 9.5px !important; }' +
+    '.rp-report .rp-info-tbl td { border: none !important; padding: 2px 0 !important; font-size: 10px !important; }' +
+    '.rp-report .rp-info-lbl { color: #64748B !important; font-weight: 600 !important; text-align: left !important; }' +
+    '.rp-report .rp-info-val { color: #0F172A !important; text-align: left !important; }' +
+    '.rp-report .rp-info-val-r { color: #0F172A !important; text-align: right !important; }' +
+    '</style>';
+
+  return resetCSS +
+    '<div class="rp-report">' +
+      '<div style="text-align:center;border-bottom:3px double #0F766E;padding-bottom:10px;margin-bottom:10px">' +
+        '<div style="font-size:10px;font-weight:700;letter-spacing:.12em;color:#64748B;text-transform:uppercase">Instalasi Farmasi</div>' +
+        '<div style="font-size:18px;font-weight:800;color:#0F766E;letter-spacing:-.01em;margin-top:4px">LAPORAN KEHADIRAN</div>' +
+        '<div style="font-size:12px;font-weight:700;color:#334155;margin-top:2px">(Semua Staff)</div>' +
+      '</div>' +
+      '<table class="rp-info-tbl" style="width:100%;border-collapse:collapse;margin-bottom:8px">' +
+        '<tr>' +
+          '<td class="rp-info-lbl" style="width:90px">Total Staff</td>' +
+          '<td class="rp-info-val">: ' + d.staff.length + ' orang</td>' +
+          '<td class="rp-info-lbl" style="width:80px;text-align:right">Periode</td>' +
+          '<td class="rp-info-val" style="width:290px">: ' + esc(periode) + '</td>' +
+          '<td class="rp-info-lbl" style="width:80px;text-align:right">Halaman</td>' +
+          '<td class="rp-info-val">: ' + pageNum + ' / ' + totalPages + '</td>' +
+        '</tr>' +
+      '</table>' +
+      '<table style="width:100%;border-collapse:collapse;table-layout:fixed">' +
+        '<colgroup>' + colgroupCells + '</colgroup>' +
+        '<thead>' + headerRow + '</thead>' +
+        '<tbody>' + rows + '</tbody>' +
+      '</table>' +
+    '</div>';
+}
 
 function openKehadiranPrintPreview(namaFilter) {
   if (!state.kehadiran.loaded || !state.kehadiran.data || !state.kehadiran.data.staff) {
