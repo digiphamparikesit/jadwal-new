@@ -795,18 +795,53 @@
             <div id="dashTopCuti" class="list-staf"></div>
           </div>
 
-          <!-- ⭐ CHART BARU: Top/Bottom % Kehadiran -->
-          <div class="chart-card full">
-            <h3>Top 10 % Kehadiran Tertinggi</h3>
-            <p class="desc">Formula: Piket ÷ (Piket + Izin + Sakit + DL + CT + CM) × 100%</p>
-            <canvas id="chartTopKehadiran"></canvas>
-          </div>
+          <!-- ⭐ CHART Top/Bottom % Kehadiran dengan Filter Bulan -->
+<div class="chart-card full">
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--border-soft)">
+    <div>
+      <h3 style="margin-bottom:4px">🏆 Peringkat % Kehadiran Staff</h3>
+      <p class="desc" style="margin:0">Formula: Piket ÷ (Piket + Izin + Sakit + DL + CT + CM) × 100%</p>
+    </div>
+    <div class="dash-year-picker" style="gap:6px;flex-wrap:wrap">
+      <label style="font-size:11px;color:var(--ink-muted);font-weight:600;text-transform:uppercase;letter-spacing:.04em">Periode</label>
+      <button class="btn btn-secondary" id="chartKehadiranPrevYear" title="Tahun sebelumnya" style="padding:6px 10px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px"><path d="m15 18-6-6 6-6"/></svg>
+      </button>
+      <input type="number" id="chartKehadiranYear" step="1" style="width:80px;padding:7px 10px;border:1px solid var(--border);border-radius:var(--r-md);font-size:12.5px;font-family:'JetBrains Mono',monospace;text-align:center;outline:none">
+      <button class="btn btn-secondary" id="chartKehadiranNextYear" title="Tahun berikutnya" style="padding:6px 10px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px"><path d="m9 18 6-6-6-6"/></svg>
+      </button>
+      <select id="chartKehadiranMonth" style="padding:7px 12px;border:1px solid var(--border);border-radius:var(--r-md);font-size:12.5px;background:var(--card);color:var(--ink);cursor:pointer;font-weight:600;outline:none">
+        <option value="">📅 Semua Bulan</option>
+        <option value="1">Januari</option>
+        <option value="2">Februari</option>
+        <option value="3">Maret</option>
+        <option value="4">April</option>
+        <option value="5">Mei</option>
+        <option value="6">Juni</option>
+        <option value="7">Juli</option>
+        <option value="8">Agustus</option>
+        <option value="9">September</option>
+        <option value="10">Oktober</option>
+        <option value="11">November</option>
+        <option value="12">Desember</option>
+      </select>
+    </div>
+  </div>
 
-          <div class="chart-card full">
-            <h3>Bottom 10 % Kehadiran Terendah</h3>
-            <p class="desc">Staf dengan kehadiran di bawah rata-rata — perlu perhatian</p>
-            <canvas id="chartBottomKehadiran"></canvas>
-          </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:20px">
+    <div>
+      <div style="font-size:12.5px;font-weight:700;color:var(--ink);margin-bottom:4px">🏆 Top 10 Kehadiran Tertinggi</div>
+      <p style="font-size:11px;color:var(--ink-muted);margin-bottom:12px">Paling rajin piket &amp; jarang absen</p>
+      <canvas id="chartTopKehadiran"></canvas>
+    </div>
+    <div>
+      <div style="font-size:12.5px;font-weight:700;color:var(--ink);margin-bottom:4px">⚠️ Bottom 10 Kehadiran Terendah</div>
+      <p style="font-size:11px;color:var(--ink-muted);margin-bottom:12px">Hanya yang ada Izin/Sakit/DL/CT/CM</p>
+      <canvas id="chartBottomKehadiran"></canvas>
+    </div>
+  </div>
+</div>
 
           <div class="chart-card">
             <h3>Beban Piket per Ruangan</h3>
@@ -1476,6 +1511,7 @@ var state = {
   pengajuan: { data: null, loaded: false },
   masterStaff: { data: null, loaded: false, editingNip: null },
   matrix: { year: new Date().getFullYear(), data: null, loaded: false },
+  chartKehadiranFilter: { year: new Date().getFullYear(), month: null },
   importPreview: null,
   jamPerKode: {},
   jamRuangan: [],
@@ -2019,7 +2055,7 @@ function renderTopCuti(list){
   }).join('');
 }
 
-/* ⭐ CHART BARU: Top & Bottom % Kehadiran (fetch dari RPC) */
+/* ⭐ CHART BARU: Top & Bottom % Kehadiran (dengan filter periode sendiri) */
 async function renderChartTopBottomKehadiran(d) {
   destroyChart('topKehadiran');
   destroyChart('bottomKehadiran');
@@ -2028,9 +2064,10 @@ async function renderChartTopBottomKehadiran(d) {
   var botCard = document.getElementById('chartBottomKehadiran');
   if (!topCard || !botCard) return;
 
-  // Tentukan periode (bulan / tahun penuh)
-  var year = dashState.year;
-  var month = dashState.month;
+  // Gunakan filter khusus chart (state.chartKehadiranFilter)
+  var year = state.chartKehadiranFilter.year;
+  var month = state.chartKehadiranFilter.month;
+
   var start, end;
   if (month) {
     start = new Date(year, month - 1, 1).toISOString().slice(0,10);
@@ -2040,7 +2077,10 @@ async function renderChartTopBottomKehadiran(d) {
     end   = year + '-12-31';
   }
 
-  // Fetch data kehadiran
+  // Show loading state
+  topCard.parentElement.style.opacity = '.4';
+  botCard.parentElement.style.opacity = '.4';
+
   var dataKehadiran = [];
   try {
     var r = await sb.rpc('rpc_rekap_kehadiran', { p_start: start, p_end: end });
@@ -2061,20 +2101,20 @@ async function renderChartTopBottomKehadiran(d) {
     }
   } catch (err) {
     console.warn('Fetch kehadiran error:', err);
+  } finally {
+    topCard.parentElement.style.opacity = '1';
+    botCard.parentElement.style.opacity = '1';
   }
 
+  var periodeLabel = month ? BULAN_FULL[month] + ' ' + year : 'Tahun ' + year;
+
   if (dataKehadiran.length === 0) {
-    topCard.parentElement.innerHTML = '<div style="text-align:center;padding:30px;color:var(--ink-muted);font-size:12px">Belum ada data % kehadiran pada periode ini.</div>';
-    botCard.parentElement.innerHTML = '<div style="text-align:center;padding:30px;color:var(--ink-muted);font-size:12px">Belum ada data % kehadiran pada periode ini.</div>';
+    topCard.parentElement.innerHTML = '<div style="text-align:center;padding:30px;color:var(--ink-muted);font-size:12px">Belum ada data % kehadiran pada periode ' + periodeLabel + '.</div>';
+    botCard.parentElement.innerHTML = '<div style="text-align:center;padding:30px;color:var(--ink-muted);font-size:12px">Belum ada data % kehadiran pada periode ' + periodeLabel + '.</div>';
     return;
   }
 
-  // ============================================================
-  // SORTING Top 10:
-  //   1. % Kehadiran tertinggi
-  //   2. Kalau sama → piket terbanyak
-  //   3. Kalau sama → nama alfabetis
-  // ============================================================
+  // Sorting Top 10: pct DESC → piket DESC → nama ASC
   var sortedTop = dataKehadiran.slice().sort(function(a, b) {
     if (b.pct !== a.pct) return b.pct - a.pct;
     if (b.piket !== a.piket) return b.piket - a.piket;
@@ -2084,13 +2124,7 @@ async function renderChartTopBottomKehadiran(d) {
   var topNames = {};
   top.forEach(function(x){ topNames[x.nama] = true; });
 
-  // ============================================================
-  // Bottom 10:
-  //   HANYA staff dengan % < 100 (yang benar-benar ada ketidakhadiran)
-  //   + exclude yang sudah muncul di Top 10
-  //   + urut dari % terkecil
-  //   + tie-breaker: piket terkecil → nama alfabetis
-  // ============================================================
+  // Bottom 10: HANYA pct < 100, exclude Top
   var bottom = dataKehadiran.filter(function(x) {
     return x.pct < 100 && !topNames[x.nama];
   }).sort(function(a, b) {
@@ -2099,7 +2133,13 @@ async function renderChartTopBottomKehadiran(d) {
     return a.nama.localeCompare(b.nama);
   }).slice(0, 10);
 
-  // ==================== CHART TOP ====================
+  // Update subheader info di judul chart
+  var topHeader = topCard.parentElement.querySelector('div:first-child');
+  var botHeader = botCard.parentElement.querySelector('div:first-child');
+  if (topHeader) topHeader.textContent = '🏆 Top 10 Kehadiran Tertinggi — ' + periodeLabel;
+  if (botHeader) botHeader.textContent = '⚠️ Bottom 10 Kehadiran Terendah — ' + periodeLabel;
+
+  // Chart Top
   dashState.charts.topKehadiran = new Chart(topCard, {
     type: 'bar',
     data: {
@@ -2134,9 +2174,9 @@ async function renderChartTopBottomKehadiran(d) {
     }
   });
 
-  // ==================== CHART BOTTOM ====================
+  // Chart Bottom
   if (bottom.length === 0) {
-    botCard.parentElement.innerHTML = '<div style="text-align:center;padding:30px;color:var(--ink-muted);font-size:12px">✅ Tidak ada staff dengan % kehadiran &lt; 100% pada periode ini — semua staff hadir penuh.</div>';
+    botCard.parentElement.innerHTML = '<div style="text-align:center;padding:30px;color:var(--ink-muted);font-size:12px">✅ Tidak ada staff dengan % kehadiran &lt; 100% pada periode ' + periodeLabel + ' — semua staff hadir penuh.</div>';
   } else {
     dashState.charts.bottomKehadiran = new Chart(botCard, {
       type: 'bar',
@@ -2173,7 +2213,11 @@ async function renderChartTopBottomKehadiran(d) {
     });
   }
 }
-
+/* Reload hanya chart Top/Bottom (tanpa reload dashboard) */
+function reloadChartKehadiran() {
+  renderChartTopBottomKehadiran(dashState.data);
+}
+  
 function renderChartRuangan(perRuangan){
   if(!perRuangan || perRuangan.length === 0) return;
   destroyChart('ruangan');
@@ -4243,6 +4287,25 @@ document.getElementById('dashMonth').addEventListener('change', function(e){ var
 document.getElementById('dashRefreshBtn').addEventListener('click', function(){ loadDashboard(dashState.year, dashState.month); });
 document.getElementById('dashPdfBtn').addEventListener('click', exportDashboardPdf);
 
+  /* Chart Kehadiran — filter periode mandiri */
+document.getElementById('chartKehadiranPrevYear').addEventListener('click', function(){
+  state.chartKehadiranFilter.year--;
+  document.getElementById('chartKehadiranYear').value = state.chartKehadiranFilter.year;
+  reloadChartKehadiran();
+});
+document.getElementById('chartKehadiranNextYear').addEventListener('click', function(){
+  state.chartKehadiranFilter.year++;
+  document.getElementById('chartKehadiranYear').value = state.chartKehadiranFilter.year;
+  reloadChartKehadiran();
+});
+document.getElementById('chartKehadiranYear').addEventListener('change', function(e){
+  state.chartKehadiranFilter.year = parseInt(e.target.value, 10) || new Date().getFullYear();
+  reloadChartKehadiran();
+});
+document.getElementById('chartKehadiranMonth').addEventListener('change', function(e){
+  state.chartKehadiranFilter.month = e.target.value ? parseInt(e.target.value, 10) : null;
+  reloadChartKehadiran();
+});
 document.getElementById('kehadiranLoadBtn').addEventListener('click', loadKehadiran);
 document.getElementById('pengajuanLoadBtn').addEventListener('click', loadPengajuan);
 document.getElementById('pengajuanJenis').addEventListener('change', loadPengajuan);
@@ -4526,6 +4589,11 @@ document.addEventListener('keydown', function(e){
 
   document.getElementById('matrixYear').value = state.matrix.year;
 
+  // Init filter chart kehadiran (default = tahun berjalan, semua bulan)
+  state.chartKehadiranFilter.year = new Date().getFullYear();
+  state.chartKehadiranFilter.month = null;
+  document.getElementById('chartKehadiranYear').value = state.chartKehadiranFilter.year;
+  document.getElementById('chartKehadiranMonth').value = '';
   await refreshSession();
   updateMenuVisibility();
   await loadStaffList();
