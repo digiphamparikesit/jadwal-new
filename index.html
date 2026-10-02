@@ -2028,6 +2028,7 @@ async function renderChartTopBottomKehadiran(d) {
   var botCard = document.getElementById('chartBottomKehadiran');
   if (!topCard || !botCard) return;
 
+  // Tentukan periode (bulan / tahun penuh)
   var year = dashState.year;
   var month = dashState.month;
   var start, end;
@@ -2039,6 +2040,7 @@ async function renderChartTopBottomKehadiran(d) {
     end   = year + '-12-31';
   }
 
+  // Fetch data kehadiran
   var dataKehadiran = [];
   try {
     var r = await sb.rpc('rpc_rekap_kehadiran', { p_start: start, p_end: end });
@@ -2049,6 +2051,7 @@ async function renderChartTopBottomKehadiran(d) {
         if (pct !== null) {
           dataKehadiran.push({
             nama: s.nama,
+            nip: s.nip || '',
             pct: pct,
             piket: Number(s.hariKerja) || 0,
             totalNH: ((s.breakdown && s.breakdown.IZIN)||0) + ((s.breakdown && s.breakdown.SKT)||0) + ((s.breakdown && s.breakdown.DL)||0) + ((s.breakdown && s.breakdown.CT)||0) + ((s.breakdown && s.breakdown.CM)||0)
@@ -2066,18 +2069,37 @@ async function renderChartTopBottomKehadiran(d) {
     return;
   }
 
-  // Top 10
-  var sorted = dataKehadiran.slice().sort(function(a,b){ return b.pct - a.pct; });
-  var top = sorted.slice(0, 10);
-
-  // Bottom 10 — exclude yang sudah ada di Top
+  // ============================================================
+  // SORTING Top 10:
+  //   1. % Kehadiran tertinggi
+  //   2. Kalau sama → piket terbanyak
+  //   3. Kalau sama → nama alfabetis
+  // ============================================================
+  var sortedTop = dataKehadiran.slice().sort(function(a, b) {
+    if (b.pct !== a.pct) return b.pct - a.pct;
+    if (b.piket !== a.piket) return b.piket - a.piket;
+    return a.nama.localeCompare(b.nama);
+  });
+  var top = sortedTop.slice(0, 10);
   var topNames = {};
   top.forEach(function(x){ topNames[x.nama] = true; });
-  var bottom = sorted.filter(function(x){ return !topNames[x.nama]; })
-                     .sort(function(a,b){ return a.pct - b.pct; })
-                     .slice(0, 10);
 
-  // Chart Top
+  // ============================================================
+  // Bottom 10:
+  //   HANYA staff dengan % < 100 (yang benar-benar ada ketidakhadiran)
+  //   + exclude yang sudah muncul di Top 10
+  //   + urut dari % terkecil
+  //   + tie-breaker: piket terkecil → nama alfabetis
+  // ============================================================
+  var bottom = dataKehadiran.filter(function(x) {
+    return x.pct < 100 && !topNames[x.nama];
+  }).sort(function(a, b) {
+    if (a.pct !== b.pct) return a.pct - b.pct;
+    if (a.piket !== b.piket) return a.piket - b.piket;
+    return a.nama.localeCompare(b.nama);
+  }).slice(0, 10);
+
+  // ==================== CHART TOP ====================
   dashState.charts.topKehadiran = new Chart(topCard, {
     type: 'bar',
     data: {
@@ -2085,15 +2107,25 @@ async function renderChartTopBottomKehadiran(d) {
       datasets: [{
         label: '% Kehadiran',
         data: top.map(function(s){ return Number(s.pct.toFixed(1)); }),
-        backgroundColor: top.map(function(s){ return s.pct >= 95 ? '#10B981' : (s.pct >= 80 ? '#F59E0B' : '#EF4444'); }),
-        borderRadius: 6, borderSkipped: false
+        backgroundColor: top.map(function(s){
+          return s.pct >= 95 ? '#10B981' : (s.pct >= 80 ? '#F59E0B' : '#EF4444');
+        }),
+        borderRadius: 6,
+        borderSkipped: false
       }]
     },
     options: {
       responsive: true, maintainAspectRatio: false, indexAxis: 'y',
       plugins: {
         legend: { display: false },
-        tooltip: { callbacks: { label: function(c){ var s = top[c.dataIndex]; return c.parsed.x.toFixed(1) + '% · ' + s.piket + ' hari piket · ' + s.totalNH + ' hari non-hadir'; } } }
+        tooltip: {
+          callbacks: {
+            label: function(c) {
+              var s = top[c.dataIndex];
+              return c.parsed.x.toFixed(1) + '% · ' + s.piket + ' hari piket · ' + s.totalNH + ' hari non-hadir';
+            }
+          }
+        }
       },
       scales: {
         x: { beginAtZero: true, max: 100, ticks: { callback: function(v){ return v + '%'; }, font: { size: 10 } } },
@@ -2102,9 +2134,9 @@ async function renderChartTopBottomKehadiran(d) {
     }
   });
 
-  // Chart Bottom
+  // ==================== CHART BOTTOM ====================
   if (bottom.length === 0) {
-    botCard.parentElement.innerHTML = '<div style="text-align:center;padding:30px;color:var(--ink-muted);font-size:12px">Jumlah staf ≤ 10, tidak ada Bottom terpisah.</div>';
+    botCard.parentElement.innerHTML = '<div style="text-align:center;padding:30px;color:var(--ink-muted);font-size:12px">✅ Tidak ada staff dengan % kehadiran &lt; 100% pada periode ini — semua staff hadir penuh.</div>';
   } else {
     dashState.charts.bottomKehadiran = new Chart(botCard, {
       type: 'bar',
@@ -2113,15 +2145,25 @@ async function renderChartTopBottomKehadiran(d) {
         datasets: [{
           label: '% Kehadiran',
           data: bottom.map(function(s){ return Number(s.pct.toFixed(1)); }),
-          backgroundColor: bottom.map(function(s){ return s.pct >= 95 ? '#10B981' : (s.pct >= 80 ? '#F59E0B' : '#EF4444'); }),
-          borderRadius: 6, borderSkipped: false
+          backgroundColor: bottom.map(function(s){
+            return s.pct >= 95 ? '#10B981' : (s.pct >= 80 ? '#F59E0B' : '#EF4444');
+          }),
+          borderRadius: 6,
+          borderSkipped: false
         }]
       },
       options: {
         responsive: true, maintainAspectRatio: false, indexAxis: 'y',
         plugins: {
           legend: { display: false },
-          tooltip: { callbacks: { label: function(c){ var s = bottom[c.dataIndex]; return c.parsed.x.toFixed(1) + '% · ' + s.piket + ' hari piket · ' + s.totalNH + ' hari non-hadir'; } } }
+          tooltip: {
+            callbacks: {
+              label: function(c) {
+                var s = bottom[c.dataIndex];
+                return c.parsed.x.toFixed(1) + '% · ' + s.piket + ' hari piket · ' + s.totalNH + ' hari non-hadir';
+              }
+            }
+          }
         },
         scales: {
           x: { beginAtZero: true, max: 100, ticks: { callback: function(v){ return v + '%'; }, font: { size: 10 } } },
