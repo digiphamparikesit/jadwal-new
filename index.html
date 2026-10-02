@@ -492,6 +492,11 @@
         <span>Master Data Staff</span>
         <span class="badge-new">NEW</span>
       </button>
+      <button class="nav-item" data-role="admin" data-tab="riwayat">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="10"/><path d="M3.05 11a9 9 0 1 1 .5 4M3 4v5h5"/></svg>
+        <span>Riwayat Penempatan</span>
+        <span class="badge-new">NEW</span>
+      </button>
       <button class="nav-item" data-role="admin" data-tab="import">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v12"/></svg>
         <span>Import Jadwal</span>
@@ -542,7 +547,6 @@
       </button>
     </div>
 
-    <!-- ============ TAB FORM ============ -->
     <section id="tab-form" class="hidden">
       <div class="page-head">
         <div>
@@ -631,7 +635,6 @@
       </div>
     </section>
 
-    <!-- ============ TAB REKAP JADWAL ============ -->
     <section id="tab-rekap">
       <div class="page-head">
         <div>
@@ -653,7 +656,6 @@
       <div class="room-grid" id="roomGrid"></div>
     </section>
 
-    <!-- ============ TAB JADWAL LENGKAP ============ -->
     <section id="tab-jadwal" class="hidden">
       <div class="page-head">
         <div>
@@ -704,7 +706,6 @@
       </div>
     </section>
 
-    <!-- ============ TAB DASHBOARD ============ -->
     <section id="tab-dashboard" class="hidden">
       <div class="page-head">
         <div>
@@ -795,53 +796,58 @@
             <div id="dashTopCuti" class="list-staf"></div>
           </div>
 
-          <!-- ⭐ CHART Top/Bottom % Kehadiran dengan Filter Bulan -->
-<div class="chart-card full">
-  <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--border-soft)">
-    <div>
-      <h3 style="margin-bottom:4px">🏆 Peringkat % Kehadiran Staff</h3>
-      <p class="desc" style="margin:0">Formula: Piket ÷ (Piket + Izin + Sakit + DL + CT + CM) × 100%</p>
-    </div>
-    <div class="dash-year-picker" style="gap:6px;flex-wrap:wrap">
-      <label style="font-size:11px;color:var(--ink-muted);font-weight:600;text-transform:uppercase;letter-spacing:.04em">Periode</label>
-      <button class="btn btn-secondary" id="chartKehadiranPrevYear" title="Tahun sebelumnya" style="padding:6px 10px">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px"><path d="m15 18-6-6 6-6"/></svg>
-      </button>
-      <input type="number" id="chartKehadiranYear" step="1" style="width:80px;padding:7px 10px;border:1px solid var(--border);border-radius:var(--r-md);font-size:12.5px;font-family:'JetBrains Mono',monospace;text-align:center;outline:none">
-      <button class="btn btn-secondary" id="chartKehadiranNextYear" title="Tahun berikutnya" style="padding:6px 10px">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px"><path d="m9 18 6-6-6-6"/></svg>
-      </button>
-      <select id="chartKehadiranMonth" style="padding:7px 12px;border:1px solid var(--border);border-radius:var(--r-md);font-size:12.5px;background:var(--card);color:var(--ink);cursor:pointer;font-weight:600;outline:none">
-        <option value="">📅 Semua Bulan</option>
-        <option value="1">Januari</option>
-        <option value="2">Februari</option>
-        <option value="3">Maret</option>
-        <option value="4">April</option>
-        <option value="5">Mei</option>
-        <option value="6">Juni</option>
-        <option value="7">Juli</option>
-        <option value="8">Agustus</option>
-        <option value="9">September</option>
-        <option value="10">Oktober</option>
-        <option value="11">November</option>
-        <option value="12">Desember</option>
-      </select>
-    </div>
-  </div>
+          <div class="chart-card full">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--border-soft)">
+              <div>
+                <h3 style="margin-bottom:4px">🏆 Peringkat % Kehadiran Staff</h3>
+                <p class="desc" style="margin:0">Formula: Piket ÷ (Piket + Izin + Sakit + DL + CT + CM) × 100%</p>
+              </div>
+              <div class="dash-year-picker" style="gap:6px;flex-wrap:wrap">
+                <label style="font-size:11px;color:var(--ink-muted);font-weight:600;text-transform:uppercase;letter-spacing:.04em">Periode</label>
+                <button class="btn btn-secondary" id="chartKehadiranPrevYear" title="Tahun sebelumnya" style="padding:6px 10px">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px"><path d="m15 18-6-6 6-6"/></svg>
+                </button>
+                <input type="number" id="chartKehadiranYear" step="1" style="width:80px;padding:7px 10px;border:1px solid var(--border);border-radius:var(--r-md);font-size:12.5px;font-family:'JetBrains Mono',monospace;text-align:center;outline:none">
+                <button class="btn btn-secondary" id="chartKehadiranNextYear" title="Tahun berikutnya" style="padding:6px 10px">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px"><path d="m9 18 6-6-6-6"/></svg>
+                </button>
+                <select id="chartKehadiranMonth" style="padding:7px 12px;border:1px solid var(--border);border-radius:var(--r-md);font-size:12.5px;background:var(--card);color:var(--ink);cursor:pointer;font-weight:600;outline:none">
+                  <option value="">📅 Semua Bulan</option>
+                  <option value="1">Januari</option>
+                  <option value="2">Februari</option>
+                  <option value="3">Maret</option>
+                  <option value="4">April</option>
+                  <option value="5">Mei</option>
+                  <option value="6">Juni</option>
+                  <option value="7">Juli</option>
+                  <option value="8">Agustus</option>
+                  <option value="9">September</option>
+                  <option value="10">Oktober</option>
+                  <option value="11">November</option>
+                  <option value="12">Desember</option>
+                </select>
+              </div>
+            </div>
 
-  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:20px">
-    <div>
-      <div style="font-size:12.5px;font-weight:700;color:var(--ink);margin-bottom:4px">🏆 Top 10 Kehadiran Tertinggi</div>
-      <p style="font-size:11px;color:var(--ink-muted);margin-bottom:12px">Paling rajin piket &amp; jarang absen</p>
-      <canvas id="chartTopKehadiran"></canvas>
-    </div>
-    <div>
-      <div style="font-size:12.5px;font-weight:700;color:var(--ink);margin-bottom:4px">⚠️ Bottom 10 Kehadiran Terendah</div>
-      <p style="font-size:11px;color:var(--ink-muted);margin-bottom:12px">Hanya yang ada Izin/Sakit/DL/CT/CM</p>
-      <canvas id="chartBottomKehadiran"></canvas>
-    </div>
-  </div>
-</div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:20px">
+              <div>
+                <div style="font-size:12.5px;font-weight:700;color:var(--ink);margin-bottom:4px">🏆 Top 10 Kehadiran Tertinggi</div>
+                <p style="font-size:11px;color:var(--ink-muted);margin-bottom:12px">Paling rajin piket &amp; jarang absen</p>
+                <canvas id="chartTopKehadiran"></canvas>
+              </div>
+              <div>
+                <div style="font-size:12.5px;font-weight:700;color:var(--ink);margin-bottom:4px">⚠️ Bottom 10 Kehadiran Terendah</div>
+                <p style="font-size:11px;color:var(--ink-muted);margin-bottom:12px">Hanya yang ada Izin/Sakit/DL/CT/CM</p>
+                <canvas id="chartBottomKehadiran"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <div class="chart-card full">
+            <h3>🎓 Top 15 Staff Multiskill</h3>
+            <p class="desc">Berdasarkan jumlah ruangan berbeda yang pernah ditempati</p>
+            <canvas id="chartMultiskill"></canvas>
+          </div>
 
           <div class="chart-card">
             <h3>Beban Piket per Ruangan</h3>
@@ -866,7 +872,6 @@
       </div>
     </section>
 
-    <!-- ============ TAB JAM KERJA ============ -->
     <section id="tab-jamkerja" class="hidden">
       <div class="page-head">
         <div>
@@ -915,7 +920,6 @@
       </div>
     </section>
 
-    <!-- ============ TAB KEHADIRAN ============ -->
     <section id="tab-kehadiran" class="hidden">
       <div class="page-head">
         <div>
@@ -968,7 +972,6 @@
       </div>
     </section>
 
-    <!-- ============ TAB MASTER DATA STAFF ============ -->
     <section id="tab-master" class="hidden">
       <div class="page-head">
         <div>
@@ -1021,7 +1024,7 @@
                 <th style="position:static;box-shadow:none">Tgl Masuk</th>
                 <th style="position:static;box-shadow:none">Masa Kerja</th>
                 <th style="text-align:left;min-width:160px;position:static;box-shadow:none">Departemen</th>
-                <th style="text-align:center;min-width:100px;position:static;box-shadow:none">Aksi</th>
+                <th style="text-align:center;min-width:130px;position:static;box-shadow:none">Aksi</th>
               </tr>
             </thead>
             <tbody id="masterBody"></tbody>
@@ -1031,7 +1034,68 @@
       </div>
     </section>
 
-    <!-- ============ TAB PENGAJUAN ============ -->
+    <section id="tab-riwayat" class="hidden">
+      <div class="page-head">
+        <div>
+          <p class="eyebrow">Rotasi & penempatan staff · hanya admin</p>
+          <h2>Riwayat Penempatan Staff</h2>
+        </div>
+        <div class="date-nav">
+          <button class="btn btn-primary" id="riwayatAddBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+            Tambah Penempatan
+          </button>
+        </div>
+      </div>
+
+      <div class="kpi-grid" id="riwayatKpi" style="margin-bottom:18px"></div>
+
+      <div class="filter-row">
+        <input type="text" id="riwayatSearch" placeholder="Cari nama staff…" style="min-width:200px">
+        <select id="riwayatFilterRuangan"><option value="">Semua ruangan</option></select>
+        <select id="riwayatFilterPeran">
+          <option value="">Semua peran</option>
+          <option value="Kepala Instalasi">Kepala Instalasi</option>
+          <option value="Koordinator">Koordinator</option>
+          <option value="Staff">Staff</option>
+          <option value="PIC">PIC</option>
+          <option value="Magang">Magang</option>
+          <option value="Lainnya">Lainnya</option>
+        </select>
+        <select id="riwayatFilterStatus">
+          <option value="">Semua status</option>
+          <option value="aktif">Masih Aktif</option>
+          <option value="selesai">Sudah Selesai</option>
+        </select>
+        <button class="btn btn-secondary" id="riwayatRefreshBtn" title="Muat ulang">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>
+          Muat
+        </button>
+      </div>
+
+      <div class="table-card">
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th style="text-align:left;min-width:180px;position:static;box-shadow:none">Nama</th>
+                <th style="text-align:left;min-width:160px;position:static;box-shadow:none">Ruangan</th>
+                <th style="position:static;box-shadow:none">Peran</th>
+                <th style="position:static;box-shadow:none">Mulai</th>
+                <th style="position:static;box-shadow:none">Selesai</th>
+                <th style="position:static;box-shadow:none">Durasi</th>
+                <th style="position:static;box-shadow:none">Status</th>
+                <th style="text-align:left;min-width:180px;position:static;box-shadow:none">Keterangan</th>
+                <th style="text-align:center;min-width:100px;position:static;box-shadow:none">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="riwayatBody"></tbody>
+          </table>
+        </div>
+        <div class="total-bar" id="riwayatTotal">—</div>
+      </div>
+    </section>
+
     <section id="tab-pengajuan" class="hidden">
       <div class="page-head">
         <div>
@@ -1094,7 +1158,6 @@
       </div>
     </section>
 
-    <!-- ============ TAB IMPORT ============ -->
     <section id="tab-import" class="hidden">
       <div class="page-head">
         <div>
@@ -1168,7 +1231,6 @@
   </main>
 </div>
 
-<!-- ============ MOBILE BOTTOM ============ -->
 <div class="mobile-bottom">
   <button class="mobile-nav" data-tab="form">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
@@ -1188,7 +1250,7 @@
   </button>
 </div>
 
-<!-- ============ MODALS ============ -->
+<!-- MODAL LOGIN -->
 <div class="modal-bg" id="loginModal">
   <div class="modal-m">
     <div class="modal-head">
@@ -1210,6 +1272,7 @@
   </div>
 </div>
 
+<!-- MODAL SETTINGS -->
 <div class="modal-bg" id="settingsModal">
   <div class="modal-m">
     <div class="modal-head">
@@ -1251,6 +1314,7 @@
   </div>
 </div>
 
+<!-- MODAL EDIT PENGAJUAN -->
 <div class="modal-bg" id="editPengajuanModal">
   <div class="modal-m">
     <div class="modal-head">
@@ -1274,6 +1338,7 @@
   </div>
 </div>
 
+<!-- MODAL DETAIL -->
 <div class="modal-bg" id="detailModal">
   <div class="modal-m wide">
     <div class="modal-head dark">
@@ -1296,6 +1361,7 @@
   </div>
 </div>
 
+<!-- MODAL CETAK KEHADIRAN -->
 <div class="modal-bg" id="kehadiranPrintModal">
   <div class="modal-m wide" style="max-width:920px">
     <div class="modal-head dark">
@@ -1322,6 +1388,7 @@
   </div>
 </div>
 
+<!-- MODAL CETAK JAM KERJA -->
 <div class="modal-bg" id="jamKerjaPrintModal">
   <div class="modal-m wide" style="max-width:920px">
     <div class="modal-head dark">
@@ -1348,6 +1415,7 @@
   </div>
 </div>
 
+<!-- MODAL MASTER FORM -->
 <div class="modal-bg" id="masterFormModal">
   <div class="modal-m wide" style="max-width:720px">
     <div class="modal-head">
@@ -1419,7 +1487,88 @@
   </div>
 </div>
 
-<!-- ⭐ MODAL BARU: MATRIX % KEHADIRAN BULANAN -->
+<!-- MODAL RIWAYAT FORM -->
+<div class="modal-bg" id="riwayatFormModal">
+  <div class="modal-m wide" style="max-width:600px">
+    <div class="modal-head">
+      <h3 id="riwayatFormTitle">Tambah Penempatan</h3>
+      <button class="modal-close" id="closeRiwayatForm">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div id="riwayatFormFields">
+        <div class="form-group">
+          <label>Staff <span class="req">*</span></label>
+          <select id="rfNip">
+            <option value="">— Pilih staff —</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Ruangan <span class="req">*</span></label>
+          <input type="text" id="rfRuangan" list="rfRuanganList" placeholder="Contoh: DEPO FARMASI IGD" autocomplete="off">
+          <datalist id="rfRuanganList"></datalist>
+        </div>
+        <div class="form-group">
+          <label>Peran <span class="req">*</span></label>
+          <select id="rfPeran">
+            <option value="">— Pilih peran —</option>
+            <option value="Kepala Instalasi">Kepala Instalasi</option>
+            <option value="Koordinator">Koordinator</option>
+            <option value="Staff">Staff</option>
+            <option value="PIC">PIC</option>
+            <option value="Magang">Magang</option>
+            <option value="Lainnya">Lainnya</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Tanggal Mulai <span class="req">*</span></label>
+          <input type="date" id="rfMulai">
+        </div>
+        <div class="form-group">
+          <label>Tanggal Selesai</label>
+          <input type="date" id="rfSelesai">
+          <div class="hint">Kosongkan jika masih aktif sampai sekarang</div>
+        </div>
+        <div class="form-group">
+          <label>Keterangan</label>
+          <textarea id="rfKeterangan" placeholder="Catatan: alasan pindah, prestasi, dll"></textarea>
+        </div>
+      </div>
+      <p class="error-text hidden" id="riwayatFormError"></p>
+    </div>
+    <div class="modal-foot space">
+      <button class="btn btn-danger hidden" id="riwayatDeleteBtn">Hapus</button>
+      <div style="display:flex;gap:10px;margin-left:auto">
+        <button class="btn btn-secondary" id="riwayatCancelBtn">Batal</button>
+        <button class="btn btn-primary" id="riwayatSaveBtn">Simpan</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL RIWAYAT LIST PER STAFF -->
+<div class="modal-bg" id="riwayatListModal">
+  <div class="modal-m wide" style="max-width:700px">
+    <div class="modal-head dark">
+      <div>
+        <h3 id="riwayatListTitle">Riwayat Penempatan</h3>
+        <div class="modal-sub" id="riwayatListSub">—</div>
+      </div>
+      <button class="modal-close" id="closeRiwayatList">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body" id="riwayatListBody">
+      <div style="text-align:center;padding:40px;color:var(--ink-muted);font-size:13px">Memuat…</div>
+    </div>
+    <div class="modal-foot" style="justify-content:flex-end">
+      <button class="btn btn-secondary" id="closeRiwayatListBtn">Tutup</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL MATRIX -->
 <div class="modal-bg" id="matrixModal">
   <div class="modal-m" style="max-width:1400px">
     <div class="modal-head dark">
@@ -1465,6 +1614,7 @@
   <div class="pdf-spinner"></div>
   <div id="pdfLoadingText">Menyiapkan PDF…</div>
 </div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 var SUPABASE_URL = 'https://yufbyhbztmerkejyiqdx.supabase.co';
@@ -1512,6 +1662,7 @@ var state = {
   masterStaff: { data: null, loaded: false, editingNip: null },
   matrix: { year: new Date().getFullYear(), data: null, loaded: false },
   chartKehadiranFilter: { year: new Date().getFullYear(), month: null },
+  riwayat: { data: null, loaded: false, editingId: null, filterStaff: null },
   importPreview: null,
   jamPerKode: {},
   jamRuangan: [],
@@ -1572,6 +1723,18 @@ function hitungMasaKerja(tgl) {
   if (th === 0) return bl + ' bln';
   return th + ' th' + (bl > 0 ? ' ' + bl + ' bln' : '');
 }
+function hitungDurasiBulan(tglMulai, tglSelesai) {
+  if (!tglMulai) return '—';
+  var a = new Date(tglMulai + 'T00:00:00');
+  var b = tglSelesai ? new Date(tglSelesai + 'T00:00:00') : new Date();
+  var totalBulan = (b.getFullYear() - a.getFullYear()) * 12 + (b.getMonth() - a.getMonth());
+  if (b.getDate() < a.getDate()) totalBulan--;
+  if (totalBulan < 0) return '—';
+  var th = Math.floor(totalBulan / 12);
+  var bl = totalBulan % 12;
+  if (th === 0) return bl + ' bln';
+  return th + ' th' + (bl > 0 ? ' ' + bl + ' bln' : '');
+}
 
 /* ============================================================
    FORMULA PERSENTASE KEHADIRAN
@@ -1621,8 +1784,9 @@ function renderSkeletons(){
 function setTab(t){
   document.querySelectorAll('.nav-item[data-tab]').forEach(function(b){ b.classList.toggle('active', b.dataset.tab===t); });
   document.querySelectorAll('.mobile-nav').forEach(function(b){ b.classList.toggle('active', b.dataset.tab===t); });
-  ['rekap','jadwal','jamkerja','kehadiran','pengajuan','import','form','dashboard','master'].forEach(function(name){
-    document.getElementById('tab-'+name).classList.toggle('hidden', name!==t);
+  ['rekap','jadwal','jamkerja','kehadiran','pengajuan','import','form','dashboard','master','riwayat'].forEach(function(name){
+    var el = document.getElementById('tab-'+name);
+    if (el) el.classList.toggle('hidden', name!==t);
   });
   if(t==='jamkerja' && !state.jamKerja.loadedYear) loadJamKerja(state.jamKerja.year);
   if(t==='kehadiran' && !state.kehadiran.loaded) loadKehadiran();
@@ -1631,6 +1795,7 @@ function setTab(t){
   if(t==='form' && state.staffList.length === 0) loadStaffList();
   if(t==='dashboard' && !dashState.data) loadDashboard(dashState.year);
   if(t==='master' && !state.masterStaff.loaded) loadMasterStaff();
+  if(t==='riwayat' && !state.riwayat.loaded) loadRiwayat();
   document.getElementById('sidebar').classList.remove('open');
   document.getElementById('sidebarBackdrop').classList.remove('open');
 }
@@ -1772,9 +1937,23 @@ function renderRekap(){
       var m = state.legend[code] || { label:code, color:'#64748B', bg:'#F1F5F9' };
       return '<span class="off-tag" style="background:'+m.bg+';color:'+m.color+'">'+esc(m.label)+' · '+r.offByCode[code]+'</span>';
     }).join('');
+
+    // Cari koordinator aktif untuk ruangan ini
+    var koordinator = '';
+    if (state.riwayat.data) {
+      var k = state.riwayat.data.find(function(x){
+        return x.ruangan === room && x.peran === 'Koordinator' && !x.tanggal_selesai;
+      });
+      if (k && k.staff) koordinator = k.staff.nama;
+      else if (k) koordinator = k.nip;
+    }
+    var koordinatorHtml = koordinator
+      ? '<div style="font-size:10.5px;color:#7C3AED;font-weight:600;margin-top:2px;display:flex;align-items:center;gap:4px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:11px;height:11px"><path d="M12 2l3 7h7l-5.5 4 2 7L12 16l-6.5 4 2-7L2 9h7z"/></svg>' + esc(koordinator) + '</div>'
+      : '';
+
     return '<div class="room-modern">' +
       '<div class="room-head">' +
-        '<div class="room-name"><div class="room-name-icon">'+esc(room.slice(0,2).toUpperCase())+'</div><span>'+esc(room)+'</span></div>' +
+        '<div class="room-name"><div class="room-name-icon">'+esc(room.slice(0,2).toUpperCase())+'</div><div style="min-width:0"><span>'+esc(room)+'</span>'+koordinatorHtml+'</div></div>' +
         '<div style="display:flex;align-items:center;gap:10px">' +
           '<span class="room-count"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>'+r.onDuty+' bertugas</span>' +
           '<svg class="room-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>' +
@@ -1857,28 +2036,577 @@ async function autoUpdateJadwalFromPengajuan(jenis, payload) {
       var start = payload.tanggal_mulai;
       var end = payload.tanggal_selesai || payload.tanggal_mulai;
       if (!start) return;
-      var d = new Date(start + 'T00:00:00');
-      var e = new Date(end + 'T00:00:00');
-      var updates = [];
-      while (d <= e) {
-        var iso = d.toISOString().slice(0, 10);
-        updates.push({ tanggal: iso, kode: kode });
-        d.setDate(d.getDate() + 1);
-      }
+
       var st = state.staffList.find(function(x){ return x.nip === payload.nip; });
       var namaJadwal = st ? (st.nama_jadwal || st.nama) : null;
       if (!namaJadwal) return;
 
-      for (var i = 0; i < updates.length; i++) {
-        await sb.from('jadwal').upsert({
+      // Bulk upsert — lebih andal dari loop individual
+      var rows = [];
+      var d = new Date(start + 'T00:00:00');
+      var e = new Date(end + 'T00:00:00');
+      while (d <= e) {
+        rows.push({
+          tanggal: d.toISOString().slice(0,10),
           nama: namaJadwal,
-          tanggal: updates[i].tanggal,
           kode: kode
-        }, { onConflict: 'tanggal,nama' });
+        });
+        d.setDate(d.getDate() + 1);
       }
+
+      if (rows.length === 0) return;
+      var r = await sb.from('jadwal').upsert(rows, { onConflict: 'tanggal,nama' });
+      if (r.error) throw r.error;
     }
   } catch (err) {
     console.warn('autoUpdateJadwalFromPengajuan error:', err);
+  }
+}
+
+/* ============================================================
+   MASTER DATA STAFF — CRUD
+   ============================================================ */
+async function loadMasterStaff() {
+  document.getElementById('masterBody').innerHTML = '<tr><td colspan="11" style="text-align:center;padding:32px;color:var(--ink-muted)">Memuat…</td></tr>';
+  try {
+    var r = await sb.from('staff').select('*').order('nama');
+    if (r.error) throw r.error;
+    state.masterStaff.data = r.data || [];
+    state.masterStaff.loaded = true;
+    renderMasterStaff();
+  } catch (err) {
+    console.error('Gagal load master staff:', err);
+    document.getElementById('masterBody').innerHTML =
+      '<tr><td colspan="11" style="text-align:center;padding:32px;color:var(--ink-muted)">Gagal memuat: ' + esc(err.message || 'Error') + '</td></tr>';
+  }
+}
+
+function renderMasterStaff() {
+  var d = state.masterStaff.data || [];
+  var q = document.getElementById('masterSearch').value.toLowerCase().trim();
+  var fj = document.getElementById('masterFilterJabatan').value;
+  var fk = document.getElementById('masterFilterJK').value;
+
+  var rows = d.filter(function(s) {
+    if (q && (s.nama || '').toLowerCase().indexOf(q) === -1 && (s.nip || '').toLowerCase().indexOf(q) === -1) return false;
+    if (fj && (s.jabatan || '') !== fj) return false;
+    if (fk && (s.jenis_kelamin || '') !== fk) return false;
+    return true;
+  });
+
+  var totalApoteker = d.filter(function(s){ return s.jabatan === 'Apoteker'; }).length;
+  var totalTTK = d.filter(function(s){ return s.jabatan === 'TTK'; }).length;
+  var totalL = d.filter(function(s){ return s.jenis_kelamin === 'L'; }).length;
+  var totalP = d.filter(function(s){ return s.jenis_kelamin === 'P'; }).length;
+
+  document.getElementById('masterKpi').innerHTML = [
+    { label: 'Total Staff', value: d.length, color: 'primary',
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>' },
+    { label: 'Apoteker', value: totalApoteker, color: 'primary',
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12h6M12 9v6M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg>' },
+    { label: 'TTK', value: totalTTK, color: 'violet',
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>' },
+    { label: 'Laki-laki / Perempuan', value: totalL + ' / ' + totalP, color: 'amber',
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>' }
+  ].map(function(it) {
+    return '<div class="stat-bento" data-accent="' + it.color + '" style="padding:14px 16px">' +
+      '<div class="stat-icon" data-color="' + it.color + '" style="width:30px;height:30px;margin-bottom:10px">' + it.icon + '</div>' +
+      '<div class="stat-num" style="font-size:24px">' + it.value + '</div>' +
+      '<div class="stat-label">' + it.label + '</div></div>';
+  }).join('');
+
+  var body = document.getElementById('masterBody');
+  if (!rows.length) {
+    body.innerHTML = '<tr><td colspan="11" style="text-align:center;padding:32px;color:var(--ink-muted)">Tidak ada staff cocok</td></tr>';
+    document.getElementById('masterTotal').textContent = '—';
+    return;
+  }
+
+  var jabatanColor = {
+    'Apoteker': '#0F766E',
+    'TTK': '#2563EB',
+    'Administrasi': '#EA580C',
+    'Transporter': '#7C3AED',
+    'Kepala Instalasi': '#DC2626'
+  };
+
+  body.innerHTML = rows.map(function(s) {
+    var jab = s.jabatan || '—';
+    var jabBg = jabatanColor[jab] || '#64748B';
+    var jabHtml = s.jabatan
+      ? '<span class="kategori-pill" style="background:' + jabBg + ';color:#fff;border:none">' + esc(jab) + '</span>'
+      : '<span class="code-empty">—</span>';
+
+    var jkHtml = s.jenis_kelamin === 'L'
+      ? '<span class="kategori-pill" style="background:#DBEAFE;color:#1D4ED8">Laki-laki</span>'
+      : (s.jenis_kelamin === 'P'
+        ? '<span class="kategori-pill" style="background:#FCE7F3;color:#BE185D">Perempuan</span>'
+        : '<span class="code-empty">—</span>');
+
+    var nipAttr = String(s.nip).replace(/"/g, '&quot;');
+    return '<tr>' +
+      '<td class="mono" style="text-align:left">' + esc(s.nip) + '</td>' +
+      '<td style="text-align:left;font-weight:600">' + esc(s.nama) + '</td>' +
+      '<td style="text-align:left;color:var(--ink-muted);font-size:11.5px">' + esc(s.nama_jadwal || '—') + '</td>' +
+      '<td>' + jabHtml + '</td>' +
+      '<td>' + jkHtml + '</td>' +
+      '<td class="mono" style="font-size:11.5px">' + (s.tanggal_lahir || '—') + '</td>' +
+      '<td class="mono" style="font-weight:600">' + hitungUmur(s.tanggal_lahir) + '</td>' +
+      '<td class="mono" style="font-size:11.5px">' + (s.tanggal_masuk || '—') + '</td>' +
+      '<td class="mono" style="font-weight:600;color:var(--primary)">' + hitungMasaKerja(s.tanggal_masuk) + '</td>' +
+      '<td style="text-align:left;color:var(--ink-muted);font-size:11.5px">' + esc(s.departemen || '—') + '</td>' +
+      '<td style="text-align:center;white-space:nowrap">' +
+        '<button class="row-action-btn" data-riwayat-staff="' + nipAttr + '" title="Lihat Riwayat Penempatan" style="background:#F3E8FF;color:#7C3AED;border-color:#C4B5FD">' +
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="10"/></svg>' +
+        '</button>' +
+        '<button class="row-action-btn" data-edit-staff="' + nipAttr + '" title="Edit">' +
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>' +
+        '</button>' +
+        '<button class="row-action-btn danger" data-delete-staff="' + nipAttr + '" title="Hapus">' +
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>' +
+        '</button>' +
+      '</td>' +
+    '</tr>';
+  }).join('');
+
+  document.getElementById('masterTotal').innerHTML =
+    '<span style="font-weight:700;color:var(--primary)">TOTAL (' + rows.length + ' dari ' + d.length + ' staff):</span> ' +
+    'Apoteker=' + totalApoteker + ' · TTK=' + totalTTK + ' · L/P=' + totalL + '/' + totalP;
+}
+
+function openMasterForm(nip) {
+  state.masterStaff.editingNip = nip || null;
+  var title = document.getElementById('masterFormTitle');
+  var delBtn = document.getElementById('mfDeleteBtn');
+  var nipEl = document.getElementById('mfNip');
+
+  document.getElementById('mfError').classList.add('hidden');
+
+  if (nip) {
+    var s = (state.masterStaff.data || []).find(function(x){ return String(x.nip) === String(nip); });
+    if (!s) return;
+    title.textContent = 'Edit Staff: ' + s.nama;
+    nipEl.value = s.nip;
+    nipEl.disabled = true;
+    document.getElementById('mfNama').value = s.nama || '';
+    document.getElementById('mfNamaJadwal').value = s.nama_jadwal || '';
+    document.getElementById('mfEmail').value = s.email || '';
+    document.getElementById('mfJabatan').value = s.jabatan || '';
+    document.getElementById('mfDepartemen').value = s.departemen || '';
+    document.getElementById('mfJK').value = s.jenis_kelamin || '';
+    document.getElementById('mfTanggalLahir').value = s.tanggal_lahir || '';
+    document.getElementById('mfTanggalMasuk').value = s.tanggal_masuk || '';
+    delBtn.classList.remove('hidden');
+  } else {
+    title.textContent = 'Tambah Staff Baru';
+    nipEl.value = '';
+    nipEl.disabled = false;
+    document.getElementById('mfNama').value = '';
+    document.getElementById('mfNamaJadwal').value = '';
+    document.getElementById('mfEmail').value = '';
+    document.getElementById('mfJabatan').value = '';
+    document.getElementById('mfDepartemen').value = '';
+    document.getElementById('mfJK').value = '';
+    document.getElementById('mfTanggalLahir').value = '';
+    document.getElementById('mfTanggalMasuk').value = '';
+    delBtn.classList.add('hidden');
+  }
+  openModal('masterFormModal');
+}
+
+async function saveMasterStaff() {
+  var nip = document.getElementById('mfNip').value.trim();
+  var nama = document.getElementById('mfNama').value.trim();
+  var jabatan = document.getElementById('mfJabatan').value;
+  var errEl = document.getElementById('mfError');
+  errEl.classList.add('hidden');
+
+  if (!nip || !nama) {
+    errEl.textContent = 'NIP dan Nama wajib diisi.';
+    errEl.classList.remove('hidden');
+    return;
+  }
+  if (!jabatan) {
+    errEl.textContent = 'Jabatan wajib dipilih.';
+    errEl.classList.remove('hidden');
+    return;
+  }
+
+  var payload = {
+    nip: nip,
+    nama: nama,
+    nama_jadwal: document.getElementById('mfNamaJadwal').value.trim() || null,
+    email: document.getElementById('mfEmail').value.trim() || null,
+    jabatan: jabatan,
+    departemen: document.getElementById('mfDepartemen').value.trim() || null,
+    jenis_kelamin: document.getElementById('mfJK').value || null,
+    tanggal_lahir: document.getElementById('mfTanggalLahir').value || null,
+    tanggal_masuk: document.getElementById('mfTanggalMasuk').value || null
+  };
+
+  var btn = document.getElementById('mfSaveBtn');
+  btn.disabled = true; btn.textContent = 'Menyimpan…';
+
+  try {
+    var r;
+    if (state.masterStaff.editingNip) {
+      delete payload.nip;
+      r = await sb.from('staff').update(payload).eq('nip', state.masterStaff.editingNip);
+    } else {
+      r = await sb.from('staff').insert(payload);
+    }
+    if (r.error) throw r.error;
+    closeModal('masterFormModal');
+    state.masterStaff.editingNip = null;
+    await loadMasterStaff();
+    await loadStaffList();
+  } catch (err) {
+    errEl.textContent = err.message || 'Gagal menyimpan.';
+    errEl.classList.remove('hidden');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Simpan';
+  }
+}
+
+async function deleteMasterStaff(nip) {
+  var s = (state.masterStaff.data || []).find(function(x){ return String(x.nip) === String(nip); });
+  if (!s) return;
+  if (!confirm('Hapus staff ini?\n\nNIP: ' + s.nip + '\nNama: ' + s.nama + '\n\nTindakan ini tidak bisa dibatalkan.')) return;
+  try {
+    var r = await sb.from('staff').delete().eq('nip', nip);
+    if (r.error) throw r.error;
+    await loadMasterStaff();
+    await loadStaffList();
+  } catch (err) {
+    alert('Gagal hapus: ' + (err.message || 'Error'));
+  }
+}
+
+/* ============================================================
+   RIWAYAT PENEMPATAN STAFF — CRUD
+   ============================================================ */
+async function loadRiwayat() {
+  document.getElementById('riwayatBody').innerHTML = '<tr><td colspan="9" style="text-align:center;padding:32px;color:var(--ink-muted)">Memuat…</td></tr>';
+  try {
+    var r = await sb.from('staff_penempatan')
+      .select('*, staff(nama, jabatan)')
+      .order('tanggal_mulai', { ascending: false });
+    if (r.error) throw r.error;
+    state.riwayat.data = r.data || [];
+    state.riwayat.loaded = true;
+    populateRiwayatFilters();
+    renderRiwayat();
+  } catch (err) {
+    console.error('Load riwayat error:', err);
+    document.getElementById('riwayatBody').innerHTML =
+      '<tr><td colspan="9" style="text-align:center;padding:32px;color:var(--ink-muted)">Gagal memuat: ' + esc(err.message) + '</td></tr>';
+  }
+}
+
+function populateRiwayatFilters() {
+  var rooms = Array.from(new Set((state.riwayat.data || []).map(function(x){ return x.ruangan; }).filter(Boolean))).sort();
+  var sel = document.getElementById('riwayatFilterRuangan');
+  var currentVal = sel.value;
+  sel.innerHTML = '<option value="">Semua ruangan</option>' +
+    rooms.map(function(r){ return '<option value="' + esc(r) + '">' + esc(r) + '</option>'; }).join('');
+  sel.value = currentVal;
+
+  var dl = document.getElementById('rfRuanganList');
+  if (dl) {
+    dl.innerHTML = rooms.map(function(r){ return '<option value="' + esc(r) + '">'; }).join('');
+    if (state.data && state.data.employees) {
+      var extraRooms = Array.from(new Set(state.data.employees.map(function(e){ return e.ruangan; }).filter(Boolean)));
+      extraRooms.forEach(function(r){
+        if (rooms.indexOf(r) === -1) {
+          dl.innerHTML += '<option value="' + esc(r) + '">';
+        }
+      });
+    }
+  }
+}
+
+function renderRiwayat() {
+  var d = state.riwayat.data || [];
+  var q = document.getElementById('riwayatSearch').value.toLowerCase().trim();
+  var fr = document.getElementById('riwayatFilterRuangan').value;
+  var fp = document.getElementById('riwayatFilterPeran').value;
+  var fs = document.getElementById('riwayatFilterStatus').value;
+
+  var rows = d.filter(function(x) {
+    if (q) {
+      var nama = (x.staff && x.staff.nama) || '';
+      if (nama.toLowerCase().indexOf(q) === -1 && (x.nip || '').toLowerCase().indexOf(q) === -1) return false;
+    }
+    if (fr && x.ruangan !== fr) return false;
+    if (fp && x.peran !== fp) return false;
+    if (fs === 'aktif' && x.tanggal_selesai) return false;
+    if (fs === 'selesai' && !x.tanggal_selesai) return false;
+    return true;
+  });
+
+  var totalAktif = d.filter(function(x){ return !x.tanggal_selesai; }).length;
+  var totalKoordinator = d.filter(function(x){ return x.peran === 'Koordinator' && !x.tanggal_selesai; }).length;
+  var ruanganUnik = Array.from(new Set(d.map(function(x){ return x.ruangan; }))).length;
+  var staffUnik = Array.from(new Set(d.map(function(x){ return x.nip; }))).length;
+
+  document.getElementById('riwayatKpi').innerHTML = [
+    { label: 'Total Penempatan', value: d.length, color: 'primary' },
+    { label: 'Penempatan Aktif', value: totalAktif, color: 'primary' },
+    { label: 'Koordinator Aktif', value: totalKoordinator, color: 'violet' },
+    { label: 'Staff / Ruangan', value: staffUnik + ' / ' + ruanganUnik, color: 'amber' }
+  ].map(function(it) {
+    return '<div class="stat-bento" data-accent="' + it.color + '" style="padding:14px 16px">' +
+      '<div class="stat-num" style="font-size:22px">' + it.value + '</div>' +
+      '<div class="stat-label">' + it.label + '</div></div>';
+  }).join('');
+
+  var body = document.getElementById('riwayatBody');
+  if (!rows.length) {
+    body.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:32px;color:var(--ink-muted)">Tidak ada data cocok</td></tr>';
+    document.getElementById('riwayatTotal').textContent = '—';
+    return;
+  }
+
+  var peranColor = {
+    'Kepala Instalasi': '#DC2626',
+    'Koordinator': '#7C3AED',
+    'Staff': '#0F766E',
+    'PIC': '#2563EB',
+    'Magang': '#EA580C',
+    'Lainnya': '#64748B'
+  };
+
+  body.innerHTML = rows.map(function(x) {
+    var nama = (x.staff && x.staff.nama) || x.nip;
+    var peranBg = peranColor[x.peran] || '#64748B';
+    var peranHtml = '<span class="kategori-pill" style="background:' + peranBg + ';color:#fff;border:none">' + esc(x.peran) + '</span>';
+    var durasi = hitungDurasiBulan(x.tanggal_mulai, x.tanggal_selesai);
+    var statusHtml = x.tanggal_selesai
+      ? '<span class="kategori-pill" style="background:#E2E8F0;color:#64748B">Selesai</span>'
+      : '<span class="kategori-pill" style="background:#D1FAE5;color:#065F46">🟢 Aktif</span>';
+    var idAttr = String(x.id).replace(/"/g, '&quot;');
+
+    return '<tr>' +
+      '<td style="text-align:left;font-weight:600">' + esc(nama) + '</td>' +
+      '<td style="text-align:left;font-size:12px">' + esc(x.ruangan) + '</td>' +
+      '<td>' + peranHtml + '</td>' +
+      '<td class="mono" style="font-size:11.5px">' + (x.tanggal_mulai || '—') + '</td>' +
+      '<td class="mono" style="font-size:11.5px">' + (x.tanggal_selesai || '—') + '</td>' +
+      '<td class="mono" style="font-weight:600;color:var(--primary)">' + durasi + '</td>' +
+      '<td>' + statusHtml + '</td>' +
+      '<td style="text-align:left;font-size:11px;color:var(--ink-muted);max-width:220px;white-space:normal">' + esc(x.keterangan || '—') + '</td>' +
+      '<td style="text-align:center;white-space:nowrap">' +
+        '<button class="row-action-btn" data-edit-riwayat="' + idAttr + '" title="Edit">' +
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>' +
+        '</button>' +
+        '<button class="row-action-btn danger" data-delete-riwayat="' + idAttr + '" title="Hapus">' +
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>' +
+        '</button>' +
+      '</td>' +
+    '</tr>';
+  }).join('');
+
+  document.getElementById('riwayatTotal').innerHTML =
+    '<span style="font-weight:700;color:var(--primary)">TOTAL (' + rows.length + ' dari ' + d.length + '):</span> ' +
+    'Aktif=' + totalAktif + ' · Koordinator=' + totalKoordinator + ' · Ruangan unik=' + ruanganUnik;
+}
+
+function openRiwayatForm(id, presetNip) {
+  state.riwayat.editingId = id || null;
+  var title = document.getElementById('riwayatFormTitle');
+  var delBtn = document.getElementById('riwayatDeleteBtn');
+  var nipSel = document.getElementById('rfNip');
+
+  nipSel.innerHTML = '<option value="">— Pilih staff —</option>' +
+    state.staffList.map(function(s){
+      return '<option value="' + esc(s.nip) + '">' + esc(s.nama) + ' (' + esc(s.nip) + ')</option>';
+    }).join('');
+
+  document.getElementById('riwayatFormError').classList.add('hidden');
+
+  if (id) {
+    var x = (state.riwayat.data || []).find(function(y){ return String(y.id) === String(id); });
+    if (!x) return;
+    title.textContent = 'Edit Penempatan';
+    nipSel.value = x.nip;
+    nipSel.disabled = true;
+    document.getElementById('rfRuangan').value = x.ruangan;
+    document.getElementById('rfPeran').value = x.peran;
+    document.getElementById('rfMulai').value = x.tanggal_mulai || '';
+    document.getElementById('rfSelesai').value = x.tanggal_selesai || '';
+    document.getElementById('rfKeterangan').value = x.keterangan || '';
+    delBtn.classList.remove('hidden');
+  } else {
+    title.textContent = 'Tambah Penempatan';
+    nipSel.disabled = false;
+    if (presetNip) nipSel.value = presetNip;
+    document.getElementById('rfRuangan').value = '';
+    document.getElementById('rfPeran').value = 'Staff';
+    document.getElementById('rfMulai').value = todayISO();
+    document.getElementById('rfSelesai').value = '';
+    document.getElementById('rfKeterangan').value = '';
+    delBtn.classList.add('hidden');
+  }
+  openModal('riwayatFormModal');
+}
+
+async function saveRiwayat() {
+  var nip = document.getElementById('rfNip').value;
+  var ruangan = document.getElementById('rfRuangan').value.trim();
+  var peran = document.getElementById('rfPeran').value;
+  var mulai = document.getElementById('rfMulai').value;
+  var selesai = document.getElementById('rfSelesai').value || null;
+  var keterangan = document.getElementById('rfKeterangan').value.trim() || null;
+  var errEl = document.getElementById('riwayatFormError');
+  errEl.classList.add('hidden');
+
+  if (!nip || !ruangan || !peran || !mulai) {
+    errEl.textContent = 'NIP, Ruangan, Peran, dan Tanggal Mulai wajib diisi.';
+    errEl.classList.remove('hidden');
+    return;
+  }
+  if (selesai && selesai < mulai) {
+    errEl.textContent = 'Tanggal Selesai tidak boleh lebih awal dari Tanggal Mulai.';
+    errEl.classList.remove('hidden');
+    return;
+  }
+
+  var payload = {
+    nip: nip,
+    ruangan: ruangan,
+    peran: peran,
+    tanggal_mulai: mulai,
+    tanggal_selesai: selesai,
+    keterangan: keterangan
+  };
+
+  var btn = document.getElementById('riwayatSaveBtn');
+  btn.disabled = true; btn.textContent = 'Menyimpan…';
+
+  try {
+    var r;
+    if (state.riwayat.editingId) {
+      delete payload.nip;
+      r = await sb.from('staff_penempatan').update(payload).eq('id', state.riwayat.editingId);
+    } else {
+      r = await sb.from('staff_penempatan').insert(payload);
+    }
+    if (r.error) throw r.error;
+    closeModal('riwayatFormModal');
+    state.riwayat.editingId = null;
+    await loadRiwayat();
+    renderRekap();
+    if (dashState.data) renderChartMultiskill();
+  } catch (err) {
+    errEl.textContent = err.message || 'Gagal menyimpan.';
+    errEl.classList.remove('hidden');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Simpan';
+  }
+}
+
+async function deleteRiwayat(id) {
+  var x = (state.riwayat.data || []).find(function(y){ return String(y.id) === String(id); });
+  if (!x) return;
+  var nama = (x.staff && x.staff.nama) || x.nip;
+  if (!confirm('Hapus penempatan ini?\n\nStaff: ' + nama + '\nRuangan: ' + x.ruangan + '\nPeran: ' + x.peran + '\n\nTindakan ini tidak bisa dibatalkan.')) return;
+  try {
+    var r = await sb.from('staff_penempatan').delete().eq('id', id);
+    if (r.error) throw r.error;
+    await loadRiwayat();
+    renderRekap();
+    if (dashState.data) renderChartMultiskill();
+  } catch (err) {
+    alert('Gagal hapus: ' + (err.message || 'Error'));
+  }
+}
+
+async function openRiwayatListForStaff(nip) {
+  var s = (state.masterStaff.data || []).find(function(x){ return String(x.nip) === String(nip); });
+  if (!s) return;
+
+  document.getElementById('riwayatListTitle').textContent = 'Riwayat Penempatan';
+  document.getElementById('riwayatListSub').textContent = s.nama + ' · ' + s.nip;
+  document.getElementById('riwayatListBody').innerHTML = '<div style="text-align:center;padding:40px;color:var(--ink-muted);font-size:13px">Memuat…</div>';
+  openModal('riwayatListModal');
+
+  try {
+    var r = await sb.from('staff_penempatan')
+      .select('*')
+      .eq('nip', nip)
+      .order('tanggal_mulai', { ascending: false });
+    if (r.error) throw r.error;
+    var list = r.data || [];
+
+    if (list.length === 0) {
+      document.getElementById('riwayatListBody').innerHTML =
+        '<div style="text-align:center;padding:40px 20px;color:var(--ink-muted)">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:40px;height:40px;margin:0 auto 12px;display:block;opacity:.4"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>' +
+        '<b style="display:block;font-size:14px;color:var(--ink-2);margin-bottom:4px">Belum ada riwayat</b>' +
+        '<span style="font-size:12.5px">Staff ini belum punya penempatan tercatat.</span>' +
+        '</div>';
+      return;
+    }
+
+    var peranColor = {
+      'Kepala Instalasi': '#DC2626',
+      'Koordinator': '#7C3AED',
+      'Staff': '#0F766E',
+      'PIC': '#2563EB',
+      'Magang': '#EA580C',
+      'Lainnya': '#64748B'
+    };
+
+    var html = '<div style="display:flex;flex-direction:column;gap:10px">';
+    list.forEach(function(x, idx) {
+      var peranBg = peranColor[x.peran] || '#64748B';
+      var durasi = hitungDurasiBulan(x.tanggal_mulai, x.tanggal_selesai);
+      var statusHtml = x.tanggal_selesai
+        ? '<span class="kategori-pill" style="background:#E2E8F0;color:#64748B">Selesai</span>'
+        : '<span class="kategori-pill" style="background:#D1FAE5;color:#065F46">🟢 Aktif</span>';
+      var isLatest = idx === 0;
+
+      html += '<div style="padding:14px 16px;background:' + (isLatest ? 'var(--primary-tint)' : 'var(--bg-soft)') + ';border-radius:10px;border-left:4px solid ' + peranBg + '">' +
+        '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:6px">' +
+          '<div style="flex:1;min-width:0">' +
+            '<div style="font-size:13.5px;font-weight:700;color:var(--ink);margin-bottom:4px">📍 ' + esc(x.ruangan) + '</div>' +
+            '<div style="display:flex;gap:6px;flex-wrap:wrap">' +
+              '<span class="kategori-pill" style="background:' + peranBg + ';color:#fff;border:none">' + esc(x.peran) + '</span>' +
+              statusHtml +
+            '</div>' +
+          '</div>' +
+          '<div style="font-size:11px;color:var(--ink-muted);font-family:\'JetBrains Mono\',monospace;text-align:right;white-space:nowrap">' +
+            (x.tanggal_mulai || '—') + '<br>s/d<br>' + (x.tanggal_selesai || 'sekarang') +
+          '</div>' +
+        '</div>' +
+        '<div style="font-size:11.5px;color:var(--primary);font-weight:600;font-family:\'JetBrains Mono\',monospace">Durasi: ' + durasi + '</div>' +
+        (x.keterangan ? '<div style="font-size:11.5px;color:var(--ink-muted);margin-top:6px;padding-top:6px;border-top:1px dashed var(--border);line-height:1.5">' + esc(x.keterangan) + '</div>' : '') +
+      '</div>';
+    });
+    html += '</div>';
+
+    var totalDurasiBulan = 0;
+    list.forEach(function(x) {
+      var a = new Date(x.tanggal_mulai + 'T00:00:00');
+      var b = x.tanggal_selesai ? new Date(x.tanggal_selesai + 'T00:00:00') : new Date();
+      var tb = (b.getFullYear() - a.getFullYear()) * 12 + (b.getMonth() - a.getMonth());
+      if (b.getDate() < a.getDate()) tb--;
+      if (tb > 0) totalDurasiBulan += tb;
+    });
+    var totalTh = Math.floor(totalDurasiBulan / 12);
+    var totalBl = totalDurasiBulan % 12;
+    var totalText = totalTh > 0 ? (totalTh + ' th' + (totalBl > 0 ? ' ' + totalBl + ' bln' : '')) : (totalBl + ' bln');
+
+    html += '<div style="margin-top:16px;padding:12px 14px;background:#fff;border-radius:10px;border:1px solid var(--border);font-size:12px;color:var(--ink-2);display:flex;gap:16px;flex-wrap:wrap">' +
+      '<div><b>Total penempatan:</b> ' + list.length + ' periode</div>' +
+      '<div><b>Total durasi:</b> ' + totalText + '</div>' +
+      '<div><b>Ruangan berbeda:</b> ' + Array.from(new Set(list.map(function(x){ return x.ruangan; }))).length + '</div>' +
+    '</div>';
+
+    document.getElementById('riwayatListBody').innerHTML = html;
+  } catch (err) {
+    document.getElementById('riwayatListBody').innerHTML =
+      '<div style="text-align:center;padding:40px;color:#991B1B;font-size:13px">Gagal memuat: ' + esc(err.message) + '</div>';
   }
 }
 
@@ -1919,8 +2647,8 @@ function renderDashboard(){
   renderChartRuangan(d.per_ruangan);
   renderChartShiftRuangan(d.shift_ruangan);
   renderHeatmap(d.heatmap, d.tahun);
-  // Chart baru: Top/Bottom % kehadiran (dari endpoint yang sama)
   renderChartTopBottomKehadiran(d);
+  renderChartMultiskill();
 }
 
 function renderKpi(stats){
@@ -2055,7 +2783,7 @@ function renderTopCuti(list){
   }).join('');
 }
 
-/* ⭐ CHART BARU: Top & Bottom % Kehadiran (dengan filter periode sendiri) */
+/* ⭐ CHART Top/Bottom % Kehadiran — Responsive (mobile list) */
 async function renderChartTopBottomKehadiran(d) {
   destroyChart('topKehadiran');
   destroyChart('bottomKehadiran');
@@ -2064,7 +2792,6 @@ async function renderChartTopBottomKehadiran(d) {
   var botCard = document.getElementById('chartBottomKehadiran');
   if (!topCard || !botCard) return;
 
-  // Gunakan filter khusus chart (state.chartKehadiranFilter)
   var year = state.chartKehadiranFilter.year;
   var month = state.chartKehadiranFilter.month;
 
@@ -2077,7 +2804,6 @@ async function renderChartTopBottomKehadiran(d) {
     end   = year + '-12-31';
   }
 
-  // Show loading state
   topCard.parentElement.style.opacity = '.4';
   botCard.parentElement.style.opacity = '.4';
 
@@ -2114,7 +2840,6 @@ async function renderChartTopBottomKehadiran(d) {
     return;
   }
 
-  // Sorting Top 10: pct DESC → piket DESC → nama ASC
   var sortedTop = dataKehadiran.slice().sort(function(a, b) {
     if (b.pct !== a.pct) return b.pct - a.pct;
     if (b.piket !== a.piket) return b.piket - a.piket;
@@ -2124,31 +2849,199 @@ async function renderChartTopBottomKehadiran(d) {
   var topNames = {};
   top.forEach(function(x){ topNames[x.nama] = true; });
 
-  // Bottom 10: HANYA pct < 100, exclude Top
   var bottom = dataKehadiran.filter(function(x) {
-    return x.pct < 100 && !topNames[x.nama];
+    return x.totalNH > 0 && !topNames[x.nama];
   }).sort(function(a, b) {
     if (a.pct !== b.pct) return a.pct - b.pct;
-    if (a.piket !== b.piket) return a.piket - b.piket;
+    if (b.totalNH !== a.totalNH) return b.totalNH - a.totalNH;
     return a.nama.localeCompare(b.nama);
   }).slice(0, 10);
 
-  // Update subheader info di judul chart
+  var isMobile = window.innerWidth < 768;
+
   var topHeader = topCard.parentElement.querySelector('div:first-child');
   var botHeader = botCard.parentElement.querySelector('div:first-child');
   if (topHeader) topHeader.textContent = '🏆 Top 10 Kehadiran Tertinggi — ' + periodeLabel;
   if (botHeader) botHeader.textContent = '⚠️ Bottom 10 Kehadiran Terendah — ' + periodeLabel;
 
-  // Chart Top
-  dashState.charts.topKehadiran = new Chart(topCard, {
+  if (isMobile) {
+    renderMobileListKehadiran(topCard, top, 'top');
+    if (bottom.length === 0) {
+      botCard.parentElement.innerHTML = '<div style="text-align:center;padding:20px;color:var(--ink-muted);font-size:12px">✅ Tidak ada staff dengan ketidakhadiran pada periode ini.</div>';
+    } else {
+      renderMobileListKehadiran(botCard, bottom, 'bottom');
+    }
+  } else {
+    if (top.length > 0) {
+      dashState.charts.topKehadiran = new Chart(topCard, {
+        type: 'bar',
+        data: {
+          labels: top.map(function(s){ return s.nama; }),
+          datasets: [{
+            label: '% Kehadiran',
+            data: top.map(function(s){ return Number(s.pct.toFixed(1)); }),
+            backgroundColor: top.map(function(s){
+              return s.pct >= 95 ? '#10B981' : (s.pct >= 80 ? '#F59E0B' : '#EF4444');
+            }),
+            borderRadius: 6,
+            borderSkipped: false
+          }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false, indexAxis: 'y',
+          plugins: {
+            legend: { display: false },
+            tooltip: { callbacks: { label: function(c) {
+              var s = top[c.dataIndex];
+              return c.parsed.x.toFixed(1) + '% · ' + s.piket + ' hari piket · ' + s.totalNH + ' hari non-hadir';
+            } } }
+          },
+          scales: {
+            x: { beginAtZero: true, max: 100, ticks: { callback: function(v){ return v + '%'; }, font: { size: 10 } } },
+            y: { ticks: { font: { size: 11 } } }
+          }
+        }
+      });
+    }
+
+    if (bottom.length === 0) {
+      botCard.parentElement.innerHTML = '<div style="text-align:center;padding:30px;color:var(--ink-muted);font-size:12px">✅ Tidak ada staff dengan % kehadiran &lt; 100% pada periode ' + periodeLabel + '.</div>';
+    } else {
+      dashState.charts.bottomKehadiran = new Chart(botCard, {
+        type: 'bar',
+        data: {
+          labels: bottom.map(function(s){ return s.nama; }),
+          datasets: [{
+            label: '% Kehadiran',
+            data: bottom.map(function(s){ return Number(s.pct.toFixed(1)); }),
+            backgroundColor: bottom.map(function(s){
+              return s.pct >= 95 ? '#10B981' : (s.pct >= 80 ? '#F59E0B' : '#EF4444');
+            }),
+            borderRadius: 6,
+            borderSkipped: false
+          }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false, indexAxis: 'y',
+          plugins: {
+            legend: { display: false },
+            tooltip: { callbacks: { label: function(c) {
+              var s = bottom[c.dataIndex];
+              return c.parsed.x.toFixed(1) + '% · ' + s.piket + ' hari piket · ' + s.totalNH + ' hari non-hadir';
+            } } }
+          },
+          scales: {
+            x: { beginAtZero: true, max: 100, ticks: { callback: function(v){ return v + '%'; }, font: { size: 10 } } },
+            y: { ticks: { font: { size: 11 } } }
+          }
+        }
+      });
+    }
+  }
+}
+
+/* Mobile List View untuk chart Top/Bottom */
+function renderMobileListKehadiran(container, data, type) {
+  if (!container) return;
+  var parent = container.parentElement;
+  var wrapper = document.createElement('div');
+  wrapper.style.cssText = 'display:flex;flex-direction:column;gap:8px';
+
+  var html = '';
+  data.forEach(function(s, idx) {
+    var rank = idx + 1;
+    var medal = rank === 1 ? '🥇' : (rank === 2 ? '🥈' : (rank === 3 ? '🥉' : '#' + rank));
+    var warna = s.pct >= 95 ? '#10B981' : (s.pct >= 80 ? '#F59E0B' : '#EF4444');
+    var barWidth = Math.max(s.pct, 2);
+    var namaTampil = shortenNameKehadiran(s.nama);
+
+    html += '<div style="padding:10px 12px;background:#fff;border-radius:10px;border:1px solid var(--border);border-left:3px solid ' + warna + '">' +
+      '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px">' +
+        '<div style="min-width:0;flex:1">' +
+          '<div style="font-size:12px;font-weight:700;color:' + warna + ';line-height:1;margin-bottom:3px">' + medal + '</div>' +
+          '<div style="font-size:12.5px;font-weight:600;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="' + esc(s.nama) + '">' + esc(namaTampil) + '</div>' +
+        '</div>' +
+        '<div style="font-size:14px;font-weight:800;color:' + warna + ';font-family:\'JetBrains Mono\',monospace;white-space:nowrap">' + s.pct.toFixed(1) + '%</div>' +
+      '</div>' +
+      '<div style="height:6px;background:#E2E8F0;border-radius:3px;overflow:hidden">' +
+        '<div style="height:100%;width:' + barWidth + '%;background:' + warna + ';transition:width .3s ease"></div>' +
+      '</div>' +
+      '<div style="font-size:10.5px;color:var(--ink-muted);margin-top:6px;font-family:\'JetBrains Mono\',monospace">' + s.piket + ' piket · ' + s.totalNH + ' non-hadir</div>' +
+    '</div>';
+  });
+
+  wrapper.innerHTML = html;
+  parent.innerHTML = '';
+  parent.appendChild(wrapper);
+}
+
+function shortenNameKehadiran(nama) {
+  if (!nama) return '';
+  var cleaned = nama.replace(/^(Apt\.|Apt |Dr\.|Ns\.|dr\.)\s*/i, '');
+  var parts = cleaned.split(/[\s,]+/).filter(function(x){ return x.length > 0; });
+  if (parts.length <= 2) return cleaned;
+  var second = parts[1] ? parts[1].charAt(0) + '.' : '';
+  return parts[0] + ' ' + second;
+}
+
+function reloadChartKehadiran() {
+  renderChartTopBottomKehadiran(dashState.data);
+}
+
+/* Auto re-render chart saat resize layar */
+var chartResizeTimer = null;
+window.addEventListener('resize', function() {
+  clearTimeout(chartResizeTimer);
+  chartResizeTimer = setTimeout(function() {
+    if (dashState.data && document.getElementById('chartTopKehadiran')) {
+      renderChartTopBottomKehadiran(dashState.data);
+    }
+  }, 300);
+});
+
+/* ⭐ Chart Multiskill */
+function renderChartMultiskill() {
+  destroyChart('multiskill');
+  var ctx = document.getElementById('chartMultiskill');
+  if (!ctx) return;
+
+  var d = state.riwayat.data;
+  if (!d || d.length === 0) {
+    ctx.parentElement.innerHTML = '<div style="text-align:center;padding:30px;color:var(--ink-muted);font-size:12px">Belum ada data riwayat penempatan. Tambahkan lewat menu <b>Riwayat Penempatan</b>.</div>';
+    return;
+  }
+
+  var byNip = {};
+  d.forEach(function(x) {
+    if (!byNip[x.nip]) byNip[x.nip] = { nip: x.nip, nama: (x.staff && x.staff.nama) || x.nip, ruangan: {}, total: 0 };
+    byNip[x.nip].ruangan[x.ruangan] = true;
+    byNip[x.nip].total++;
+  });
+
+  var list = Object.values(byNip).map(function(x) {
+    return { nama: x.nama, jmlRuangan: Object.keys(x.ruangan).length, jmlPenempatan: x.total };
+  });
+
+  list.sort(function(a, b){
+    if (b.jmlRuangan !== a.jmlRuangan) return b.jmlRuangan - a.jmlRuangan;
+    return a.nama.localeCompare(b.nama);
+  });
+
+  var top15 = list.filter(function(x){ return x.jmlRuangan >= 2; }).slice(0, 15);
+  if (top15.length === 0) {
+    ctx.parentElement.innerHTML = '<div style="text-align:center;padding:30px;color:var(--ink-muted);font-size:12px">Belum ada staff yang pernah ditempatkan di ≥ 2 ruangan berbeda.</div>';
+    return;
+  }
+
+  dashState.charts.multiskill = new Chart(ctx, {
     type: 'bar',
     data: {
-      labels: top.map(function(s){ return s.nama; }),
+      labels: top15.map(function(x){ return x.nama; }),
       datasets: [{
-        label: '% Kehadiran',
-        data: top.map(function(s){ return Number(s.pct.toFixed(1)); }),
-        backgroundColor: top.map(function(s){
-          return s.pct >= 95 ? '#10B981' : (s.pct >= 80 ? '#F59E0B' : '#EF4444');
+        label: 'Jumlah Ruangan',
+        data: top15.map(function(x){ return x.jmlRuangan; }),
+        backgroundColor: top15.map(function(x){
+          return x.jmlRuangan >= 4 ? '#7C3AED' : (x.jmlRuangan >= 3 ? '#2563EB' : '#0F766E');
         }),
         borderRadius: 6,
         borderSkipped: false
@@ -2161,63 +3054,20 @@ async function renderChartTopBottomKehadiran(d) {
         tooltip: {
           callbacks: {
             label: function(c) {
-              var s = top[c.dataIndex];
-              return c.parsed.x.toFixed(1) + '% · ' + s.piket + ' hari piket · ' + s.totalNH + ' hari non-hadir';
+              var x = top15[c.dataIndex];
+              return x.jmlRuangan + ' ruangan · ' + x.jmlPenempatan + ' total penempatan';
             }
           }
         }
       },
       scales: {
-        x: { beginAtZero: true, max: 100, ticks: { callback: function(v){ return v + '%'; }, font: { size: 10 } } },
+        x: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 10 } } },
         y: { ticks: { font: { size: 11 } } }
       }
     }
   });
+}
 
-  // Chart Bottom
-  if (bottom.length === 0) {
-    botCard.parentElement.innerHTML = '<div style="text-align:center;padding:30px;color:var(--ink-muted);font-size:12px">✅ Tidak ada staff dengan % kehadiran &lt; 100% pada periode ' + periodeLabel + ' — semua staff hadir penuh.</div>';
-  } else {
-    dashState.charts.bottomKehadiran = new Chart(botCard, {
-      type: 'bar',
-      data: {
-        labels: bottom.map(function(s){ return s.nama; }),
-        datasets: [{
-          label: '% Kehadiran',
-          data: bottom.map(function(s){ return Number(s.pct.toFixed(1)); }),
-          backgroundColor: bottom.map(function(s){
-            return s.pct >= 95 ? '#10B981' : (s.pct >= 80 ? '#F59E0B' : '#EF4444');
-          }),
-          borderRadius: 6,
-          borderSkipped: false
-        }]
-      },
-      options: {
-        responsive: true, maintainAspectRatio: false, indexAxis: 'y',
-        plugins: {
-          legend: { display: false },
-          tooltip: {
-            callbacks: {
-              label: function(c) {
-                var s = bottom[c.dataIndex];
-                return c.parsed.x.toFixed(1) + '% · ' + s.piket + ' hari piket · ' + s.totalNH + ' hari non-hadir';
-              }
-            }
-          }
-        },
-        scales: {
-          x: { beginAtZero: true, max: 100, ticks: { callback: function(v){ return v + '%'; }, font: { size: 10 } } },
-          y: { ticks: { font: { size: 11 } } }
-        }
-      }
-    });
-  }
-}
-/* Reload hanya chart Top/Bottom (tanpa reload dashboard) */
-function reloadChartKehadiran() {
-  renderChartTopBottomKehadiran(dashState.data);
-}
-  
 function renderChartRuangan(perRuangan){
   if(!perRuangan || perRuangan.length === 0) return;
   destroyChart('ruangan');
@@ -2606,7 +3456,6 @@ async function loadMatrixKehadiran(year) {
       return sb.rpc('rpc_rekap_kehadiran', { p_start: mr.start, p_end: mr.end });
     }));
 
-    // Map hasil per nama
     var byNama = {};
     results.forEach(function(r, idx) {
       if (r.error) { console.warn('Bulan ' + monthRanges[idx].bulan + ' error:', r.error); return; }
@@ -2641,7 +3490,6 @@ function renderMatrixKehadiran() {
     return;
   }
 
-  // Header
   var headerHtml = '<thead><tr>' +
     '<th class="mx-name">Nama</th>' +
     '<th class="mx-room">Ruangan</th>' +
@@ -2649,11 +3497,8 @@ function renderMatrixKehadiran() {
     '<th style="background:#F0FDFA;color:#0F766E">Rata²</th>' +
     '</tr></thead>';
 
-  // Body
   var bodyHtml = '<tbody>';
-  var yearTotalPct = [];
   var yearTotalByMonth = {};
-  var globalPiket = { aktual: 0, wajib: 0 };
 
   rows.forEach(function(s) {
     var monthCells = '';
@@ -2681,7 +3526,6 @@ function renderMatrixKehadiran() {
   });
   bodyHtml += '</tbody>';
 
-  // Footer rata-rata per bulan
   var footerHtml = '<tfoot><tr style="background:#F8FAFC;border-top:2px solid var(--border)">' +
     '<td class="mx-name" colspan="2" style="font-weight:800;color:#0F766E">RATA-RATA GLOBAL</td>';
   for (var m = 1; m <= 12; m++) {
@@ -2694,13 +3538,11 @@ function renderMatrixKehadiran() {
 
   document.getElementById('matrixContent').innerHTML = '<table class="matrix-table">' + headerHtml + bodyHtml + footerHtml + '</table>';
 
-  // Legend
   document.getElementById('matrixLegend').innerHTML =
     '<span><span class="persen-badge hadir-tinggi">≥ 95%</span> Sangat baik</span>' +
     '<span><span class="persen-badge hadir-sedang">80–94%</span> Cukup</span>' +
     '<span><span class="persen-badge hadir-rendah">< 80%</span> Perlu perhatian</span>';
 
-  // Summary
   var count = rows.length;
   var globalRata = 0, gCount = 0;
   for (var mm = 1; mm <= 12; mm++) {
@@ -2792,619 +3634,6 @@ async function exportMatrixPdf() {
 }
 
 /* ============================================================
-   MASTER DATA STAFF
-   ============================================================ */
-async function loadMasterStaff() {
-  document.getElementById('masterBody').innerHTML = '<tr><td colspan="11" style="text-align:center;padding:32px;color:var(--ink-muted)">Memuat…</td></tr>';
-  try {
-    var r = await sb.from('staff').select('*').order('nama');
-    if (r.error) throw r.error;
-    state.masterStaff.data = r.data || [];
-    state.masterStaff.loaded = true;
-    renderMasterStaff();
-  } catch (err) {
-    console.error('Gagal load master staff:', err);
-    document.getElementById('masterBody').innerHTML =
-      '<tr><td colspan="11" style="text-align:center;padding:32px;color:var(--ink-muted)">Gagal memuat: ' + esc(err.message || 'Error') + '</td></tr>';
-  }
-}
-
-function renderMasterStaff() {
-  var d = state.masterStaff.data || [];
-  var q = document.getElementById('masterSearch').value.toLowerCase().trim();
-  var fj = document.getElementById('masterFilterJabatan').value;
-  var fk = document.getElementById('masterFilterJK').value;
-
-  var rows = d.filter(function(s) {
-    if (q && (s.nama || '').toLowerCase().indexOf(q) === -1 && (s.nip || '').toLowerCase().indexOf(q) === -1) return false;
-    if (fj && (s.jabatan || '') !== fj) return false;
-    if (fk && (s.jenis_kelamin || '') !== fk) return false;
-    return true;
-  });
-
-  var totalApoteker = d.filter(function(s){ return s.jabatan === 'Apoteker'; }).length;
-  var totalTTK = d.filter(function(s){ return s.jabatan === 'TTK'; }).length;
-  var totalL = d.filter(function(s){ return s.jenis_kelamin === 'L'; }).length;
-  var totalP = d.filter(function(s){ return s.jenis_kelamin === 'P'; }).length;
-
-  document.getElementById('masterKpi').innerHTML = [
-    { label: 'Total Staff', value: d.length, color: 'primary',
-      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>' },
-    { label: 'Apoteker', value: totalApoteker, color: 'primary',
-      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12h6M12 9v6M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg>' },
-    { label: 'TTK', value: totalTTK, color: 'violet',
-      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>' },
-    { label: 'Laki-laki / Perempuan', value: totalL + ' / ' + totalP, color: 'amber',
-      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>' }
-  ].map(function(it) {
-    return '<div class="stat-bento" data-accent="' + it.color + '" style="padding:14px 16px">' +
-      '<div class="stat-icon" data-color="' + it.color + '" style="width:30px;height:30px;margin-bottom:10px">' + it.icon + '</div>' +
-      '<div class="stat-num" style="font-size:24px">' + it.value + '</div>' +
-      '<div class="stat-label">' + it.label + '</div></div>';
-  }).join('');
-
-  var body = document.getElementById('masterBody');
-  if (!rows.length) {
-    body.innerHTML = '<tr><td colspan="11" style="text-align:center;padding:32px;color:var(--ink-muted)">Tidak ada staff cocok</td></tr>';
-    document.getElementById('masterTotal').textContent = '—';
-    return;
-  }
-
-  var jabatanColor = {
-    'Apoteker': '#0F766E',
-    'TTK': '#2563EB',
-    'Administrasi': '#EA580C',
-    'Transporter': '#7C3AED',
-    'Kepala Instalasi': '#DC2626'
-  };
-
-  body.innerHTML = rows.map(function(s) {
-    var jab = s.jabatan || '—';
-    var jabBg = jabatanColor[jab] || '#64748B';
-    var jabHtml = s.jabatan
-      ? '<span class="kategori-pill" style="background:' + jabBg + ';color:#fff;border:none">' + esc(jab) + '</span>'
-      : '<span class="code-empty">—</span>';
-
-    var jkHtml = s.jenis_kelamin === 'L'
-      ? '<span class="kategori-pill" style="background:#DBEAFE;color:#1D4ED8">Laki-laki</span>'
-      : (s.jenis_kelamin === 'P'
-        ? '<span class="kategori-pill" style="background:#FCE7F3;color:#BE185D">Perempuan</span>'
-        : '<span class="code-empty">—</span>');
-
-    var nipAttr = String(s.nip).replace(/"/g, '&quot;');
-    return '<tr>' +
-      '<td class="mono" style="text-align:left">' + esc(s.nip) + '</td>' +
-      '<td style="text-align:left;font-weight:600">' + esc(s.nama) + '</td>' +
-      '<td style="text-align:left;color:var(--ink-muted);font-size:11.5px">' + esc(s.nama_jadwal || '—') + '</td>' +
-      '<td>' + jabHtml + '</td>' +
-      '<td>' + jkHtml + '</td>' +
-      '<td class="mono" style="font-size:11.5px">' + (s.tanggal_lahir || '—') + '</td>' +
-      '<td class="mono" style="font-weight:600">' + hitungUmur(s.tanggal_lahir) + '</td>' +
-      '<td class="mono" style="font-size:11.5px">' + (s.tanggal_masuk || '—') + '</td>' +
-      '<td class="mono" style="font-weight:600;color:var(--primary)">' + hitungMasaKerja(s.tanggal_masuk) + '</td>' +
-      '<td style="text-align:left;color:var(--ink-muted);font-size:11.5px">' + esc(s.departemen || '—') + '</td>' +
-      '<td style="text-align:center;white-space:nowrap">' +
-        '<button class="row-action-btn" data-edit-staff="' + nipAttr + '" title="Edit">' +
-          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>' +
-        '</button>' +
-        '<button class="row-action-btn danger" data-delete-staff="' + nipAttr + '" title="Hapus">' +
-          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>' +
-        '</button>' +
-      '</td>' +
-    '</tr>';
-  }).join('');
-
-  document.getElementById('masterTotal').innerHTML =
-    '<span style="font-weight:700;color:var(--primary)">TOTAL (' + rows.length + ' dari ' + d.length + ' staff):</span> ' +
-    'Apoteker=' + totalApoteker + ' · TTK=' + totalTTK + ' · L/P=' + totalL + '/' + totalP;
-}
-
-function openMasterForm(nip) {
-  state.masterStaff.editingNip = nip || null;
-  var title = document.getElementById('masterFormTitle');
-  var delBtn = document.getElementById('mfDeleteBtn');
-  var nipEl = document.getElementById('mfNip');
-
-  document.getElementById('mfError').classList.add('hidden');
-
-  if (nip) {
-    var s = (state.masterStaff.data || []).find(function(x){ return String(x.nip) === String(nip); });
-    if (!s) return;
-    title.textContent = 'Edit Staff: ' + s.nama;
-    nipEl.value = s.nip;
-    nipEl.disabled = true;
-    document.getElementById('mfNama').value = s.nama || '';
-    document.getElementById('mfNamaJadwal').value = s.nama_jadwal || '';
-    document.getElementById('mfEmail').value = s.email || '';
-    document.getElementById('mfJabatan').value = s.jabatan || '';
-    document.getElementById('mfDepartemen').value = s.departemen || '';
-    document.getElementById('mfJK').value = s.jenis_kelamin || '';
-    document.getElementById('mfTanggalLahir').value = s.tanggal_lahir || '';
-    document.getElementById('mfTanggalMasuk').value = s.tanggal_masuk || '';
-    delBtn.classList.remove('hidden');
-  } else {
-    title.textContent = 'Tambah Staff Baru';
-    nipEl.value = '';
-    nipEl.disabled = false;
-    document.getElementById('mfNama').value = '';
-    document.getElementById('mfNamaJadwal').value = '';
-    document.getElementById('mfEmail').value = '';
-    document.getElementById('mfJabatan').value = '';
-    document.getElementById('mfDepartemen').value = '';
-    document.getElementById('mfJK').value = '';
-    document.getElementById('mfTanggalLahir').value = '';
-    document.getElementById('mfTanggalMasuk').value = '';
-    delBtn.classList.add('hidden');
-  }
-  openModal('masterFormModal');
-}
-
-async function saveMasterStaff() {
-  var nip = document.getElementById('mfNip').value.trim();
-  var nama = document.getElementById('mfNama').value.trim();
-  var jabatan = document.getElementById('mfJabatan').value;
-  var errEl = document.getElementById('mfError');
-  errEl.classList.add('hidden');
-
-  if (!nip || !nama) {
-    errEl.textContent = 'NIP dan Nama wajib diisi.';
-    errEl.classList.remove('hidden');
-    return;
-  }
-  if (!jabatan) {
-    errEl.textContent = 'Jabatan wajib dipilih.';
-    errEl.classList.remove('hidden');
-    return;
-  }
-
-  var payload = {
-    nip: nip,
-    nama: nama,
-    nama_jadwal: document.getElementById('mfNamaJadwal').value.trim() || null,
-    email: document.getElementById('mfEmail').value.trim() || null,
-    jabatan: jabatan,
-    departemen: document.getElementById('mfDepartemen').value.trim() || null,
-    jenis_kelamin: document.getElementById('mfJK').value || null,
-    tanggal_lahir: document.getElementById('mfTanggalLahir').value || null,
-    tanggal_masuk: document.getElementById('mfTanggalMasuk').value || null
-  };
-
-  var btn = document.getElementById('mfSaveBtn');
-  btn.disabled = true; btn.textContent = 'Menyimpan…';
-
-  try {
-    var r;
-    if (state.masterStaff.editingNip) {
-      delete payload.nip;
-      r = await sb.from('staff').update(payload).eq('nip', state.masterStaff.editingNip);
-    } else {
-      r = await sb.from('staff').insert(payload);
-    }
-    if (r.error) throw r.error;
-    closeModal('masterFormModal');
-    state.masterStaff.editingNip = null;
-    await loadMasterStaff();
-    await loadStaffList();
-  } catch (err) {
-    errEl.textContent = err.message || 'Gagal menyimpan.';
-    errEl.classList.remove('hidden');
-  } finally {
-    btn.disabled = false; btn.textContent = 'Simpan';
-  }
-}
-
-async function deleteMasterStaff(nip) {
-  var s = (state.masterStaff.data || []).find(function(x){ return String(x.nip) === String(nip); });
-  if (!s) return;
-  if (!confirm('Hapus staff ini?\n\nNIP: ' + s.nip + '\nNama: ' + s.nama + '\n\nTindakan ini tidak bisa dibatalkan.')) return;
-  try {
-    var r = await sb.from('staff').delete().eq('nip', nip);
-    if (r.error) throw r.error;
-    await loadMasterStaff();
-    await loadStaffList();
-  } catch (err) {
-    alert('Gagal hapus: ' + (err.message || 'Error'));
-  }
-}
-
-/* ============================================================
-   PENGAJUAN
-   ============================================================ */
-async function loadPengajuan(){
-  if(!state.user || !state.isAdmin) return;
-  var start = document.getElementById('pengajuanStart').value;
-  var end = document.getElementById('pengajuanEnd').value;
-  var jenis = document.getElementById('pengajuanJenis').value;
-  document.getElementById('pengajuanBody').innerHTML = '<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--ink-muted)">Memuat…</td></tr>';
-  try{
-    var q = sb.from('pengajuan').select('*, staff(nama)').order('created_at', { ascending: false }).limit(2000);
-    if(start) q = q.gte('created_at', start + 'T00:00:00');
-    if(end) q = q.lte('created_at', end + 'T23:59:59');
-    if(jenis) q = q.eq('jenis', jenis);
-    var r = await q;
-    if(r.error) throw r.error;
-    state.pengajuan.data = r.data || [];
-    state.pengajuan.loaded = true;
-    renderPengajuan();
-  }catch(err){
-    console.error('Gagal load pengajuan:', err);
-    document.getElementById('pengajuanBody').innerHTML = '<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--ink-muted)">Gagal memuat: ' + esc(err.message||'Error') + '</td></tr>';
-  }
-}
-
-function renderPengajuan(){
-  var d = state.pengajuan.data || [];
-  var q = document.getElementById('searchNamePengajuan').value.toLowerCase().trim();
-  var rows = d.filter(function(p){
-    if(!q) return true;
-    return (p.nip || '').toLowerCase().indexOf(q) !== -1 || ((p.staff && p.staff.nama) || p.nama || '').toLowerCase().indexOf(q) !== -1;
-  });
-  if(rows.length === 0){ document.getElementById('pengajuanBody').innerHTML = '<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--ink-muted)">Tidak ada pengajuan</td></tr>'; return; }
-  var html = rows.map(function(p){
-    var tgl = p.created_at ? new Date(p.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
-    var periode = '';
-    if(p.jenis === 'telat') periode = (p.tanggal_mulai || '—') + (p.jenis_telat ? ' · ' + p.jenis_telat : '') + (p.jam ? ' · ' + p.jam : '');
-    else if(p.jenis === 'absensieror') periode = (p.tanggal_absensi || '—') + (p.waktu_absensi ? ' · ' + p.waktu_absensi : '');
-    else periode = (p.tanggal_mulai || '—') + (p.tanggal_selesai ? ' s/d ' + p.tanggal_selesai : '');
-    var jenisLabel = JENIS_LABEL[p.jenis] || p.jenis;
-    var namaTampil = (p.staff && p.staff.nama) || p.nama || '—';
-    return '<tr><td style="text-align:left">' + tgl + '</td><td style="text-align:left"><b>' + esc(namaTampil) + '</b><div style="font-size:11px;color:var(--ink-faint)">' + esc(p.nip || '') + '</div></td><td><span class="jenis-pill jenis-' + esc(p.jenis) + '">' + esc(jenisLabel) + '</span></td><td style="text-align:left">' + esc(periode) + '</td><td style="text-align:left;white-space:normal;max-width:300px">' + esc(p.keterangan || '—') + '</td><td style="text-align:center;white-space:nowrap"><button class="row-action-btn" data-action="edit" data-id="' + p.id + '" title="Edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button><button class="row-action-btn danger" data-action="delete" data-id="' + p.id + '" title="Hapus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button></td></tr>';
-  }).join('');
-  document.getElementById('pengajuanBody').innerHTML = html;
-}
-
-function openEditPengajuan(id){
-  var p = (state.pengajuan.data || []).find(function(x){ return String(x.id) === String(id); });
-  if(!p) return;
-  editingPengajuanId = id;
-  var namaTampil = (p.staff && p.staff.nama) || p.nama || '—';
-  var jenisLabel = JENIS_LABEL[p.jenis] || p.jenis;
-  document.getElementById('editPengajuanInfo').innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg><div><b>' + esc(namaTampil) + '</b> · ' + esc(p.nip || '') + '<br>Jenis: <b>' + esc(jenisLabel) + '</b> · dibuat ' + (p.created_at ? new Date(p.created_at).toLocaleString('id-ID') : '—') + '</div>';
-  var el = document.getElementById('editPengajuanFields');
-  var inputStyle = 'width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:var(--r-md);font-size:13.5px;outline:none';
-  var fields = '';
-  if(p.jenis === 'izin' || p.jenis === 'sakit' || p.jenis === 'cuti'){
-    fields = '<label>Tanggal Mulai</label><input type="date" id="epTanggalMulai" value="' + (p.tanggal_mulai || '') + '" style="' + inputStyle + '"><label style="margin-top:14px">Tanggal Selesai</label><input type="date" id="epTanggalSelesai" value="' + (p.tanggal_selesai || p.tanggal_mulai || '') + '" style="' + inputStyle + '">';
-  } else if(p.jenis === 'telat'){
-    fields = '<label>Tanggal</label><input type="date" id="epTanggal" value="' + (p.tanggal_mulai || '') + '" style="' + inputStyle + '"><label style="margin-top:14px">Jenis</label><select id="epJenisTelat" style="' + inputStyle + '"><option value="Telat Datang"' + (p.jenis_telat === 'Telat Datang' ? ' selected' : '') + '>Telat Datang</option><option value="Pulang Cepat"' + (p.jenis_telat === 'Pulang Cepat' ? ' selected' : '') + '>Pulang Cepat</option><option value="Tidak Absen"' + (p.jenis_telat === 'Tidak Absen' ? ' selected' : '') + '>Tidak Absen</option></select><label style="margin-top:14px">Jam</label><input type="time" id="epJam" value="' + (p.jam || '') + '" style="' + inputStyle + '">';
-  } else if(p.jenis === 'absensieror'){
-    fields = '<label>Tanggal Absensi</label><input type="date" id="epTanggalAbsensi" value="' + (p.tanggal_absensi || p.tanggal_mulai || '') + '" style="' + inputStyle + '"><label style="margin-top:14px">Waktu</label><select id="epWaktuAbsensi" style="' + inputStyle + '"><option value="masuk"' + (p.waktu_absensi === 'masuk' ? ' selected' : '') + '>Absen Masuk</option><option value="pulang"' + (p.waktu_absensi === 'pulang' ? ' selected' : '') + '>Absen Pulang</option></select>';
-  } else {
-    fields = '<div class="alert-box info" style="background:#F1F5F9;color:var(--ink-2);border-color:var(--border)"><div>Jenis ini tidak bisa diedit dari sini. Hanya bisa dihapus.</div></div>';
-  }
-  el.innerHTML = fields;
-  document.getElementById('editPengajuanKeterangan').value = p.keterangan || '';
-  document.getElementById('editPengajuanError').classList.add('hidden');
-  openModal('editPengajuanModal');
-}
-
-async function saveEditPengajuan(){
-  if(!editingPengajuanId) return;
-  var p = (state.pengajuan.data || []).find(function(x){ return String(x.id) === String(editingPengajuanId); });
-  if(!p) return;
-  var updates = { keterangan: document.getElementById('editPengajuanKeterangan').value.trim() };
-  if(p.jenis === 'izin' || p.jenis === 'sakit' || p.jenis === 'cuti'){
-    updates.tanggal_mulai = document.getElementById('epTanggalMulai').value || null;
-    updates.tanggal_selesai = document.getElementById('epTanggalSelesai').value || null;
-  } else if(p.jenis === 'telat'){
-    updates.tanggal_mulai = document.getElementById('epTanggal').value || null;
-    updates.jenis_telat = document.getElementById('epJenisTelat').value;
-    updates.jam = document.getElementById('epJam').value || null;
-  } else if(p.jenis === 'absensieror'){
-    updates.tanggal_absensi = document.getElementById('epTanggalAbsensi').value || null;
-    updates.waktu_absensi = document.getElementById('epWaktuAbsensi').value;
-  }
-  var btn = document.getElementById('saveEditPengajuan');
-  btn.disabled = true; btn.textContent = 'Menyimpan…';
-  try{
-    var r = await sb.from('pengajuan').update(updates).eq('id', editingPengajuanId);
-    if(r.error) throw r.error;
-    closeModal('editPengajuanModal'); editingPengajuanId = null; await loadPengajuan();
-  }catch(err){
-    var errEl = document.getElementById('editPengajuanError');
-    errEl.textContent = err.message || 'Gagal menyimpan.'; errEl.classList.remove('hidden');
-  }finally{ btn.disabled = false; btn.textContent = 'Simpan'; }
-}
-
-async function confirmDeletePengajuan(){
-  if(!editingPengajuanId) return;
-  var p = (state.pengajuan.data || []).find(function(x){ return String(x.id) === String(editingPengajuanId); });
-  if(!p) return;
-  var namaTampil = (p.staff && p.staff.nama) || p.nama || p.nip;
-  if(!confirm('Hapus pengajuan ini?\n\nNama: ' + namaTampil + '\nJenis: ' + (JENIS_LABEL[p.jenis] || p.jenis) + '\n\nTindakan ini tidak bisa dibatalkan.')) return;
-  var btn = document.getElementById('deletePengajuanBtn');
-  btn.disabled = true; btn.textContent = 'Menghapus…';
-  try{
-    var r = await sb.from('pengajuan').delete().eq('id', editingPengajuanId);
-    if(r.error) throw r.error;
-    closeModal('editPengajuanModal'); editingPengajuanId = null; await loadPengajuan();
-  }catch(err){
-    var errEl = document.getElementById('editPengajuanError');
-    errEl.textContent = err.message || 'Gagal menghapus.'; errEl.classList.remove('hidden');
-  }finally{ btn.disabled = false; btn.textContent = 'Hapus'; }
-}
-
-/* ============================================================
-   FORM PENGAJUAN STAFF
-   ============================================================ */
-function selectJenisForm(jenis){
-  state.formJenis = jenis;
-  document.querySelectorAll('.jenis-btn').forEach(function(b){ b.classList.toggle('active', b.dataset.jenis === jenis); });
-  renderFormFields();
-  updateFormPreview();
-}
-
-function renderFormFields(){
-  var jenis = state.formJenis;
-  var el = document.getElementById('formFields');
-  var today = todayISO();
-  if(jenis === 'izin' || jenis === 'sakit' || jenis === 'cuti'){
-    el.innerHTML = '<div class="form-group"><label>Tanggal Mulai <span class="req">*</span></label><input type="date" id="fTanggalMulai" value="' + today + '"></div><div class="form-group"><label>Tanggal Selesai <span class="req">*</span></label><input type="date" id="fTanggalSelesai" value="' + today + '"><div class="hint">Kalau hanya 1 hari, isi sama dengan tanggal mulai</div></div>';
-  } else if(jenis === 'telat'){
-    el.innerHTML = '<div class="form-group"><label>Tanggal <span class="req">*</span></label><input type="date" id="fTanggal" value="' + today + '"></div><div class="form-group"><label>Jenis <span class="req">*</span></label><select id="fJenisTelat"><option value="Telat Datang">Telat Datang</option><option value="Pulang Cepat">Pulang Cepat</option><option value="Tidak Absen">Tidak Absen</option></select></div><div class="form-group"><label>Jam</label><input type="time" id="fJam"></div>';
-  } else if(jenis === 'absensieror'){
-    el.innerHTML = '<div class="form-group"><label>Tanggal Absensi <span class="req">*</span></label><input type="date" id="fTanggalAbsensi" value="' + today + '"></div><div class="form-group"><label>Waktu <span class="req">*</span></label><select id="fWaktuAbsensi"><option value="masuk">Absen Masuk</option><option value="pulang">Absen Pulang</option></select></div>';
-  } else if(jenis === 'tukar_shift'){
-    var opts = state.staffList.map(function(s){ return '<option value="' + esc(s.nama_jadwal || s.nama) + '">' + esc(s.nama) + '</option>'; }).join('');
-    el.innerHTML = '<div class="form-group"><label>Tanggal Tukar <span class="req">*</span></label><input type="date" id="fTanggalTukar" value="' + today + '"></div><div class="form-group"><label>Nama Pengganti <span class="req">*</span></label><select id="fNamaPengganti"><option value="">— Pilih rekan kerja —</option>' + opts + '</select><div class="hint">Pilih rekan yang shift-nya akan ditukar dengan Anda</div></div><div class="preview-card" id="swapPreviewCard" style="display:none"><div class="lbl">Setelah Tukar Shift</div><div class="preview-swap" id="swapPreviewInner"></div></div>';
-  } else {
-    el.innerHTML = '<div class="info-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg><div>Pilih jenis pengajuan di atas untuk menampilkan isian.</div></div>';
-  }
-  checkFormReady();
-}
-
-async function updateSwapPreview(){
-  var nip = document.getElementById('formNip').value;
-  var namaB = document.getElementById('fNamaPengganti') ? document.getElementById('fNamaPengganti').value : '';
-  var tanggal = document.getElementById('fTanggalTukar') ? document.getElementById('fTanggalTukar').value : '';
-  var card = document.getElementById('swapPreviewCard');
-  if(!card) return;
-  if(!nip || !namaB || !tanggal){ card.style.display = 'none'; return; }
-  card.style.display = 'block';
-  document.getElementById('swapPreviewInner').innerHTML = '<div style="text-align:center;font-size:12px;color:#92400E">Memuat…</div>';
-  try{
-    var r = await sb.rpc('rpc_cek_jadwal_staff', { p_nip: nip, p_tanggal: tanggal, p_nama_b: namaB });
-    if(r.error) throw r.error;
-    var d = r.data;
-    if(!d.kode_a){ card.innerHTML = '<div class="lbl">Setelah Tukar Shift</div><div style="font-size:12px;color:#991B1B;text-align:center">⚠️ Jadwal Anda di tanggal ini tidak ditemukan</div>'; return; }
-    if(!d.kode_b){ card.innerHTML = '<div class="lbl">Setelah Tukar Shift</div><div style="font-size:12px;color:#991B1B;text-align:center">⚠️ Jadwal ' + esc(namaB) + ' di tanggal ini tidak ditemukan</div>'; return; }
-    var mA = state.legend[d.kode_a] || { color: '#64748B' };
-    var mB = state.legend[d.kode_b] || { color: '#64748B' };
-    card.innerHTML = '<div class="lbl">Setelah Tukar Shift</div><div class="preview-swap"><div class="preview-staff"><div class="n">' + esc(d.nama_a) + '</div><div class="k" style="color:' + mA.color + '">' + d.kode_a + '</div><div class="preview-arrow">↓</div><div class="k" style="color:' + mB.color + '">' + d.kode_b + '</div></div><div class="preview-arrow">⇄</div><div class="preview-staff"><div class="n">' + esc(namaB) + '</div><div class="k" style="color:' + mB.color + '">' + d.kode_b + '</div><div class="preview-arrow">↓</div><div class="k" style="color:' + mA.color + '">' + d.kode_a + '</div></div></div>';
-  }catch(err){
-    card.innerHTML = '<div class="lbl">Setelah Tukar Shift</div><div style="font-size:12px;color:#991B1B;text-align:center">⚠️ ' + esc(err.message || 'Gagal') + '</div>';
-  }
-}
-
-function updateFormPreview(){
-  var el = document.getElementById('formPreview');
-  var stepBadge = document.getElementById('formStepBadge');
-  var nip = document.getElementById('formNip').value;
-  var jenis = state.formJenis;
-  var ket = document.getElementById('formKeterangan').value.trim();
-  var staff = state.staffList.find(function(s){ return s.nip === nip; });
-  if(!staff || !jenis){
-    stepBadge.style.opacity = '.4';
-    el.innerHTML = '<div class="empty-preview"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8M16 17H8M10 9H8"/></svg><b>Belum ada data</b><span>Isi form di sebelah kiri untuk melihat preview</span></div>';
-    return;
-  }
-  stepBadge.style.opacity = '1';
-  var jenisLabel = JENIS_LABEL[jenis] || (jenis === 'tukar_shift' ? 'Tukar Shift' : jenis);
-  var detailRows = '';
-  if(jenis === 'izin' || jenis === 'sakit' || jenis === 'cuti'){
-    var tglM = (document.getElementById('fTanggalMulai') || {}).value || '—';
-    var tglS = (document.getElementById('fTanggalSelesai') || {}).value || '—';
-    var kodeBaru = jenis === 'izin' ? 'IZIN' : jenis === 'sakit' ? 'SKT' : 'CT';
-    detailRows = '<div class="preview-stat"><div class="lbl">Periode</div><div class="val" style="font-size:13px">' + tglM + ' s/d ' + tglS + '</div></div><div class="preview-stat"><div class="lbl">Kode Jadwal Baru</div><div class="val" style="font-size:14px;color:' + state.legend[kodeBaru].color + '">' + kodeBaru + '</div></div>';
-  } else if(jenis === 'telat'){
-    var tgl = (document.getElementById('fTanggal') || {}).value || '—';
-    var jt = (document.getElementById('fJenisTelat') || {}).value || '—';
-    var jam = (document.getElementById('fJam') || {}).value || '—';
-    detailRows = '<div class="preview-stat"><div class="lbl">Tanggal</div><div class="val" style="font-size:13px">' + tgl + '</div></div><div class="preview-stat"><div class="lbl">Jenis</div><div class="val" style="font-size:13px">' + jt + '</div></div><div class="preview-stat"><div class="lbl">Jam</div><div class="val" style="font-size:13px">' + jam + '</div></div>';
-  } else if(jenis === 'absensieror'){
-    var ta = (document.getElementById('fTanggalAbsensi') || {}).value || '—';
-    var wa = (document.getElementById('fWaktuAbsensi') || {}).value || '—';
-    detailRows = '<div class="preview-stat"><div class="lbl">Tanggal</div><div class="val" style="font-size:13px">' + ta + '</div></div><div class="preview-stat"><div class="lbl">Waktu</div><div class="val" style="font-size:13px">' + (wa === 'masuk' ? 'Absen Masuk' : 'Absen Pulang') + '</div></div>';
-  } else if(jenis === 'tukar_shift'){
-    var namaB = (document.getElementById('fNamaPengganti') || {}).value || '—';
-    var tt = (document.getElementById('fTanggalTukar') || {}).value || '—';
-    detailRows = '<div class="preview-stat"><div class="lbl">Tanggal</div><div class="val" style="font-size:13px">' + tt + '</div></div><div class="preview-stat"><div class="lbl">Tukar Dengan</div><div class="val" style="font-size:12px">' + esc(namaB) + '</div></div>';
-  }
-  el.innerHTML = '<div class="alert-box info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg><div><b>Pengaju:</b> ' + esc(staff.nama) + '<br>NIP: ' + esc(staff.nip) + '</div></div><div class="alert-box info" style="background:#F3E8FF;color:#6D28D9;border-color:#E9D5FF"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><path d="M7 7h.01"/></svg><div><b>Jenis:</b> ' + esc(jenisLabel) + '</div></div><div class="preview-summary" style="grid-template-columns:1fr 1fr">' + detailRows + '</div>' + (ket ? '<div class="alert-box info" style="background:#F1F5F9;color:var(--ink-2);border-color:var(--border)"><div><b>Keterangan:</b><br>' + esc(ket) + '</div></div>' : '');
-  checkFormReady();
-}
-
-function checkFormReady(){
-  var nip = document.getElementById('formNip').value;
-  var jenis = state.formJenis;
-  var btn = document.getElementById('submitFormBtn');
-  var ready = false;
-  if(nip && jenis){
-    if(jenis === 'tukar_shift'){
-      var nb = (document.getElementById('fNamaPengganti') || {}).value;
-      var tt = (document.getElementById('fTanggalTukar') || {}).value;
-      ready = !!(nb && tt);
-    } else { ready = true; }
-  }
-  btn.disabled = !ready;
-}
-
-async function submitForm(){
-  var nip = document.getElementById('formNip').value;
-  var jenis = state.formJenis;
-  var ket = document.getElementById('formKeterangan').value.trim();
-  if(!nip || !jenis) return;
-  var payload = { nip: nip, jenis: jenis, keterangan: ket };
-  if(jenis === 'izin' || jenis === 'sakit' || jenis === 'cuti'){
-    payload.tanggal_mulai = (document.getElementById('fTanggalMulai') || {}).value;
-    payload.tanggal_selesai = (document.getElementById('fTanggalSelesai') || {}).value;
-    if(!payload.tanggal_mulai || !payload.tanggal_selesai){ alert('Isi tanggal mulai dan selesai.'); return; }
-  } else if(jenis === 'telat'){
-    payload.tanggal = (document.getElementById('fTanggal') || {}).value;
-    payload.jenis_telat = (document.getElementById('fJenisTelat') || {}).value;
-    payload.jam = (document.getElementById('fJam') || {}).value;
-    if(!payload.tanggal){ alert('Isi tanggal.'); return; }
-  } else if(jenis === 'absensieror'){
-    payload.tanggal = (document.getElementById('fTanggalAbsensi') || {}).value;
-    payload.tanggal_absensi = payload.tanggal;
-    payload.waktu_absensi = (document.getElementById('fWaktuAbsensi') || {}).value;
-    if(!payload.tanggal){ alert('Isi tanggal.'); return; }
-  } else if(jenis === 'tukar_shift'){
-    payload.nama_b = (document.getElementById('fNamaPengganti') || {}).value;
-    payload.tanggal_tukar = (document.getElementById('fTanggalTukar') || {}).value;
-    if(!payload.nama_b || !payload.tanggal_tukar){ alert('Lengkapi data tukar shift.'); return; }
-  }
-  var btn = document.getElementById('submitFormBtn');
-  btn.disabled = true; btn.innerHTML = 'Memproses…';
-  try{
-    var r = await sb.rpc('rpc_submit_pengajuan', { p_payload: payload });
-    if(r.error) throw r.error;
-    if(!r.data.success) throw new Error(r.data.error || 'Gagal submit');
-
-    if (jenis === 'izin' || jenis === 'sakit' || jenis === 'cuti') {
-      await autoUpdateJadwalFromPengajuan(jenis, payload);
-    }
-
-    var jenisLabel = JENIS_LABEL[jenis] || (jenis === 'tukar_shift' ? 'Tukar Shift' : jenis);
-    var extra = '';
-    if(r.data.detail && jenis === 'tukar_shift'){
-      var d = r.data.detail;
-      extra = '<br><br><b>Detail tukar:</b><br>' + d.nama_a + ': ' + d.kode_a_lama + ' → ' + d.kode_a_baru + '<br>' + d.nama_b + ': ' + d.kode_b_lama + ' → ' + d.kode_b_baru + '<br>Tanggal: ' + d.tanggal;
-    } else if(jenis === 'izin' || jenis === 'sakit' || jenis === 'cuti'){
-      extra = '<br><br>✅ Jadwal di menu <b>Jadwal Lengkap</b> berhasil diupdate otomatis dengan kode <b>' + (jenis === 'izin' ? 'IZIN' : jenis === 'sakit' ? 'SKT' : 'CT') + '</b>.';
-    } else if(r.data.jadwal_terupdate !== undefined){
-      extra = '<br><br>✅ ' + r.data.jadwal_terupdate + ' sel jadwal berhasil diupdate otomatis.';
-    }
-    document.getElementById('formPreview').innerHTML = '<div class="alert-box success" style="flex-direction:column;align-items:flex-start;font-size:13px"><div style="display:flex;gap:10px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg><div><b>Pengajuan Terkirim!</b><br>Jenis: ' + esc(jenisLabel) + extra + '</div></div></div><button class="btn btn-secondary" id="resetFormBtn" style="width:100%;justify-content:center">Buat Pengajuan Baru</button>';
-    document.getElementById('resetFormBtn').addEventListener('click', resetForm);
-
-    setTimeout(function(){
-      loadDataJadwalBulan(state.jadwalTahun, state.jadwalBulan);
-      if(state.kehadiran.loaded) loadKehadiran();
-      if(dashState.data) loadDashboard(dashState.year, dashState.month);
-    }, 500);
-  }catch(err){
-    document.getElementById('formPreview').innerHTML = '<div class="alert-box error"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg><div><b>Gagal Kirim</b><br>' + esc(err.message) + '</div></div>';
-  }finally{ btn.disabled = false; btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2l-7 20-4-9-9-4Z"/></svg> Kirim Pengajuan'; }
-}
-
-function resetForm(){
-  state.formJenis = null;
-  document.querySelectorAll('.jenis-btn').forEach(function(b){ b.classList.remove('active'); });
-  document.getElementById('formKeterangan').value = '';
-  document.getElementById('formFields').innerHTML = '';
-  updateFormPreview();
-}
-
-/* ============================================================
-   AUTH
-   ============================================================ */
-async function checkIsAdmin(userId){
-  try{
-    var r = await sb.from('admin_users').select('user_id').eq('user_id', userId).maybeSingle();
-    if(r.error) return false;
-    return !!r.data;
-  }catch(e){ return false; }
-}
-
-async function refreshSession(){
-  try{
-    var r = await sb.auth.getSession();
-    var s = r.data && r.data.session;
-    state.user = s ? s.user : null;
-    state.isAdmin = s ? await checkIsAdmin(s.user.id) : false;
-    updateUserUI(); updateEditModeUI(); updateImportLock(); updatePengajuanLock();
-    updateMenuVisibility();
-  }catch(e){ console.warn(e); }
-}
-
-async function doLogin(email, password){
-  var r = await sb.auth.signInWithPassword({ email: email, password: password });
-  if(r.error) throw r.error;
-  state.user = r.data.user;
-  state.isAdmin = await checkIsAdmin(r.data.user.id);
-  updateUserUI(); updateEditModeUI(); updateImportLock(); updatePengajuanLock();
-  updateMenuVisibility();
-  if(!state.isAdmin) throw new Error('Login berhasil, tapi akun ini belum terdaftar sebagai admin.');
-}
-
-async function doLogout(){
-  try{ await sb.auth.signOut(); }catch(e){}
-  state.user = null; state.isAdmin = false; state.editMode = false;
-  state.pengajuan = { data: null, loaded: false };
-  dashState.data = null;
-  updateUserUI(); updateEditModeUI(); renderJadwal(); updateImportLock(); updatePengajuanLock();
-  updateMenuVisibility();
-}
-
-function updateUserUI(){
-  var av = document.getElementById('userAvatar');
-  var em = document.getElementById('userEmail');
-  var rl = document.getElementById('userRole');
-  if(state.user){
-    av.textContent = (state.user.email||'?').slice(0,2).toUpperCase();
-    av.classList.toggle('admin', state.isAdmin);
-    em.textContent = state.user.email;
-    rl.textContent = state.isAdmin ? '✅ Admin' : '⚠️ Bukan admin';
-  }else{
-    av.textContent = '?'; av.classList.remove('admin');
-    em.textContent = 'Belum login'; rl.textContent = 'Klik untuk login';
-  }
-}
-
-function updateEditModeUI(){
-  var btn = document.getElementById('editModeBtn');
-  var label = document.getElementById('editBtnLabel');
-  if(!btn) return;
-  if(state.editMode){
-    btn.classList.add('edit-active'); btn.classList.remove('btn-primary');
-    label.textContent = 'Keluar Edit';
-  }else{
-    btn.classList.remove('edit-active'); btn.classList.add('btn-primary');
-    label.textContent = 'Mode Edit';
-  }
-  updateSessionBox();
-}
-
-function updateSessionBox(){
-  var who = document.getElementById('sessionWho');
-  var sub = document.getElementById('sessionSub');
-  var btn = document.getElementById('sessionActionBtn');
-  if(!who) return;
-  if(state.user){
-    who.textContent = state.user.email;
-    sub.textContent = state.isAdmin ? '✅ Admin aktif' : '⚠️ Bukan admin';
-    btn.textContent = 'Logout'; btn.classList.remove('btn-primary'); btn.classList.add('btn-danger');
-  }else{
-    who.textContent = 'Belum login';
-    sub.textContent = 'Login untuk mengaktifkan edit jadwal';
-    btn.textContent = 'Login'; btn.classList.remove('btn-danger'); btn.classList.add('btn-primary');
-  }
-}
-
-function updateImportLock(){
-  var locked = document.getElementById('importLocked');
-  var unlocked = document.getElementById('importUnlocked');
-  if(!locked) return;
-  if(state.user && state.isAdmin){ locked.classList.add('hidden'); unlocked.classList.remove('hidden'); }
-  else{ locked.classList.remove('hidden'); unlocked.classList.add('hidden'); }
-}
-
-function updatePengajuanLock(){
-  var locked = document.getElementById('pengajuanLocked');
-  var unlocked = document.getElementById('pengajuanUnlocked');
-  if(!locked) return;
-  if(state.user && state.isAdmin){
-    locked.classList.add('hidden'); unlocked.classList.remove('hidden');
-    if(!state.pengajuan.loaded) loadPengajuan();
-  }else{
-    locked.classList.remove('hidden'); unlocked.classList.add('hidden');
-  }
-}
-
-function openModal(id){ document.getElementById(id).classList.add('open'); }
-function closeModal(id){ document.getElementById(id).classList.remove('open'); }
-  /* ============================================================
    PDF LAPORAN KEHADIRAN
    ============================================================ */
 function buildKehadiranSingleReport(s, d) {
@@ -3425,7 +3654,6 @@ function buildKehadiranSingleReport(s, d) {
   summaryRows += '<tr style="background:#F0FDFA"><td style="padding:7px 12px;border:1px solid #E2E8F0;font-size:12px;font-weight:700;color:#0F766E">Hari Kerja</td><td style="padding:7px 12px;border:1px solid #E2E8F0;font-size:12px;text-align:center;font-weight:700;color:#0F766E;font-family:JetBrains Mono,monospace">' + (s.hariKerja || 0) + '</td></tr>';
   summaryRows += '<tr style="background:#FEF3C7"><td style="padding:7px 12px;border:1px solid #E2E8F0;font-size:12px;font-weight:700;color:#92400E">Hari Off</td><td style="padding:7px 12px;border:1px solid #E2E8F0;font-size:12px;text-align:center;font-weight:700;color:#92400E;font-family:JetBrains Mono,monospace">' + (s.hariOff || 0) + '</td></tr>';
 
-  // ⭐ Baris % Kehadiran
   var pctS = hitungPersenKehadiran(s);
   var pctBg = pctS === null ? '#F1F5F9' : (pctS >= 95 ? '#D1FAE5' : (pctS >= 80 ? '#FEF3C7' : '#FEE2E2'));
   var pctColor = pctS === null ? '#64748B' : (pctS >= 95 ? '#065F46' : (pctS >= 80 ? '#92400E' : '#991B1B'));
@@ -3474,12 +3702,6 @@ function buildKehadiranSingleReport(s, d) {
       '<div>Dicetak: ' + printedAt + '</div>' +
       '<div>Sistem Jadwal Instalasi Farmasi</div>' +
     '</div>';
-}
-
-function buildKehadiranAllReport(d) {
-  var periode = fmtDateLong(d.start) + ' s/d ' + fmtDateLong(d.end);
-  var staffSorted = d.staff.slice().sort(function(a,b){ return a.nama.localeCompare(b.nama); });
-  return buildKehadiranAllReportPage(d, staffSorted, 1, 1);
 }
 
 function buildKehadiranAllReportPage(d, staffChunk, pageNum, totalPages) {
@@ -4231,6 +4453,404 @@ function renderLegendEditor(){
 }
 
 /* ============================================================
+   PENGAJUAN
+   ============================================================ */
+async function loadPengajuan(){
+  if(!state.user || !state.isAdmin) return;
+  var start = document.getElementById('pengajuanStart').value;
+  var end = document.getElementById('pengajuanEnd').value;
+  var jenis = document.getElementById('pengajuanJenis').value;
+  document.getElementById('pengajuanBody').innerHTML = '<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--ink-muted)">Memuat…</td></tr>';
+  try{
+    var q = sb.from('pengajuan').select('*, staff(nama)').order('created_at', { ascending: false }).limit(2000);
+    if(start) q = q.gte('created_at', start + 'T00:00:00');
+    if(end) q = q.lte('created_at', end + 'T23:59:59');
+    if(jenis) q = q.eq('jenis', jenis);
+    var r = await q;
+    if(r.error) throw r.error;
+    state.pengajuan.data = r.data || [];
+    state.pengajuan.loaded = true;
+    renderPengajuan();
+  }catch(err){
+    console.error('Gagal load pengajuan:', err);
+    document.getElementById('pengajuanBody').innerHTML = '<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--ink-muted)">Gagal memuat: ' + esc(err.message||'Error') + '</td></tr>';
+  }
+}
+
+function renderPengajuan(){
+  var d = state.pengajuan.data || [];
+  var q = document.getElementById('searchNamePengajuan').value.toLowerCase().trim();
+  var rows = d.filter(function(p){
+    if(!q) return true;
+    return (p.nip || '').toLowerCase().indexOf(q) !== -1 || ((p.staff && p.staff.nama) || p.nama || '').toLowerCase().indexOf(q) !== -1;
+  });
+  if(rows.length === 0){ document.getElementById('pengajuanBody').innerHTML = '<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--ink-muted)">Tidak ada pengajuan</td></tr>'; return; }
+  var html = rows.map(function(p){
+    var tgl = p.created_at ? new Date(p.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
+    var periode = '';
+    if(p.jenis === 'telat') periode = (p.tanggal_mulai || '—') + (p.jenis_telat ? ' · ' + p.jenis_telat : '') + (p.jam ? ' · ' + p.jam : '');
+    else if(p.jenis === 'absensieror') periode = (p.tanggal_absensi || '—') + (p.waktu_absensi ? ' · ' + p.waktu_absensi : '');
+    else periode = (p.tanggal_mulai || '—') + (p.tanggal_selesai ? ' s/d ' + p.tanggal_selesai : '');
+    var jenisLabel = JENIS_LABEL[p.jenis] || p.jenis;
+    var namaTampil = (p.staff && p.staff.nama) || p.nama || '—';
+    return '<tr><td style="text-align:left">' + tgl + '</td><td style="text-align:left"><b>' + esc(namaTampil) + '</b><div style="font-size:11px;color:var(--ink-faint)">' + esc(p.nip || '') + '</div></td><td><span class="jenis-pill jenis-' + esc(p.jenis) + '">' + esc(jenisLabel) + '</span></td><td style="text-align:left">' + esc(periode) + '</td><td style="text-align:left;white-space:normal;max-width:300px">' + esc(p.keterangan || '—') + '</td><td style="text-align:center;white-space:nowrap"><button class="row-action-btn" data-action="edit" data-id="' + p.id + '" title="Edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button><button class="row-action-btn danger" data-action="delete" data-id="' + p.id + '" title="Hapus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button></td></tr>';
+  }).join('');
+  document.getElementById('pengajuanBody').innerHTML = html;
+}
+
+function openEditPengajuan(id){
+  var p = (state.pengajuan.data || []).find(function(x){ return String(x.id) === String(id); });
+  if(!p) return;
+  editingPengajuanId = id;
+  var namaTampil = (p.staff && p.staff.nama) || p.nama || '—';
+  var jenisLabel = JENIS_LABEL[p.jenis] || p.jenis;
+  document.getElementById('editPengajuanInfo').innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg><div><b>' + esc(namaTampil) + '</b> · ' + esc(p.nip || '') + '<br>Jenis: <b>' + esc(jenisLabel) + '</b> · dibuat ' + (p.created_at ? new Date(p.created_at).toLocaleString('id-ID') : '—') + '</div>';
+  var el = document.getElementById('editPengajuanFields');
+  var inputStyle = 'width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:var(--r-md);font-size:13.5px;outline:none';
+  var fields = '';
+  if(p.jenis === 'izin' || p.jenis === 'sakit' || p.jenis === 'cuti'){
+    fields = '<label>Tanggal Mulai</label><input type="date" id="epTanggalMulai" value="' + (p.tanggal_mulai || '') + '" style="' + inputStyle + '"><label style="margin-top:14px">Tanggal Selesai</label><input type="date" id="epTanggalSelesai" value="' + (p.tanggal_selesai || p.tanggal_mulai || '') + '" style="' + inputStyle + '">';
+  } else if(p.jenis === 'telat'){
+    fields = '<label>Tanggal</label><input type="date" id="epTanggal" value="' + (p.tanggal_mulai || '') + '" style="' + inputStyle + '"><label style="margin-top:14px">Jenis</label><select id="epJenisTelat" style="' + inputStyle + '"><option value="Telat Datang"' + (p.jenis_telat === 'Telat Datang' ? ' selected' : '') + '>Telat Datang</option><option value="Pulang Cepat"' + (p.jenis_telat === 'Pulang Cepat' ? ' selected' : '') + '>Pulang Cepat</option><option value="Tidak Absen"' + (p.jenis_telat === 'Tidak Absen' ? ' selected' : '') + '>Tidak Absen</option></select><label style="margin-top:14px">Jam</label><input type="time" id="epJam" value="' + (p.jam || '') + '" style="' + inputStyle + '">';
+  } else if(p.jenis === 'absensieror'){
+    fields = '<label>Tanggal Absensi</label><input type="date" id="epTanggalAbsensi" value="' + (p.tanggal_absensi || p.tanggal_mulai || '') + '" style="' + inputStyle + '"><label style="margin-top:14px">Waktu</label><select id="epWaktuAbsensi" style="' + inputStyle + '"><option value="masuk"' + (p.waktu_absensi === 'masuk' ? ' selected' : '') + '>Absen Masuk</option><option value="pulang"' + (p.waktu_absensi === 'pulang' ? ' selected' : '') + '>Absen Pulang</option></select>';
+  } else {
+    fields = '<div class="alert-box info" style="background:#F1F5F9;color:var(--ink-2);border-color:var(--border)"><div>Jenis ini tidak bisa diedit dari sini. Hanya bisa dihapus.</div></div>';
+  }
+  el.innerHTML = fields;
+  document.getElementById('editPengajuanKeterangan').value = p.keterangan || '';
+  document.getElementById('editPengajuanError').classList.add('hidden');
+  openModal('editPengajuanModal');
+}
+
+async function saveEditPengajuan(){
+  if(!editingPengajuanId) return;
+  var p = (state.pengajuan.data || []).find(function(x){ return String(x.id) === String(editingPengajuanId); });
+  if(!p) return;
+  var updates = { keterangan: document.getElementById('editPengajuanKeterangan').value.trim() };
+  if(p.jenis === 'izin' || p.jenis === 'sakit' || p.jenis === 'cuti'){
+    updates.tanggal_mulai = document.getElementById('epTanggalMulai').value || null;
+    updates.tanggal_selesai = document.getElementById('epTanggalSelesai').value || null;
+  } else if(p.jenis === 'telat'){
+    updates.tanggal_mulai = document.getElementById('epTanggal').value || null;
+    updates.jenis_telat = document.getElementById('epJenisTelat').value;
+    updates.jam = document.getElementById('epJam').value || null;
+  } else if(p.jenis === 'absensieror'){
+    updates.tanggal_absensi = document.getElementById('epTanggalAbsensi').value || null;
+    updates.waktu_absensi = document.getElementById('epWaktuAbsensi').value;
+  }
+  var btn = document.getElementById('saveEditPengajuan');
+  btn.disabled = true; btn.textContent = 'Menyimpan…';
+  try{
+    var r = await sb.from('pengajuan').update(updates).eq('id', editingPengajuanId);
+    if(r.error) throw r.error;
+    closeModal('editPengajuanModal'); editingPengajuanId = null; await loadPengajuan();
+  }catch(err){
+    var errEl = document.getElementById('editPengajuanError');
+    errEl.textContent = err.message || 'Gagal menyimpan.'; errEl.classList.remove('hidden');
+  }finally{ btn.disabled = false; btn.textContent = 'Simpan'; }
+}
+
+async function confirmDeletePengajuan(){
+  if(!editingPengajuanId) return;
+  var p = (state.pengajuan.data || []).find(function(x){ return String(x.id) === String(editingPengajuanId); });
+  if(!p) return;
+  var namaTampil = (p.staff && p.staff.nama) || p.nama || p.nip;
+  if(!confirm('Hapus pengajuan ini?\n\nNama: ' + namaTampil + '\nJenis: ' + (JENIS_LABEL[p.jenis] || p.jenis) + '\n\nTindakan ini tidak bisa dibatalkan.')) return;
+  var btn = document.getElementById('deletePengajuanBtn');
+  btn.disabled = true; btn.textContent = 'Menghapus…';
+  try{
+    var r = await sb.from('pengajuan').delete().eq('id', editingPengajuanId);
+    if(r.error) throw r.error;
+    closeModal('editPengajuanModal'); editingPengajuanId = null; await loadPengajuan();
+  }catch(err){
+    var errEl = document.getElementById('editPengajuanError');
+    errEl.textContent = err.message || 'Gagal menghapus.'; errEl.classList.remove('hidden');
+  }finally{ btn.disabled = false; btn.textContent = 'Hapus'; }
+}
+
+/* ============================================================
+   FORM PENGAJUAN STAFF
+   ============================================================ */
+function selectJenisForm(jenis){
+  state.formJenis = jenis;
+  document.querySelectorAll('.jenis-btn').forEach(function(b){ b.classList.toggle('active', b.dataset.jenis === jenis); });
+  renderFormFields();
+  updateFormPreview();
+}
+
+function renderFormFields(){
+  var jenis = state.formJenis;
+  var el = document.getElementById('formFields');
+  var today = todayISO();
+  if(jenis === 'izin' || jenis === 'sakit' || jenis === 'cuti'){
+    el.innerHTML = '<div class="form-group"><label>Tanggal Mulai <span class="req">*</span></label><input type="date" id="fTanggalMulai" value="' + today + '"></div><div class="form-group"><label>Tanggal Selesai <span class="req">*</span></label><input type="date" id="fTanggalSelesai" value="' + today + '"><div class="hint">Kalau hanya 1 hari, isi sama dengan tanggal mulai</div></div>';
+  } else if(jenis === 'telat'){
+    el.innerHTML = '<div class="form-group"><label>Tanggal <span class="req">*</span></label><input type="date" id="fTanggal" value="' + today + '"></div><div class="form-group"><label>Jenis <span class="req">*</span></label><select id="fJenisTelat"><option value="Telat Datang">Telat Datang</option><option value="Pulang Cepat">Pulang Cepat</option><option value="Tidak Absen">Tidak Absen</option></select></div><div class="form-group"><label>Jam</label><input type="time" id="fJam"></div>';
+  } else if(jenis === 'absensieror'){
+    el.innerHTML = '<div class="form-group"><label>Tanggal Absensi <span class="req">*</span></label><input type="date" id="fTanggalAbsensi" value="' + today + '"></div><div class="form-group"><label>Waktu <span class="req">*</span></label><select id="fWaktuAbsensi"><option value="masuk">Absen Masuk</option><option value="pulang">Absen Pulang</option></select></div>';
+  } else if(jenis === 'tukar_shift'){
+    var opts = state.staffList.map(function(s){ return '<option value="' + esc(s.nama_jadwal || s.nama) + '">' + esc(s.nama) + '</option>'; }).join('');
+    el.innerHTML = '<div class="form-group"><label>Tanggal Tukar <span class="req">*</span></label><input type="date" id="fTanggalTukar" value="' + today + '"></div><div class="form-group"><label>Nama Pengganti <span class="req">*</span></label><select id="fNamaPengganti"><option value="">— Pilih rekan kerja —</option>' + opts + '</select><div class="hint">Pilih rekan yang shift-nya akan ditukar dengan Anda</div></div><div class="preview-card" id="swapPreviewCard" style="display:none"><div class="lbl">Setelah Tukar Shift</div><div class="preview-swap" id="swapPreviewInner"></div></div>';
+  } else {
+    el.innerHTML = '<div class="info-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg><div>Pilih jenis pengajuan di atas untuk menampilkan isian.</div></div>';
+  }
+  checkFormReady();
+}
+
+async function updateSwapPreview(){
+  var nip = document.getElementById('formNip').value;
+  var namaB = document.getElementById('fNamaPengganti') ? document.getElementById('fNamaPengganti').value : '';
+  var tanggal = document.getElementById('fTanggalTukar') ? document.getElementById('fTanggalTukar').value : '';
+  var card = document.getElementById('swapPreviewCard');
+  if(!card) return;
+  if(!nip || !namaB || !tanggal){ card.style.display = 'none'; return; }
+  card.style.display = 'block';
+  document.getElementById('swapPreviewInner').innerHTML = '<div style="text-align:center;font-size:12px;color:#92400E">Memuat…</div>';
+  try{
+    var r = await sb.rpc('rpc_cek_jadwal_staff', { p_nip: nip, p_tanggal: tanggal, p_nama_b: namaB });
+    if(r.error) throw r.error;
+    var d = r.data;
+    if(!d.kode_a){ card.innerHTML = '<div class="lbl">Setelah Tukar Shift</div><div style="font-size:12px;color:#991B1B;text-align:center">⚠️ Jadwal Anda di tanggal ini tidak ditemukan</div>'; return; }
+    if(!d.kode_b){ card.innerHTML = '<div class="lbl">Setelah Tukar Shift</div><div style="font-size:12px;color:#991B1B;text-align:center">⚠️ Jadwal ' + esc(namaB) + ' di tanggal ini tidak ditemukan</div>'; return; }
+    var mA = state.legend[d.kode_a] || { color: '#64748B' };
+    var mB = state.legend[d.kode_b] || { color: '#64748B' };
+    card.innerHTML = '<div class="lbl">Setelah Tukar Shift</div><div class="preview-swap"><div class="preview-staff"><div class="n">' + esc(d.nama_a) + '</div><div class="k" style="color:' + mA.color + '">' + d.kode_a + '</div><div class="preview-arrow">↓</div><div class="k" style="color:' + mB.color + '">' + d.kode_b + '</div></div><div class="preview-arrow">⇄</div><div class="preview-staff"><div class="n">' + esc(namaB) + '</div><div class="k" style="color:' + mB.color + '">' + d.kode_b + '</div><div class="preview-arrow">↓</div><div class="k" style="color:' + mA.color + '">' + d.kode_a + '</div></div></div>';
+  }catch(err){
+    card.innerHTML = '<div class="lbl">Setelah Tukar Shift</div><div style="font-size:12px;color:#991B1B;text-align:center">⚠️ ' + esc(err.message || 'Gagal') + '</div>';
+  }
+}
+
+function updateFormPreview(){
+  var el = document.getElementById('formPreview');
+  var stepBadge = document.getElementById('formStepBadge');
+  var nip = document.getElementById('formNip').value;
+  var jenis = state.formJenis;
+  var ket = document.getElementById('formKeterangan').value.trim();
+  var staff = state.staffList.find(function(s){ return s.nip === nip; });
+  if(!staff || !jenis){
+    stepBadge.style.opacity = '.4';
+    el.innerHTML = '<div class="empty-preview"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8M16 17H8M10 9H8"/></svg><b>Belum ada data</b><span>Isi form di sebelah kiri untuk melihat preview</span></div>';
+    return;
+  }
+  stepBadge.style.opacity = '1';
+  var jenisLabel = JENIS_LABEL[jenis] || (jenis === 'tukar_shift' ? 'Tukar Shift' : jenis);
+  var detailRows = '';
+  if(jenis === 'izin' || jenis === 'sakit' || jenis === 'cuti'){
+    var tglM = (document.getElementById('fTanggalMulai') || {}).value || '—';
+    var tglS = (document.getElementById('fTanggalSelesai') || {}).value || '—';
+    var kodeBaru = jenis === 'izin' ? 'IZIN' : jenis === 'sakit' ? 'SKT' : 'CT';
+    detailRows = '<div class="preview-stat"><div class="lbl">Periode</div><div class="val" style="font-size:13px">' + tglM + ' s/d ' + tglS + '</div></div><div class="preview-stat"><div class="lbl">Kode Jadwal Baru</div><div class="val" style="font-size:14px;color:' + state.legend[kodeBaru].color + '">' + kodeBaru + '</div></div>';
+  } else if(jenis === 'telat'){
+    var tgl = (document.getElementById('fTanggal') || {}).value || '—';
+    var jt = (document.getElementById('fJenisTelat') || {}).value || '—';
+    var jam = (document.getElementById('fJam') || {}).value || '—';
+    detailRows = '<div class="preview-stat"><div class="lbl">Tanggal</div><div class="val" style="font-size:13px">' + tgl + '</div></div><div class="preview-stat"><div class="lbl">Jenis</div><div class="val" style="font-size:13px">' + jt + '</div></div><div class="preview-stat"><div class="lbl">Jam</div><div class="val" style="font-size:13px">' + jam + '</div></div>';
+  } else if(jenis === 'absensieror'){
+    var ta = (document.getElementById('fTanggalAbsensi') || {}).value || '—';
+    var wa = (document.getElementById('fWaktuAbsensi') || {}).value || '—';
+    detailRows = '<div class="preview-stat"><div class="lbl">Tanggal</div><div class="val" style="font-size:13px">' + ta + '</div></div><div class="preview-stat"><div class="lbl">Waktu</div><div class="val" style="font-size:13px">' + (wa === 'masuk' ? 'Absen Masuk' : 'Absen Pulang') + '</div></div>';
+  } else if(jenis === 'tukar_shift'){
+    var namaB = (document.getElementById('fNamaPengganti') || {}).value || '—';
+    var tt = (document.getElementById('fTanggalTukar') || {}).value || '—';
+    detailRows = '<div class="preview-stat"><div class="lbl">Tanggal</div><div class="val" style="font-size:13px">' + tt + '</div></div><div class="preview-stat"><div class="lbl">Tukar Dengan</div><div class="val" style="font-size:12px">' + esc(namaB) + '</div></div>';
+  }
+  el.innerHTML = '<div class="alert-box info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg><div><b>Pengaju:</b> ' + esc(staff.nama) + '<br>NIP: ' + esc(staff.nip) + '</div></div><div class="alert-box info" style="background:#F3E8FF;color:#6D28D9;border-color:#E9D5FF"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><path d="M7 7h.01"/></svg><div><b>Jenis:</b> ' + esc(jenisLabel) + '</div></div><div class="preview-summary" style="grid-template-columns:1fr 1fr">' + detailRows + '</div>' + (ket ? '<div class="alert-box info" style="background:#F1F5F9;color:var(--ink-2);border-color:var(--border)"><div><b>Keterangan:</b><br>' + esc(ket) + '</div></div>' : '');
+  checkFormReady();
+}
+
+function checkFormReady(){
+  var nip = document.getElementById('formNip').value;
+  var jenis = state.formJenis;
+  var btn = document.getElementById('submitFormBtn');
+  var ready = false;
+  if(nip && jenis){
+    if(jenis === 'tukar_shift'){
+      var nb = (document.getElementById('fNamaPengganti') || {}).value;
+      var tt = (document.getElementById('fTanggalTukar') || {}).value;
+      ready = !!(nb && tt);
+    } else { ready = true; }
+  }
+  btn.disabled = !ready;
+}
+
+async function submitForm(){
+  var nip = document.getElementById('formNip').value;
+  var jenis = state.formJenis;
+  var ket = document.getElementById('formKeterangan').value.trim();
+  if(!nip || !jenis) return;
+  var payload = { nip: nip, jenis: jenis, keterangan: ket };
+  if(jenis === 'izin' || jenis === 'sakit' || jenis === 'cuti'){
+    payload.tanggal_mulai = (document.getElementById('fTanggalMulai') || {}).value;
+    payload.tanggal_selesai = (document.getElementById('fTanggalSelesai') || {}).value;
+    if(!payload.tanggal_mulai || !payload.tanggal_selesai){ alert('Isi tanggal mulai dan selesai.'); return; }
+  } else if(jenis === 'telat'){
+    payload.tanggal = (document.getElementById('fTanggal') || {}).value;
+    payload.jenis_telat = (document.getElementById('fJenisTelat') || {}).value;
+    payload.jam = (document.getElementById('fJam') || {}).value;
+    if(!payload.tanggal){ alert('Isi tanggal.'); return; }
+  } else if(jenis === 'absensieror'){
+    payload.tanggal = (document.getElementById('fTanggalAbsensi') || {}).value;
+    payload.tanggal_absensi = payload.tanggal;
+    payload.waktu_absensi = (document.getElementById('fWaktuAbsensi') || {}).value;
+    if(!payload.tanggal){ alert('Isi tanggal.'); return; }
+  } else if(jenis === 'tukar_shift'){
+    payload.nama_b = (document.getElementById('fNamaPengganti') || {}).value;
+    payload.tanggal_tukar = (document.getElementById('fTanggalTukar') || {}).value;
+    if(!payload.nama_b || !payload.tanggal_tukar){ alert('Lengkapi data tukar shift.'); return; }
+  }
+  var btn = document.getElementById('submitFormBtn');
+  btn.disabled = true; btn.innerHTML = 'Memproses…';
+  try{
+    var r = await sb.rpc('rpc_submit_pengajuan', { p_payload: payload });
+    if(r.error) throw r.error;
+    if(!r.data.success) throw new Error(r.data.error || 'Gagal submit');
+
+    if (jenis === 'izin' || jenis === 'sakit' || jenis === 'cuti') {
+      await autoUpdateJadwalFromPengajuan(jenis, payload);
+    }
+
+    var jenisLabel = JENIS_LABEL[jenis] || (jenis === 'tukar_shift' ? 'Tukar Shift' : jenis);
+    var extra = '';
+    if(r.data.detail && jenis === 'tukar_shift'){
+      var d = r.data.detail;
+      extra = '<br><br><b>Detail tukar:</b><br>' + d.nama_a + ': ' + d.kode_a_lama + ' → ' + d.kode_a_baru + '<br>' + d.nama_b + ': ' + d.kode_b_lama + ' → ' + d.kode_b_baru + '<br>Tanggal: ' + d.tanggal;
+    } else if(jenis === 'izin' || jenis === 'sakit' || jenis === 'cuti'){
+      extra = '<br><br>✅ Jadwal di menu <b>Jadwal Lengkap</b> berhasil diupdate otomatis dengan kode <b>' + (jenis === 'izin' ? 'IZIN' : jenis === 'sakit' ? 'SKT' : 'CT') + '</b>.';
+    } else if(r.data.jadwal_terupdate !== undefined){
+      extra = '<br><br>✅ ' + r.data.jadwal_terupdate + ' sel jadwal berhasil diupdate otomatis.';
+    }
+    document.getElementById('formPreview').innerHTML = '<div class="alert-box success" style="flex-direction:column;align-items:flex-start;font-size:13px"><div style="display:flex;gap:10px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg><div><b>Pengajuan Terkirim!</b><br>Jenis: ' + esc(jenisLabel) + extra + '</div></div></div><button class="btn btn-secondary" id="resetFormBtn" style="width:100%;justify-content:center">Buat Pengajuan Baru</button>';
+    document.getElementById('resetFormBtn').addEventListener('click', resetForm);
+
+    setTimeout(function(){
+      loadDataJadwalBulan(state.jadwalTahun, state.jadwalBulan);
+      if(state.kehadiran.loaded) loadKehadiran();
+      if(dashState.data) loadDashboard(dashState.year, dashState.month);
+    }, 500);
+  }catch(err){
+    document.getElementById('formPreview').innerHTML = '<div class="alert-box error"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg><div><b>Gagal Kirim</b><br>' + esc(err.message) + '</div></div>';
+  }finally{ btn.disabled = false; btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2l-7 20-4-9-9-4Z"/></svg> Kirim Pengajuan'; }
+}
+
+function resetForm(){
+  state.formJenis = null;
+  document.querySelectorAll('.jenis-btn').forEach(function(b){ b.classList.remove('active'); });
+  document.getElementById('formKeterangan').value = '';
+  document.getElementById('formFields').innerHTML = '';
+  updateFormPreview();
+}
+
+/* ============================================================
+   AUTH
+   ============================================================ */
+async function checkIsAdmin(userId){
+  try{
+    var r = await sb.from('admin_users').select('user_id').eq('user_id', userId).maybeSingle();
+    if(r.error) return false;
+    return !!r.data;
+  }catch(e){ return false; }
+}
+
+async function refreshSession(){
+  try{
+    var r = await sb.auth.getSession();
+    var s = r.data && r.data.session;
+    state.user = s ? s.user : null;
+    state.isAdmin = s ? await checkIsAdmin(s.user.id) : false;
+    updateUserUI(); updateEditModeUI(); updateImportLock(); updatePengajuanLock();
+    updateMenuVisibility();
+  }catch(e){ console.warn(e); }
+}
+
+async function doLogin(email, password){
+  var r = await sb.auth.signInWithPassword({ email: email, password: password });
+  if(r.error) throw r.error;
+  state.user = r.data.user;
+  state.isAdmin = await checkIsAdmin(r.data.user.id);
+  updateUserUI(); updateEditModeUI(); updateImportLock(); updatePengajuanLock();
+  updateMenuVisibility();
+  if(!state.isAdmin) throw new Error('Login berhasil, tapi akun ini belum terdaftar sebagai admin.');
+}
+
+async function doLogout(){
+  try{ await sb.auth.signOut(); }catch(e){}
+  state.user = null; state.isAdmin = false; state.editMode = false;
+  state.pengajuan = { data: null, loaded: false };
+  dashState.data = null;
+  updateUserUI(); updateEditModeUI(); renderJadwal(); updateImportLock(); updatePengajuanLock();
+  updateMenuVisibility();
+}
+
+function updateUserUI(){
+  var av = document.getElementById('userAvatar');
+  var em = document.getElementById('userEmail');
+  var rl = document.getElementById('userRole');
+  if(state.user){
+    av.textContent = (state.user.email||'?').slice(0,2).toUpperCase();
+    av.classList.toggle('admin', state.isAdmin);
+    em.textContent = state.user.email;
+    rl.textContent = state.isAdmin ? '✅ Admin' : '⚠️ Bukan admin';
+  }else{
+    av.textContent = '?'; av.classList.remove('admin');
+    em.textContent = 'Belum login'; rl.textContent = 'Klik untuk login';
+  }
+}
+
+function updateEditModeUI(){
+  var btn = document.getElementById('editModeBtn');
+  var label = document.getElementById('editBtnLabel');
+  if(!btn) return;
+  if(state.editMode){
+    btn.classList.add('edit-active'); btn.classList.remove('btn-primary');
+    label.textContent = 'Keluar Edit';
+  }else{
+    btn.classList.remove('edit-active'); btn.classList.add('btn-primary');
+    label.textContent = 'Mode Edit';
+  }
+  updateSessionBox();
+}
+
+function updateSessionBox(){
+  var who = document.getElementById('sessionWho');
+  var sub = document.getElementById('sessionSub');
+  var btn = document.getElementById('sessionActionBtn');
+  if(!who) return;
+  if(state.user){
+    who.textContent = state.user.email;
+    sub.textContent = state.isAdmin ? '✅ Admin aktif' : '⚠️ Bukan admin';
+    btn.textContent = 'Logout'; btn.classList.remove('btn-primary'); btn.classList.add('btn-danger');
+  }else{
+    who.textContent = 'Belum login';
+    sub.textContent = 'Login untuk mengaktifkan edit jadwal';
+    btn.textContent = 'Login'; btn.classList.remove('btn-danger'); btn.classList.add('btn-primary');
+  }
+}
+
+function updateImportLock(){
+  var locked = document.getElementById('importLocked');
+  var unlocked = document.getElementById('importUnlocked');
+  if(!locked) return;
+  if(state.user && state.isAdmin){ locked.classList.add('hidden'); unlocked.classList.remove('hidden'); }
+  else{ locked.classList.remove('hidden'); unlocked.classList.add('hidden'); }
+}
+
+function updatePengajuanLock(){
+  var locked = document.getElementById('pengajuanLocked');
+  var unlocked = document.getElementById('pengajuanUnlocked');
+  if(!locked) return;
+  if(state.user && state.isAdmin){
+    locked.classList.add('hidden'); unlocked.classList.remove('hidden');
+    if(!state.pengajuan.loaded) loadPengajuan();
+  }else{
+    locked.classList.remove('hidden'); unlocked.classList.add('hidden');
+  }
+}
+
+function openModal(id){ var el = document.getElementById(id); if (el) el.classList.add('open'); }
+function closeModal(id){ var el = document.getElementById(id); if (el) el.classList.remove('open'); }
+
+/* ============================================================
    EVENT LISTENERS
    ============================================================ */
 document.querySelectorAll('[data-tab]').forEach(function(b){ b.addEventListener('click', function(){ setTab(b.dataset.tab); }); });
@@ -4287,7 +4907,7 @@ document.getElementById('dashMonth').addEventListener('change', function(e){ var
 document.getElementById('dashRefreshBtn').addEventListener('click', function(){ loadDashboard(dashState.year, dashState.month); });
 document.getElementById('dashPdfBtn').addEventListener('click', exportDashboardPdf);
 
-  /* Chart Kehadiran — filter periode mandiri */
+/* Chart Kehadiran — filter periode mandiri */
 document.getElementById('chartKehadiranPrevYear').addEventListener('click', function(){
   state.chartKehadiranFilter.year--;
   document.getElementById('chartKehadiranYear').value = state.chartKehadiranFilter.year;
@@ -4306,11 +4926,39 @@ document.getElementById('chartKehadiranMonth').addEventListener('change', functi
   state.chartKehadiranFilter.month = e.target.value ? parseInt(e.target.value, 10) : null;
   reloadChartKehadiran();
 });
+
+/* Riwayat Penempatan — Event Listeners */
+document.getElementById('riwayatAddBtn').addEventListener('click', function(){
+  if (!state.staffList.length) { alert('Data staff belum dimuat.'); return; }
+  openRiwayatForm(null, null);
+});
+document.getElementById('riwayatRefreshBtn').addEventListener('click', loadRiwayat);
+document.getElementById('riwayatSearch').addEventListener('input', renderRiwayat);
+document.getElementById('riwayatFilterRuangan').addEventListener('change', renderRiwayat);
+document.getElementById('riwayatFilterPeran').addEventListener('change', renderRiwayat);
+document.getElementById('riwayatFilterStatus').addEventListener('change', renderRiwayat);
+document.getElementById('riwayatBody').addEventListener('click', function(e){
+  var ed = e.target.closest('[data-edit-riwayat]');
+  if (ed) { openRiwayatForm(ed.dataset.editRiwayat); return; }
+  var del = e.target.closest('[data-delete-riwayat]');
+  if (del) { deleteRiwayat(del.dataset.deleteRiwayat); return; }
+});
+document.getElementById('closeRiwayatForm').addEventListener('click', function(){ closeModal('riwayatFormModal'); state.riwayat.editingId = null; });
+document.getElementById('riwayatCancelBtn').addEventListener('click', function(){ closeModal('riwayatFormModal'); state.riwayat.editingId = null; });
+document.getElementById('riwayatFormModal').addEventListener('click', function(e){ if (e.target === this) { closeModal('riwayatFormModal'); state.riwayat.editingId = null; } });
+document.getElementById('riwayatSaveBtn').addEventListener('click', saveRiwayat);
+document.getElementById('riwayatDeleteBtn').addEventListener('click', function(){
+  if (state.riwayat.editingId) deleteRiwayat(state.riwayat.editingId);
+});
+document.getElementById('closeRiwayatList').addEventListener('click', function(){ closeModal('riwayatListModal'); });
+document.getElementById('closeRiwayatListBtn').addEventListener('click', function(){ closeModal('riwayatListModal'); });
+document.getElementById('riwayatListModal').addEventListener('click', function(e){ if (e.target === this) closeModal('riwayatListModal'); });
+
 document.getElementById('kehadiranLoadBtn').addEventListener('click', loadKehadiran);
 document.getElementById('pengajuanLoadBtn').addEventListener('click', loadPengajuan);
 document.getElementById('pengajuanJenis').addEventListener('change', loadPengajuan);
 
-/* ⭐ Matrix bulanan */
+/* Matrix bulanan */
 document.getElementById('kehadiranMatrixBtn').addEventListener('click', function(){
   document.getElementById('matrixYear').value = state.matrix.year;
   document.getElementById('matrixSearch').value = '';
@@ -4333,6 +4981,7 @@ document.getElementById('refreshTop').addEventListener('click', function(){
   if(state.pengajuan.loaded) loadPengajuan();
   if(dashState.data) loadDashboard(dashState.year, dashState.month);
   if(state.masterStaff.loaded) loadMasterStaff();
+  if(state.riwayat.loaded) loadRiwayat();
 });
 document.getElementById('refreshSide').addEventListener('click', function(){
   loadDataJadwalBulan(state.jadwalTahun, state.jadwalBulan);
@@ -4340,6 +4989,7 @@ document.getElementById('refreshSide').addEventListener('click', function(){
   if(state.pengajuan.loaded) loadPengajuan();
   if(dashState.data) loadDashboard(dashState.year, dashState.month);
   if(state.masterStaff.loaded) loadMasterStaff();
+  if(state.riwayat.loaded) loadRiwayat();
 });
 
 document.getElementById('roomGrid').addEventListener('click', function(e){ var h = e.target.closest('.room-head'); if(!h) return; h.parentElement.classList.toggle('open'); });
@@ -4437,6 +5087,8 @@ document.getElementById('masterSearch').addEventListener('input', renderMasterSt
 document.getElementById('masterFilterJabatan').addEventListener('change', renderMasterStaff);
 document.getElementById('masterFilterJK').addEventListener('change', renderMasterStaff);
 document.getElementById('masterBody').addEventListener('click', function(e){
+  var rb = e.target.closest('[data-riwayat-staff]');
+  if (rb) { openRiwayatListForStaff(rb.dataset.riwayatStaff); return; }
   var ed = e.target.closest('[data-edit-staff]');
   if(ed){ openMasterForm(ed.dataset.editStaff); return; }
   var del = e.target.closest('[data-delete-staff]');
@@ -4468,7 +5120,7 @@ document.getElementById('confirmLogin').addEventListener('click', async function
     await doLogin(email, pwd);
     closeModal('loginModal');
     var activeTab = document.querySelector('.nav-item.active[data-tab]');
-    if(activeTab && activeTab.dataset.tab !== 'import' && activeTab.dataset.tab !== 'pengajuan' && activeTab.dataset.tab !== 'dashboard'){ state.editMode = true; setTab('jadwal'); renderJadwal(); }
+    if(activeTab && activeTab.dataset.tab !== 'import' && activeTab.dataset.tab !== 'pengajuan' && activeTab.dataset.tab !== 'dashboard' && activeTab.dataset.tab !== 'riwayat' && activeTab.dataset.tab !== 'master'){ state.editMode = true; setTab('jadwal'); renderJadwal(); }
   }catch(err){ errEl.textContent = err.message || 'Login gagal'; errEl.classList.remove('hidden'); }
   finally{ btn.disabled = false; btn.textContent = 'Masuk'; }
 });
@@ -4559,9 +5211,10 @@ sb.auth.onAuthStateChange(function(event, session){
 
 document.addEventListener('keydown', function(e){
   if(e.key === 'Escape'){
-    ['loginModal','settingsModal','detailModal','editPengajuanModal','kehadiranPrintModal','jamKerjaPrintModal','masterFormModal','matrixModal'].forEach(function(id){ closeModal(id); });
+    ['loginModal','settingsModal','detailModal','editPengajuanModal','kehadiranPrintModal','jamKerjaPrintModal','masterFormModal','matrixModal','riwayatFormModal','riwayatListModal'].forEach(function(id){ closeModal(id); });
     editingPengajuanId = null;
     state.masterStaff.editingNip = null;
+    state.riwayat.editingId = null;
   }
 });
 
@@ -4594,9 +5247,20 @@ document.addEventListener('keydown', function(e){
   state.chartKehadiranFilter.month = null;
   document.getElementById('chartKehadiranYear').value = state.chartKehadiranFilter.year;
   document.getElementById('chartKehadiranMonth').value = '';
+
   await refreshSession();
   updateMenuVisibility();
   await loadStaffList();
+
+  // Pre-load riwayat (untuk chart multiskill & koordinator di rekap)
+  try {
+    var rr = await sb.from('staff_penempatan').select('*, staff(nama, jabatan)');
+    if (!rr.error) {
+      state.riwayat.data = rr.data || [];
+      state.riwayat.loaded = true;
+    }
+  } catch(e) { console.warn('Pre-load riwayat error:', e); }
+
   await loadDataJadwalBulan(state.jadwalTahun, state.jadwalBulan);
 })();
 </script>
