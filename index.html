@@ -1041,11 +1041,17 @@
           <h2>Riwayat Penempatan Staff</h2>
         </div>
         <div class="date-nav">
-          <button class="btn btn-primary" id="riwayatAddBtn">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-            Tambah Penempatan
-          </button>
-        </div>
+        <!-- Tombol Import yang baru ditambahkan -->
+        <button class="btn btn-secondary" id="riwayatImportBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v12"/></svg>
+          Import Penempatan
+        </button>
+        
+        <!-- Tombol Tambah Penempatan yang lama -->
+        <button class="btn btn-primary" id="riwayatAddBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+          Tambah Penempatan
+        </button>
       </div>
 
       <div class="kpi-grid" id="riwayatKpi" style="margin-bottom:18px"></div>
@@ -5211,13 +5217,176 @@ sb.auth.onAuthStateChange(function(event, session){
 
 document.addEventListener('keydown', function(e){
   if(e.key === 'Escape'){
-    ['loginModal','settingsModal','detailModal','editPengajuanModal','kehadiranPrintModal','jamKerjaPrintModal','masterFormModal','matrixModal','riwayatFormModal','riwayatListModal'].forEach(function(id){ closeModal(id); });
+    ['loginModal','settingsModal','detailModal','editPengajuanModal','kehadiranPrintModal','jamKerjaPrintModal','masterFormModal','matrixModal','riwayatFormModal','riwayatListModal','importPenempatanModal'].forEach(function(id){ closeModal(id); });
     editingPengajuanId = null;
     state.masterStaff.editingNip = null;
     state.riwayat.editingId = null;
   }
 });
 
+  /* ============================================================
+   IMPORT PENEMPATAN STAFF
+   ============================================================ */
+var VALID_PERAN = ['Kepala Instalasi', 'Koordinator', 'Staff', 'PIC', 'Magang', 'Lainnya'];
+
+function normalizePeran(s) {
+  var lower = String(s || '').toLowerCase().trim().replace(/[^a-z ]/g, '');
+  var map = {
+    'kepala instalasi': 'Kepala Instalasi', 'kepala': 'Kepala Instalasi', 'karu': 'Kepala Instalasi',
+    'koordinator': 'Koordinator', 'koord': 'Koordinator', 'kor': 'Koordinator',
+    'staff': 'Staff', 'staf': 'Staff', 'pic': 'PIC', 'penanggung jawab': 'PIC',
+    'magang': 'Magang', 'intern': 'Magang', 'lainnya': 'Lainnya', 'lain': 'Lainnya'
+  };
+  return map[lower] || null;
+}
+
+function parsePenempatanExcel(text) {
+  var lines = text.replace(/\r/g, '').split('\n').filter(function(l){ return l.trim().length > 0; });
+  if (lines.length < 2) throw new Error('Butuh minimal 2 baris (header + 1 data).');
+
+  var rows = lines.map(function(line){ return line.split('\t'); });
+  var firstRow = rows[0].map(function(h){ return String(h||'').trim().toLowerCase(); });
+  var hasHeader = firstRow.some(function(h){
+    return h.indexOf('nip') !== -1 || h.indexOf('ruangan') !== -1 || h.indexOf('peran') !== -1 || h.indexOf('mulai') !== -1;
+  });
+
+  var colNip = -1, colRuangan = -1, colPeran = -1, colMulai = -1, colSelesai = -1, colKet = -1;
+
+  if (hasHeader) {
+    function findCol(names) {
+      for (var i = 0; i < firstRow.length; i++) {
+        for (var j = 0; j < names.length; j++) { if (firstRow[i].indexOf(names[j]) !== -1) return i; }
+      }
+      return -1;
+    }
+    colNip = findCol(['nip', 'nik']); colRuangan = findCol(['ruangan', 'depo', 'lokasi', 'unit']);
+    colPeran = findCol(['peran', 'posisi', 'struktur']); colMulai = findCol(['mulai', 'start', 'awal', 'tmt']);
+    colSelesai = findCol(['selesai', 'end', 'akhir', 'sampai']); colKet = findCol(['keterangan', 'catatan', 'note', 'ket']);
+  }
+
+  if (colNip === -1) colNip = 0; if (colRuangan === -1) colRuangan = 1; if (colPeran === -1) colPeran = 2;
+  if (colMulai === -1) colMulai = 3; if (colSelesai === -1) colSelesai = 4; if (colKet === -1) colKet = 5;
+
+  var validNips = {};
+  (state.staffList || []).forEach(function(s){ validNips[s.nip] = s; });
+
+  var parsed = [];
+  var dataStartIdx = hasHeader ? 1 : 0;
+
+  for (var r = dataStartIdx; r < rows.length; r++) {
+    var row = rows[r];
+    var nip = String(row[colNip] || '').trim(); var ruangan = String(row[colRuangan] || '').trim();
+    var peranRaw = String(row[colPeran] || '').trim(); var mulaiRaw = String(row[colMulai] || '').trim();
+    var selesaiRaw= String(row[colSelesai] || '').trim(); var ket = String(row[colKet] || '').trim();
+
+    if (!nip && !ruangan && !peranRaw) continue;
+
+    var rowErrors = []; var peran = normalizePeran(peranRaw);
+    if (!nip) rowErrors.push('NIP kosong'); else if (!validNips[nip]) rowErrors.push('NIP tidak terdaftar: ' + nip);
+    if (!ruangan) rowErrors.push('Ruangan kosong');
+    if (!peranRaw) rowErrors.push('Peran kosong'); else if (!peran) rowErrors.push('Peran tidak valid: "' + peranRaw + '"');
+
+    var mulai = parseDate(mulaiRaw);
+    if (!mulaiRaw) rowErrors.push('Tanggal mulai kosong'); else if (!mulai) rowErrors.push('Tanggal mulai tidak valid: "' + mulaiRaw + '"');
+
+    var selesai = null;
+    if (selesaiRaw) {
+      selesai = parseDate(selesaiRaw);
+      if (!selesai) rowErrors.push('Tanggal selesai tidak valid: "' + selesaiRaw + '"');
+      else if (mulai && selesai < mulai) rowErrors.push('Selesai < Mulai');
+    }
+
+    parsed.push({ rowNum: r + 1, nip: nip, nama: validNips[nip] ? validNips[nip].nama : null, ruangan: ruangan, peran: peran || peranRaw, tanggal_mulai: mulai, tanggal_selesai: selesai, keterangan: ket || null, errors: rowErrors });
+  }
+  return parsed;
+}
+
+function renderPreviewPenempatan(parsed) {
+  var el = document.getElementById('previewPenempatan');
+  var confirmBtn = document.getElementById('confirmImportPenempatan');
+  var subEl = document.getElementById('importPenempatanSub');
+
+  var validRows = parsed.filter(function(r){ return r.errors.length === 0; });
+  var errorRows = parsed.filter(function(r){ return r.errors.length > 0; });
+  subEl.textContent = validRows.length + ' valid · ' + errorRows.length + ' error · total ' + parsed.length + ' baris';
+
+  var html = '';
+  if (validRows.length > 0) html += '<div class="alert-box success"><div><b>' + validRows.length + ' baris valid</b> siap diimport.</div></div>';
+  if (errorRows.length > 0) {
+    var errDetails = errorRows.slice(0, 5).map(function(r){ return 'Baris ' + r.rowNum + ': ' + r.errors.join(', '); }).join('<br>');
+    if (errorRows.length > 5) errDetails += '<br>… dan ' + (errorRows.length - 5) + ' baris error lainnya';
+    html += '<div class="alert-box error"><div><b>' + errorRows.length + ' baris error (akan di-skip):</b><br>' + errDetails + '</div></div>';
+  }
+
+  var previewRows = parsed.slice(0, 15);
+  var tableHtml = '<div class="preview-table-wrap" style="max-height:280px"><table class="preview-table"><thead><tr><th>Baris</th><th>NIP</th><th>Nama</th><th>Ruangan</th><th>Peran</th><th>Mulai</th><th>Selesai</th><th>Status</th></tr></thead><tbody>';
+  previewRows.forEach(function(r){
+    var statusHtml = r.errors.length === 0 ? '<span style="color:#065F46;font-weight:700">✓ OK</span>' : '<span style="color:#991B1B;font-weight:700" title="' + esc(r.errors.join(', ')) + '">✗ ' + r.errors.length + ' error</span>';
+    var rowStyle = r.errors.length > 0 ? 'background:#FEF2F2' : '';
+    tableHtml += '<tr style="' + rowStyle + '"><td>' + r.rowNum + '</td><td>' + esc(r.nip) + '</td><td>' + esc(r.nama || '—') + '</td><td>' + esc(r.ruangan) + '</td><td>' + esc(r.peran) + '</td><td>' + esc(r.tanggal_mulai || '—') + '</td><td>' + esc(r.tanggal_selesai || '—') + '</td><td>' + statusHtml + '</td></tr>';
+  });
+  tableHtml += '</tbody></table></div>';
+  if (parsed.length > 15) tableHtml += '<div style="text-align:center;font-size:11.5px;color:var(--ink-muted);margin-top:8px">… dan ' + (parsed.length - 15) + ' baris lainnya</div>';
+  html += tableHtml;
+
+  el.innerHTML = html;
+  confirmBtn.disabled = validRows.length === 0;
+}
+
+async function doImportPenempatan() {
+  var text = document.getElementById('pastePenempatan').value;
+  if (!text.trim()) return;
+  var parsed;
+  try { parsed = parsePenempatanExcel(text); } catch (err) { document.getElementById('previewPenempatan').innerHTML = '<div class="alert-box error"><div><b>Gagal parse:</b> ' + esc(err.message) + '</div></div>'; return; }
+
+  var validRows = parsed.filter(function(r){ return r.errors.length === 0; });
+  if (validRows.length === 0) { alert('Tidak ada baris valid untuk diimport.'); return; }
+
+  var btn = document.getElementById('confirmImportPenempatan');
+  btn.disabled = true; btn.textContent = 'Mengimport…';
+
+  try {
+    var payload = validRows.map(function(r){ return { nip: r.nip, ruangan: r.ruangan, peran: r.peran, tanggal_mulai: r.tanggal_mulai, tanggal_selesai: r.tanggal_selesai, keterangan: r.keterangan }; });
+    var res = await sb.from('staff_penempatan').insert(payload);
+    if (res.error) throw res.error;
+
+    document.getElementById('previewPenempatan').innerHTML = '<div class="alert-box success"><div><b>Import Berhasil!</b><br>✅ ' + payload.length + ' baris penempatan ditambahkan.' + (parsed.length - validRows.length > 0 ? '<br>⚠️ ' + (parsed.length - validRows.length) + ' baris di-skip karena error.' : '') + '</div></div><div style="text-align:center;margin-top:16px"><button class="btn btn-primary" id="doneImportPenempatanBtn">Selesai</button></div>';
+    document.getElementById('doneImportPenempatanBtn').addEventListener('click', function(){
+      closeModal('importPenempatanModal'); document.getElementById('pastePenempatan').value = ''; document.getElementById('previewPenempatan').innerHTML = ''; document.getElementById('confirmImportPenempatan').disabled = true; document.getElementById('importPenempatanSub').textContent = 'Paste data dari Excel'; loadRiwayat(); renderRekap();
+    });
+  } catch (err) {
+    document.getElementById('previewPenempatan').innerHTML = '<div class="alert-box error"><div><b>Gagal import:</b> ' + esc(err.message) + '</div></div>';
+  } finally { btn.disabled = false; btn.textContent = 'Import ke Database'; }
+}
+
+/* Event Listeners untuk Import Penempatan */
+document.getElementById('riwayatImportBtn').addEventListener('click', function(){
+  document.getElementById('pastePenempatan').value = '';
+  document.getElementById('previewPenempatan').innerHTML = '';
+  document.getElementById('confirmImportPenempatan').disabled = true;
+  document.getElementById('importPenempatanSub').textContent = 'Paste data dari Excel';
+  openModal('importPenempatanModal');
+  setTimeout(function(){ document.getElementById('pastePenempatan').focus(); }, 100);
+});
+
+document.getElementById('pastePenempatan').addEventListener('input', function(e){
+  var text = e.target.value;
+  if (!text.trim()) { document.getElementById('previewPenempatan').innerHTML = ''; document.getElementById('confirmImportPenempatan').disabled = true; return; }
+  try { var parsed = parsePenempatanExcel(text); renderPreviewPenempatan(parsed); }
+  catch (err) { document.getElementById('previewPenempatan').innerHTML = '<div class="alert-box warn"><div><b>Menunggu data lengkap…</b><br>' + esc(err.message) + '</div></div>'; document.getElementById('confirmImportPenempatan').disabled = true; }
+});
+
+document.getElementById('confirmImportPenempatan').addEventListener('click', doImportPenempatan);
+document.getElementById('clearPenempatanBtn').addEventListener('click', function(){
+  document.getElementById('pastePenempatan').value = '';
+  document.getElementById('previewPenempatan').innerHTML = '';
+  document.getElementById('confirmImportPenempatan').disabled = true;
+  document.getElementById('importPenempatanSub').textContent = 'Paste data dari Excel';
+});
+document.getElementById('closeImportPenempatan').addEventListener('click', function(){ closeModal('importPenempatanModal'); });
+document.getElementById('cancelImportPenempatan').addEventListener('click', function(){ closeModal('importPenempatanModal'); });
+document.getElementById('importPenempatanModal').addEventListener('click', function(e){ if(e.target === this) closeModal('importPenempatanModal'); });
+  
 /* ============================================================
    INIT
    ============================================================ */
@@ -5264,5 +5433,46 @@ document.addEventListener('keydown', function(e){
   await loadDataJadwalBulan(state.jadwalTahun, state.jadwalBulan);
 })();
 </script>
+
+  <!-- MODAL IMPORT PENEMPATAN (Diletakkan di paling bawah agar mudah dicari) -->
+<div class="modal-bg" id="importPenempatanModal">
+  <div class="modal-m wide" style="max-width:900px">
+    <div class="modal-head dark">
+      <div>
+        <h3>Import Penempatan Staff</h3>
+        <div class="modal-sub" id="importPenempatanSub">Paste data dari Excel</div>
+      </div>
+      <button class="modal-close" id="closeImportPenempatan">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="import-help">
+        <b>Format kolom</b> (baris pertama = header, urutan bebas):
+        <ol>
+          <li><b>NIP</b> — wajib, harus terdaftar di Master Staff</li>
+          <li><b>Ruangan</b> — wajib (contoh: DEPO FARMASI IGD)</li>
+          <li><b>Peran</b> — wajib: <code>Kepala Instalasi</code> / <code>Koordinator</code> / <code>Staff</code> / <code>PIC</code> / <code>Magang</code> / <code>Lainnya</code></li>
+          <li><b>Tanggal Mulai</b> — wajib (format: <code>2026-01-15</code> / <code>15/01/2026</code> / <code>15 Jan 2026</code>)</li>
+          <li><b>Tanggal Selesai</b> — opsional (kosongkan jika masih aktif)</li>
+          <li><b>Keterangan</b> — opsional</li>
+        </ol>
+        <div style="margin-top:8px;font-size:11.5px">
+          💡 Copy langsung dari Excel (Ctrl+C) lalu paste di kotak bawah (Ctrl+V).
+        </div>
+      </div>
+      <textarea class="paste-zone" id="pastePenempatan" placeholder="Paste data Excel di sini (Ctrl+V)…" style="min-height:200px"></textarea>
+      <div id="previewPenempatan" style="margin-top:16px"></div>
+    </div>
+    <div class="modal-foot space">
+      <button class="btn btn-ghost" id="clearPenempatanBtn">Bersihkan</button>
+      <div style="display:flex;gap:10px">
+        <button class="btn btn-secondary" id="cancelImportPenempatan">Tutup</button>
+        <button class="btn btn-primary" id="confirmImportPenempatan" disabled>Import ke Database</button>
+      </div>
+    </div>
+  </div>
+</div>
+  
 </body>
 </html>
