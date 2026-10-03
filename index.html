@@ -382,7 +382,7 @@
   .chart-card.full > canvas{max-height:340px}
   .chart-card h3{font-size:14px;font-weight:700;color:var(--ink);margin-bottom:4px}
   .chart-card p.desc{font-size:11.5px;color:var(--ink-muted);margin-bottom:16px}
-  .chart-card canvas{max-height:280px}
+  .chart-card > canvas:not(:first-child){max-height:340px}
   .chart-card.full{grid-column:1/-1}
 
   .list-staf{padding:4px 0}
@@ -3170,6 +3170,85 @@ function renderChartShiftRuangan(shiftRuangan){
   });
 }
 
+/* ============================================================
+   EXPAND CHART KE FULLSCREEN
+   ============================================================ */
+var fullChartInstance = null;
+
+function expandChartFullscreen(srcCanvas) {
+  if (!srcCanvas) return;
+
+  // Cari Chart.js instance yang terkait dengan canvas ini
+  var srcChart = null;
+  Object.keys(dashState.charts).forEach(function(key){
+    var ch = dashState.charts[key];
+    if (ch && ch.canvas === srcCanvas) srcChart = ch;
+  });
+  if (!srcChart) return;
+
+  // Ambil judul dari h3 terdekat
+  var card = srcCanvas.closest('.chart-card');
+  var titleEl = card ? card.querySelector('h3') : null;
+  var title = titleEl ? titleEl.textContent.trim() : 'Grafik';
+  document.getElementById('chartFullTitle').textContent = title;
+
+  // Tampilkan modal
+  openModal('chartFullModal');
+
+  // Hancurkan chart sebelumnya (jika ada)
+  if (fullChartInstance) {
+    try { fullChartInstance.destroy(); } catch(e){}
+    fullChartInstance = null;
+  }
+
+  // Rebuild chart di canvas modal
+  var ctx = document.getElementById('chartFullCanvas');
+  var cfgType = srcChart.config.type;
+  var cfgData = srcChart.config.data;
+  var baseOpt = srcChart.config.options || {};
+  var newOpt = Object.assign({}, baseOpt, {
+    responsive: true,
+    maintainAspectRatio: false,
+    animation: { duration: 300 }
+  });
+
+  // Perbesar font label
+  if (newOpt.plugins && newOpt.plugins.legend && newOpt.plugins.legend.labels) {
+    newOpt.plugins.legend.labels.font = { size: 13 };
+  } else if (newOpt.plugins && newOpt.plugins.legend) {
+    newOpt.plugins.legend.labels = { font: { size: 13 } };
+  }
+
+  if (cfgType === 'doughnut' || cfgType === 'pie') {
+    newOpt.cutout = cfgType === 'doughnut' ? '55%' : 0;
+  }
+
+  fullChartInstance = new Chart(ctx, {
+    type: cfgType,
+    data: cfgData,
+    options: newOpt
+  });
+}
+
+// Event: klik canvas di dashboard
+document.getElementById('tab-dashboard').addEventListener('click', function(e){
+  var canvas = e.target.closest('.chart-card canvas');
+  if (canvas) expandChartFullscreen(canvas);
+});
+
+// Event: tutup modal
+function closeFullChart() {
+  closeModal('chartFullModal');
+  if (fullChartInstance) {
+    try { fullChartInstance.destroy(); } catch(err){}
+    fullChartInstance = null;
+  }
+}
+document.getElementById('closeChartFull').addEventListener('click', closeFullChart);
+document.getElementById('chartFullModal').addEventListener('click', function(e){
+  if (e.target === this) closeFullChart();
+});
+
 function renderHeatmap(heatmap, year){
   var el = document.getElementById('dashHeatmap');
   if(!heatmap || heatmap.length === 0){ el.innerHTML = '<div style="text-align:center;padding:20px;color:var(--ink-muted);font-size:12px">Belum ada data</div>'; return; }
@@ -5283,7 +5362,7 @@ sb.auth.onAuthStateChange(function(event, session){
 
 document.addEventListener('keydown', function(e){
   if(e.key === 'Escape'){
-    ['loginModal','settingsModal','detailModal','editPengajuanModal','kehadiranPrintModal','jamKerjaPrintModal','masterFormModal','matrixModal','riwayatFormModal','riwayatListModal','importPenempatanModal'].forEach(function(id){ closeModal(id); });
+    ['loginModal','settingsModal','detailModal','editPengajuanModal','kehadiranPrintModal','jamKerjaPrintModal','masterFormModal','matrixModal','riwayatFormModal','riwayatListModal','importPenempatanModal','chartFullModal']
     editingPengajuanId = null;
     state.masterStaff.editingNip = null;
     state.riwayat.editingId = null;
