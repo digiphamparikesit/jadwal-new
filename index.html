@@ -1616,6 +1616,46 @@
   </div>
 </div>
 
+  <!-- MODAL IMPORT PENEMPATAN (Diletakkan di paling bawah agar mudah dicari) -->
+<div class="modal-bg" id="importPenempatanModal">
+  <div class="modal-m wide" style="max-width:900px">
+    <div class="modal-head dark">
+      <div>
+        <h3>Import Penempatan Staff</h3>
+        <div class="modal-sub" id="importPenempatanSub">Paste data dari Excel</div>
+      </div>
+      <button class="modal-close" id="closeImportPenempatan">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="import-help">
+        <b>Format kolom</b> (baris pertama = header, urutan bebas):
+        <ol>
+          <li><b>NIP</b> — wajib, harus terdaftar di Master Staff</li>
+          <li><b>Ruangan</b> — wajib (contoh: DEPO FARMASI IGD)</li>
+          <li><b>Peran</b> — wajib: <code>Kepala Instalasi</code> / <code>Koordinator</code> / <code>Staff</code> / <code>PIC</code> / <code>Magang</code> / <code>Lainnya</code></li>
+          <li><b>Tanggal Mulai</b> — wajib (format: <code>2026-01-15</code> / <code>15/01/2026</code> / <code>15 Jan 2026</code>)</li>
+          <li><b>Tanggal Selesai</b> — opsional (kosongkan jika masih aktif)</li>
+          <li><b>Keterangan</b> — opsional</li>
+        </ol>
+        <div style="margin-top:8px;font-size:11.5px">
+          💡 Copy langsung dari Excel (Ctrl+C) lalu paste di kotak bawah (Ctrl+V).
+        </div>
+      </div>
+      <textarea class="paste-zone" id="pastePenempatan" placeholder="Paste data Excel di sini (Ctrl+V)…" style="min-height:200px"></textarea>
+      <div id="previewPenempatan" style="margin-top:16px"></div>
+    </div>
+    <div class="modal-foot space">
+      <button class="btn btn-ghost" id="clearPenempatanBtn">Bersihkan</button>
+      <div style="display:flex;gap:10px">
+        <button class="btn btn-secondary" id="cancelImportPenempatan">Tutup</button>
+        <button class="btn btn-primary" id="confirmImportPenempatan" disabled>Import ke Database</button>
+      </div>
+    </div>
+  </div>
+</div>
+  
 <div class="pdf-loading" id="pdfLoading">
   <div class="pdf-spinner"></div>
   <div id="pdfLoadingText">Menyiapkan PDF…</div>
@@ -5432,47 +5472,6 @@ document.getElementById('importPenempatanModal').addEventListener('click', funct
 
   await loadDataJadwalBulan(state.jadwalTahun, state.jadwalBulan);
 })();
-</script>
-
-  <!-- MODAL IMPORT PENEMPATAN (Diletakkan di paling bawah agar mudah dicari) -->
-<div class="modal-bg" id="importPenempatanModal">
-  <div class="modal-m wide" style="max-width:900px">
-    <div class="modal-head dark">
-      <div>
-        <h3>Import Penempatan Staff</h3>
-        <div class="modal-sub" id="importPenempatanSub">Paste data dari Excel</div>
-      </div>
-      <button class="modal-close" id="closeImportPenempatan">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><path d="M18 6 6 18M6 6l12 12"/></svg>
-      </button>
-    </div>
-    <div class="modal-body">
-      <div class="import-help">
-        <b>Format kolom</b> (baris pertama = header, urutan bebas):
-        <ol>
-          <li><b>NIP</b> — wajib, harus terdaftar di Master Staff</li>
-          <li><b>Ruangan</b> — wajib (contoh: DEPO FARMASI IGD)</li>
-          <li><b>Peran</b> — wajib: <code>Kepala Instalasi</code> / <code>Koordinator</code> / <code>Staff</code> / <code>PIC</code> / <code>Magang</code> / <code>Lainnya</code></li>
-          <li><b>Tanggal Mulai</b> — wajib (format: <code>2026-01-15</code> / <code>15/01/2026</code> / <code>15 Jan 2026</code>)</li>
-          <li><b>Tanggal Selesai</b> — opsional (kosongkan jika masih aktif)</li>
-          <li><b>Keterangan</b> — opsional</li>
-        </ol>
-        <div style="margin-top:8px;font-size:11.5px">
-          💡 Copy langsung dari Excel (Ctrl+C) lalu paste di kotak bawah (Ctrl+V).
-        </div>
-      </div>
-      <textarea class="paste-zone" id="pastePenempatan" placeholder="Paste data Excel di sini (Ctrl+V)…" style="min-height:200px"></textarea>
-      <div id="previewPenempatan" style="margin-top:16px"></div>
-    </div>
-    <div class="modal-foot space">
-      <button class="btn btn-ghost" id="clearPenempatanBtn">Bersihkan</button>
-      <div style="display:flex;gap:10px">
-        <button class="btn btn-secondary" id="cancelImportPenempatan">Tutup</button>
-        <button class="btn btn-primary" id="confirmImportPenempatan" disabled>Import ke Database</button>
-      </div>
-    </div>
-  </div>
-</div>
-  
+</script>  
 </body>
 </html>
