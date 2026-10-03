@@ -373,8 +373,13 @@
   .kpi-icon{position:absolute;top:16px;right:16px;width:32px;height:32px;border-radius:9px;display:grid;place-items:center}
   .kpi-icon svg{width:16px;height:16px}
 
-  .chart-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(420px,1fr));gap:18px}
-  .chart-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);box-shadow:var(--shadow-xs);overflow:hidden;padding:18px 20px}
+  .chart-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(420px,1fr));gap:18px;align-items:stretch}
+  .chart-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);box-shadow:var(--shadow-xs);overflow:hidden;padding:18px 20px;display:flex;flex-direction:column;transition:box-shadow .2s,transform .2s}
+  .chart-card:hover{box-shadow:var(--shadow-md)}
+  .chart-card > canvas{cursor:zoom-in;transition:opacity .15s}
+  .chart-card > canvas:hover{opacity:.85}
+  .chart-card > canvas{flex:1;min-height:280px;max-height:340px}
+  .chart-card.full > canvas{max-height:340px}
   .chart-card h3{font-size:14px;font-weight:700;color:var(--ink);margin-bottom:4px}
   .chart-card p.desc{font-size:11.5px;color:var(--ink-muted);margin-bottom:16px}
   .chart-card canvas{max-height:280px}
@@ -1617,6 +1622,26 @@
   </div>
 </div>
 
+<!-- MODAL CHART FULLSCREEN -->
+<div class="modal-bg" id="chartFullModal">
+  <div class="modal-m wide" style="max-width:1400px; width:95vw">
+    <div class="modal-head dark">
+      <div>
+        <h3 id="chartFullTitle">—</h3>
+        <div class="modal-sub">Tampilan Grafik Diperbesar · Tekan ESC untuk menutup</div>
+      </div>
+      <button class="modal-close" id="closeChartFull">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body" style="padding:20px; background:#fff">
+      <div style="height:75vh; position:relative">
+        <canvas id="chartFullCanvas"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+  
   <!-- MODAL IMPORT PENEMPATAN (Diletakkan di paling bawah agar mudah dicari) -->
 <div class="modal-bg" id="importPenempatanModal">
   <div class="modal-m wide" style="max-width:900px">
