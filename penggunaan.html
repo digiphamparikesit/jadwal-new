@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panduan Penggunaan — Sistem Jadwal Instalasi Farmasi</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F8FAFC; --card:#FFFFFF; --border:#E2E8F0; --border-soft:#F1F5F9;
+    --ink:#0F172A; --ink-2:#334155; --ink-muted:#64748B; --ink-faint:#94A3B8;
+    --primary:#0F766E; --primary-600:#0D9488; --primary-soft:#CCFBF1; --primary-tint:#F0FDFA;
+    --accent:#F59E0B; --accent-soft:#FEF3C7;
+    --rose:#DC2626; --rose-soft:#FEE2E2;
+    --violet:#7C3AED; --violet-soft:#EDE9FE;
+    --shadow-sm:0 1px 3px rgba(15,23,42,.06), 0 1px 2px rgba(15,23,42,.04);
+    --shadow-md:0 4px 6px -1px rgba(15,23,42,.06), 0 2px 4px -2px rgba(15,23,42,.04);
+    --shadow-lg:0 10px 15px -3px rgba(15,23,42,.07), 0 4px 6px -4px rgba(15,23,42,.04);
+    --r-md:12px; --r-lg:16px; --r-xl:20px; --r-full:999px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:'Inter',-apple-system,sans-serif;-webkit-font-smoothing:antialiased;line-height:1.6}
+  .mono{font-family:'JetBrains Mono',monospace}
+  
+  .wrap{max-width:1000px;margin:0 auto;padding:40px 24px 80px}
+  
+  /* Hero */
+  .hero{background:linear-gradient(135deg,#0F172A 0%,#1E293B 100%);color:#F8FAFC;border-radius:var(--r-xl);padding:48px 40px;margin-bottom:32px;position:relative;overflow:hidden;box-shadow:var(--shadow-lg)}
+  .hero::after{content:'';position:absolute;top:-80px;right:-80px;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(245,158,11,.25),transparent 70%)}
+  .hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(245,158,11,.15);color:#FBBF24;font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:6px 14px;border-radius:var(--r-full);margin-bottom:16px;border:1px solid rgba(245,158,11,.3)}
+  .hero h1{font-size:32px;font-weight:800;letter-spacing:-.02em;margin-bottom:8px;line-height:1.15}
+  .hero p{font-size:15px;color:#94A3B8;max-width:600px;margin-bottom:20px}
+  .hero-meta{display:flex;gap:24px;flex-wrap:wrap;font-size:12.5px;color:#64748B;font-family:'JetBrains Mono',monospace}
+  .hero-meta span{display:flex;align-items:center;gap:6px}
+  .hero-meta svg{width:14px;height:14px;color:#5EEAD4}
+  
+  /* TOC */
+  .toc{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);padding:24px 28px;margin-bottom:32px;box-shadow:var(--shadow-sm)}
+  .toc h2{font-size:15px;font-weight:700;color:var(--ink);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+  .toc h2::before{content:'';width:4px;height:18px;background:var(--primary);border-radius:2px}
+  .toc ol{padding-left:22px;font-size:14px;color:var(--ink-2)}
+  .toc li{margin-bottom:6px}
+  .toc a{color:var(--primary);text-decoration:none;font-weight:500}
+  .toc a:hover{text-decoration:underline}
+  
+  /* Section */
+  section{margin-bottom:40px;scroll-margin-top:20px}
+  .section-title{font-size:22px;font-weight:800;color:var(--ink);letter-spacing:-.01em;margin-bottom:6px;display:flex;align-items:center;gap:12px}
+  .section-title .num{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--primary),var(--primary-600));color:#fff;display:grid;place-items:center;font-size:15px;font-weight:800;flex:none;font-family:'JetBrains Mono',monospace}
+  .section-desc{font-size:13.5px;color:var(--ink-muted);margin-bottom:20px;padding-left:48px}
+  
+  /* Card */
+  .card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);padding:22px 26px;margin-bottom:16px;box-shadow:var(--shadow-sm)}
+  .card h3{font-size:15px;font-weight:700;color:var(--ink);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+  .card h3 svg{width:16px;height:16px;color:var(--primary)}
+  
+  /* Step list */
+  .steps{list-style:none;counter-reset:step;padding:0}
+  .steps li{position:relative;padding:10px 0 10px 42px;font-size:13.5px;color:var(--ink-2);border-bottom:1px solid var(--border-soft);counter-increment:step}
+  .steps li:last-child{border-bottom:none}
+  .steps li::before{content:counter(step);position:absolute;left:0;top:10px;width:26px;height:26px;border-radius:50%;background:var(--primary-tint);color:var(--primary);display:grid;place-items:center;font-size:12px;font-weight:800;font-family:'JetBrains Mono',monospace;border:1.5px solid var(--primary-soft)}
+  .steps li b{color:var(--ink)}
+  .steps code{background:var(--border-soft);padding:2px 8px;border-radius:5px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--primary);border:1px solid var(--border)}
+  
+  /* Info boxes */
+  .info-box{padding:14px 18px;border-radius:var(--r-md);font-size:13px;line-height:1.6;margin:12px 0;display:flex;gap:10px;align-items:flex-start}
+  .info-box svg{width:18px;height:18px;flex:none;margin-top:2px}
+  .info-box.tip{background:var(--primary-tint);color:#0F766E;border-left:3px solid var(--primary)}
+  .info-box.warn{background:#FEF3C7;color:#92400E;border-left:3px solid #F59E0B}
+  .info-box.err{background:#FEE2E2;color:#991B1B;border-left:3px solid #DC2626}
+  .info-box b{font-weight:700}
+  
+  /* Table */
+  table{width:100%;border-collapse:collapse;font-size:13px;margin:12px 0;border:1px solid var(--border);border-radius:var(--r-md);overflow:hidden}
+  thead{background:var(--border-soft)}
+  th{padding:10px 14px;text-align:left;font-weight:700;font-size:11.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-2);border-bottom:1px solid var(--border)}
+  td{padding:10px 14px;border-bottom:1px solid var(--border-soft);color:var(--ink-2)}
+  tr:last-child td{border-bottom:none}
+  tbody tr:hover{background:var(--primary-tint)}
+  
+  /* Kode pill */
+  .kode{display:inline-flex;align-items:center;justify-content:center;min-width:34px;padding:3px 10px;border-radius:var(--r-full);font-size:11px;font-weight:700;font-family:'JetBrains Mono',monospace}
+  .kode-p{background:#CCFBF1;color:#0F766E}
+  .kode-ts{background:#DBEAFE;color:#2563EB}
+  .kode-s{background:#FFEDD5;color:#EA580C}
+  .kode-m{background:#EDE9FE;color:#7C3AED}
+  .kode-l{background:#F1F5F9;color:#64748B}
+  .kode-skt{background:#FEE2E2;color:#DC2626}
+  .kode-izin{background:#E0E7FF;color:#4F46E5}
+  .kode-dl{background:#CFFAFE;color:#0891B2}
+  .kode-ct{background:#F3E8FF;color:#9333EA}
+  .kode-cm{background:#FCE7F3;color:#DB2777}
+  
+  /* FAQ */
+  details{background:var(--card);border:1px solid var(--border);border-radius:var(--r-md);margin-bottom:10px;overflow:hidden;transition:box-shadow .15s}
+  details:hover{box-shadow:var(--shadow-sm)}
+  details[open]{box-shadow:var(--shadow-md)}
+  summary{padding:14px 20px;font-size:13.5px;font-weight:600;color:var(--ink);cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:12px}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:'+';font-size:20px;color:var(--primary);font-weight:400;transition:transform .2s}
+  details[open] summary::after{content:'−'}
+  details > div{padding:0 20px 16px;font-size:13px;color:var(--ink-2);line-height:1.7;border-top:1px solid var(--border-soft);padding-top:14px}
+  
+  /* Footer */
+  .footer{text-align:center;padding:40px 0 0;margin-top:60px;border-top:1px solid var(--border);color:var(--ink-muted);font-size:12.5px}
+  .footer b{color:var(--ink-2)}
+  
+  /* Back to top */
+  .to-top{position:fixed;bottom:24px;right:24px;width:44px;height:44px;border-radius:50%;background:var(--primary);color:#fff;border:none;cursor:pointer;display:grid;place-items:center;box-shadow:var(--shadow-lg);opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:50}
+  .to-top.show{opacity:1;pointer-events:auto}
+  .to-top:hover{transform:translateY(-3px);background:var(--primary-600)}
+  .to-top svg{width:20px;height:20px}
+  
+  @media (max-width:640px){
+    .wrap{padding:20px 16px 60px}
+    .hero{padding:32px 24px}
+    .hero h1{font-size:24px}
+    .section-title{font-size:18px}
+    .section-desc{padding-left:0;margin-top:8px}
+    .card{padding:18px 20px}
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-badge">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:14px;height:14px"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+      Panduan Pengguna
+    </div>
+    <h1>Sistem Jadwal &amp; Rekap<br>Instalasi Farmasi</h1>
+    <p>Panduan lengkap penggunaan aplikasi untuk staff dan admin. Ikuti langkah-langkah di bawah untuk memaksimalkan fitur yang tersedia.</p>
+    <div class="hero-meta">
+      <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> Versi 1.2</span>
+      <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg> Terakhir diperbarui 2026</span>
+    </div>
+  </div>
+
+  <!-- TOC -->
+  <div class="toc">
+    <h2>Daftar Isi</h2>
+    <ol>
+      <li><a href="#akses">Hak Akses &amp; Login</a></li>
+      <li><a href="#staff">Fitur untuk Staff</a></li>
+      <li><a href="#admin">Fitur untuk Admin</a></li>
+      <li><a href="#import">Import Data dari Excel</a></li>
+      <li><a href="#kode">Kode Shift &amp; Formula</a></li>
+      <li><a href="#tips">Tips &amp; Trik</a></li>
+      <li><a href="#faq">Pertanyaan Umum (FAQ)</a></li>
+    </ol>
+  </div>
+
+  <!-- 1. HAK AKSES -->
+  <section id="akses">
+    <div class="section-title"><span class="num">1</span> Hak Akses &amp; Login</div>
+    <div class="section-desc">Aplikasi memiliki 2 level pengguna dengan hak akses berbeda.</div>
+
+    <div class="card">
+      <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/></svg> Staff (Tanpa Login)</h3>
+      <p style="font-size:13.5px;color:var(--ink-2);margin-bottom:10px">Dapat mengakses tanpa perlu login:</p>
+      <ul class="steps">
+        <li><b>Form Pengajuan</b> — kirim izin, sakit, cuti, tukar shift</li>
+        <li><b>Rekap Jadwal</b> — lihat siapa bertugas per ruangan</li>
+        <li><b>Jadwal Lengkap</b> — grid jadwal bulanan</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Admin (Perlu Login)</h3>
+      <p style="font-size:13.5px;color:var(--ink-2);margin-bottom:10px">Login dengan email &amp; password yang sudah terdaftar:</p>
+      <ol class="steps">
+        <li>Klik <b>ikon user</b> di kiri bawah sidebar, atau tombol <b>Mode Edit</b> di kanan atas</li>
+        <li>Masukkan <b>email</b> dan <b>password</b> admin</li>
+        <li>Klik <b>Masuk</b></li>
+        <li>Menu admin akan muncul di sidebar (Dashboard, Master Data, dll)</li>
+      </ol>
+      <div class="info-box tip">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+        <div><b>Tips:</b> Centang "ingat saya" (jika tersedia) agar tidak perlu login berulang kali. Sesi tersimpan di browser.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. FITUR STAFF -->
+  <section id="staff">
+    <div class="section-title"><span class="num">2</span> Fitur untuk Staff</div>
+    <div class="section-desc">Fitur yang dapat diakses tanpa login.</div>
+
+    <div class="card">
+      <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg> Form Pengajuan</h3>
+      <p style="font-size:13.5px;color:var(--ink-2);margin-bottom:12px">Mengajukan izin, sakit, cuti, telat, atau tukar shift. Jadwal akan otomatis terupdate setelah pengajuan dikirim.</p>
+      <ol class="steps">
+        <li>Pilih <b>nama Anda</b> dari dropdown</li>
+        <li>Pilih <b>Jenis Pengajuan</b> (Izin / Sakit / Cuti / Telat / Absensi Eror / Tukar Shift)</li>
+        <li>Isi <b>tanggal</b> dan <b>detail</b> yang diminta</li>
+        <li>Tambahkan <b>keterangan</b> (opsional)</li>
+        <li>Klik <b>Kirim Pengajuan</b></li>
+      </ol>
+      <div class="info-box tip">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+        <div><b>Otomatis:</b> Pengajuan Izin/Sakit/Cuti akan langsung mengubah jadwal Anda di bulan terkait dengan kode <span class="kode kode-izin">IZIN</span> / <span class="kode kode-skt">SKT</span> / <span class="kode kode-ct">CT</span>.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg> Rekap Jadwal per Ruangan</h3>
+      <ol class="steps">
+        <li>Pilih <b>tanggal</b> dengan klik tombol panah atau date picker</li>
+        <li>Lihat kartu ruangan — klik untuk <b>expand</b> daftar staff bertugas</li>
+        <li>Ikon <b style="color:#7C3AED">★</b> menandakan koordinator ruangan</li>
+        <li>Bagian bawah menampilkan ringkasan staff yang <b>libur/cuti/sakit</b></li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg> Jadwal Lengkap</h3>
+      <p style="font-size:13.5px;color:var(--ink-2);margin-bottom:10px">Grid bulanan semua staff dengan kode shift per hari.</p>
+      <ul class="steps">
+        <li>Ganti <b>bulan/tahun</b> dengan tombol panah atau dropdown</li>
+        <li>Gunakan <b>filter</b>: kategori (SHIFT/NON-SHIFT), ruangan, status</li>
+        <li>Ketik di <b>kolom pencarian</b> untuk filter nama staff</li>
+        <li>Kode warna mewakili jenis shift (lihat <a href="#kode">Bagian 5</a>)</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 3. FITUR ADMIN -->
+  <section id="admin">
+    <div class="section-title"><span class="num">3</span> Fitur untuk Admin</div>
+    <div class="section-desc">Fitur khusus admin — perlu login terlebih dahulu.</div>
+
+    <div class="card">
+      <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg> Dashboard Analytics</h3>
+      <p style="font-size:13.5px;color:var(--ink-2);margin-bottom:10px">Analitik lengkap: KPI, tren, peringkat kehadiran, heatmap, dan lainnya.</p>
+      <ul class="steps">
+        <li><b>Filter tahun/bulan</b> di toolbar atas</li>
+        <li><b>Klik grafik</b> untuk membuka mode <b>fullscreen</b> (popup besar)</li>
+        <li>Tekan <b>ESC</b> atau klik area luar untuk menutup popup</li>
+        <li>Klik <b>Export PDF</b> untuk menyimpan laporan dashboard</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> Rekap Jam Kerja</h3>
+      <ol class="steps">
+        <li>Pilih <b>tahun</b> dengan panah atas/bawah</li>
+        <li>Atur <b>rentang tanggal</b> (mulai - akhir) lalu klik <b>Muat</b></li>
+        <li>Klik <b>nama staff</b> untuk lihat detail per bulan</li>
+        <li>Klik ikon <b>printer</b> untuk cetak PDF laporan per staff</li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M20 8v6M23 11h-6"/></svg> Rekap Kehadiran</h3>
+      <ol class="steps">
+        <li>Atur <b>periode</b> (tanggal mulai - akhir)</li>
+        <li>Klik <b>Muat</b></li>
+        <li>Klik <b>nama staff</b> untuk detail ketidakhadiran per tanggal</li>
+        <li>Klik <b>Matrix Bulanan</b> untuk melihat % kehadiran setahun penuh</li>
+        <li>Klik <b>Cetak PDF</b> untuk laporan per staff atau semua staff</li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg> Master Data Staff</h3>
+      <ol class="steps">
+        <li>Klik <b>Tambah Staff</b> untuk input data baru</li>
+        <li>Isi: NIP, Nama, Jabatan, Departemen, Tanggal Lahir, dll</li>
+        <li>Umur &amp; masa kerja akan dihitung <b>otomatis</b></li>
+        <li>Klik ikon <b>pensil</b> untuk edit, <b>jam pasir</b> untuk lihat riwayat, <b>tong sampah</b> untuk hapus</li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="10"/><path d="M3.05 11a9 9 0 1 1 .5 4M3 4v5h5"/></svg> Riwayat Penempatan</h3>
+      <ol class="steps">
+        <li>Klik <b>Tambah Penempatan</b> untuk input satu per satu</li>
+        <li>Klik <b>Import Penempatan</b> untuk bulk input dari Excel</li>
+        <li>Filter berdasarkan ruangan, peran, atau status (aktif/selesai)</li>
+      </ol>
+      <div class="info-box tip">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+        <div><b>Peran yang didukung:</b> Kepala Instalasi, Koordinator, Staff, PIC, Magang, Lainnya.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg> Mode Edit (Jadwal)</h3>
+      <ol class="steps">
+        <li>Login sebagai admin</li>
+        <li>Klik tombol <b>Mode Edit</b> di kanan atas</li>
+        <li>Anda akan diarahkan ke menu <b>Jadwal Lengkap</b></li>
+        <li>Setiap sel jadwal berubah menjadi <b>dropdown</b> — pilih kode baru</li>
+        <li>Perubahan <b>tersimpan otomatis</b> ke database</li>
+        <li>Klik <b>Keluar Edit</b> untuk menonaktifkan mode edit</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- 4. IMPORT -->
+  <section id="import">
+    <div class="section-title"><span class="num">4</span> Import Data dari Excel</div>
+    <div class="section-desc">Bulk input data dari file Excel tanpa perlu input manual satu per satu.</div>
+
+    <div class="card">
+      <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v12"/></svg> Import Jadwal (Bulan Baru)</h3>
+      <ol class="steps">
+        <li>Buka file Excel jadwal bulanan</li>
+        <li>Blok semua data → <b>Ctrl+C</b></li>
+        <li>Buka menu <b>Import Jadwal</b> → Paste (<b>Ctrl+V</b>) di kotak besar</li>
+        <li>Klik <b>Preview</b> untuk melihat ringkasan</li>
+        <li>Periksa warning/error jika ada</li>
+        <li>Klik <b>Import ke Database</b></li>
+      </ol>
+      <div class="info-box warn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg>
+        <div><b>Format header tanggal yang didukung:</b> <code>1 Oktober 2026</code>, <code>1-Okt-2026</code>, <code>01/10/2026</code>, atau <code>2026-10-01</code>.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="10"/></svg> Import Penempatan Staff</h3>
+      <p style="font-size:13.5px;color:var(--ink-2);margin-bottom:12px">Format kolom Excel (baris pertama = header):</p>
+      <table>
+        <thead>
+          <tr><th>Kolom</th><th>Wajib?</th><th>Contoh</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>NIP</td><td>✅ Ya</td><td class="mono">198501012010011001</td></tr>
+          <tr><td>Ruangan</td><td>✅ Ya</td><td>DEPO FARMASI IGD</td></tr>
+          <tr><td>Peran</td><td>✅ Ya</td><td>Koordinator / Staff / PIC / dll</td></tr>
+          <tr><td>Tanggal Mulai</td><td>✅ Ya</td><td class="mono">2026-01-15</td></tr>
+          <tr><td>Tanggal Selesai</td><td>❌ Opsional</td><td class="mono">2026-12-31</td></tr>
+          <tr><td>Keterangan</td><td>❌ Opsional</td><td>Rotasi tahunan</td></tr>
+        </tbody>
+      </table>
+      <ol class="steps">
+        <li>Buka menu <b>Riwayat Penempatan</b></li>
+        <li>Klik tombol <b>Import Penempatan</b></li>
+        <li>Paste data dari Excel (<b>Ctrl+V</b>)</li>
+        <li>Preview akan muncul <b>otomatis</b> dengan warna hijau (valid) / merah (error)</li>
+        <li>Klik <b>Import ke Database</b></li>
+      </ol>
+      <div class="info-box tip">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+        <div><b>Nama staff</b> akan otomatis dicocokkan dengan NIP di Master Data. Jika NIP tidak terdaftar, baris tersebut akan ditandai error.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. KODE SHIFT -->
+  <section id="kode">
+    <div class="section-title"><span class="num">5</span> Kode Shift &amp; Formula</div>
+    <div class="section-desc">Daftar kode shift yang digunakan dalam jadwal.</div>
+
+    <div class="card">
+      <h3>Kode Shift</h3>
+      <table>
+        <thead>
+          <tr><th>Kode</th><th>Keterangan</th><th>Kategori</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><span class="kode kode-p">P</span></td><td>Pagi</td><td>Shift</td></tr>
+          <tr><td><span class="kode kode-ts">TS</span></td><td>Middle</td><td>Shift</td></tr>
+          <tr><td><span class="kode kode-s">S</span></td><td>Siang</td><td>Shift</td></tr>
+          <tr><td><span class="kode kode-m">M</span></td><td>Malam</td><td>Shift</td></tr>
+          <tr><td><span class="kode kode-l">L</span></td><td>Libur</td><td>Off</td></tr>
+          <tr><td><span class="kode kode-skt">SKT</span></td><td>Sakit</td><td>Off</td></tr>
+          <tr><td><span class="kode kode-izin">IZIN</span></td><td>Izin</td><td>Off</td></tr>
+          <tr><td><span class="kode kode-dl">DL</span></td><td>Dinas Luar</td><td>Off</td></tr>
+          <tr><td><span class="kode kode-ct">CT</span></td><td>Cuti Tahunan</td><td>Off</td></tr>
+          <tr><td><span class="kode kode-cm">CM</span></td><td>Cuti Bersalin</td><td>Off</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3>Formula % Kehadiran</h3>
+      <div style="background:var(--primary-tint);padding:16px 20px;border-radius:var(--r-md);border-left:3px solid var(--primary);font-size:13.5px;color:#0F766E;line-height:1.9">
+        <b>Piket</b> = P + TS + S + M<br>
+        <b>Non-Hadir</b> = IZIN + SKT + DL + CT + CM<br>
+        <b>Hari Kerja Wajib</b> = Piket + Non-Hadir<br>
+        <b>% Kehadiran</b> = (Piket ÷ Hari Kerja Wajib) × 100%
+      </div>
+      <table style="margin-top:14px">
+        <thead>
+          <tr><th>Rentang</th><th>Kategori</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>≥ 95%</td><td><span style="color:#065F46;font-weight:700">Sangat baik</span></td></tr>
+          <tr><td>80% – 94%</td><td><span style="color:#92400E;font-weight:700">Cukup</span></td></tr>
+          <tr><td>&lt; 80%</td><td><span style="color:#991B1B;font-weight:700">Perlu perhatian</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 6. TIPS -->
+  <section id="tips">
+    <div class="section-title"><span class="num">6</span> Tips &amp; Trik</div>
+    <div class="section-desc">Fitur tersembunyi dan shortcut yang mempercepat pekerjaan.</div>
+
+    <div class="card">
+      <h3>⌨️ Keyboard Shortcut</h3>
+      <ul class="steps">
+        <li><b>ESC</b> — Tutup semua modal yang sedang terbuka</li>
+        <li><b>Ctrl + F5</b> — Hard refresh (bersihkan cache)</li>
+        <li><b>F12</b> — Buka Console untuk debugging</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>🎯 Interaksi Cepat</h3>
+      <ul class="steps">
+        <li>Klik <b>kartu ruangan</b> di Rekap Jadwal untuk expand/collapse</li>
+        <li>Klik <b>grafik</b> di Dashboard untuk mode fullscreen</li>
+        <li>Klik <b>nama staff</b> di tabel untuk lihat detail</li>
+        <li>Klik <b>ikon printer</b> untuk cetak laporan PDF per staff</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>🔍 Pencarian Global</h3>
+      <p style="font-size:13.5px;color:var(--ink-2);margin-bottom:10px">Kotak pencarian di kanan atas berfungsi <b>multi-tab</b>:</p>
+      <ul class="steps">
+        <li>Mengetik akan otomatis memfilter tabel di tab aktif</li>
+        <li>Bekerja di: Jadwal, Jam Kerja, Kehadiran, Pengajuan</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 7. FAQ -->
+  <section id="faq">
+    <div class="section-title"><span class="num">7</span> Pertanyaan Umum (FAQ)</div>
+    <div class="section-desc">Jawaban untuk pertanyaan yang sering ditanyakan.</div>
+
+    <details>
+      <summary>Data tidak muncul / kosong?</summary>
+      <div>Kemungkinan penyebab:
+        <ul style="padding-left:20px;margin-top:8px">
+          <li>Belum login sebagai admin (menu tertentu terkunci)</li>
+          <li>Tanggal/periode yang dipilih tidak memiliki data</li>
+          <li>Buka Console (F12) untuk melihat error yang muncul</li>
+        </ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>Kenapa pengajuan saya tidak muncul di jadwal?</summary>
+      <div>Cek beberapa hal:
+        <ul style="padding-left:20px;margin-top:8px">
+          <li>Pastikan <b>NIP</b> Anda sudah terdaftar di Master Data Staff</li>
+          <li>Cek apakah <b>nama di jadwal</b> berbeda dengan nama lengkap (bisa berbeda)</li>
+          <li>Hubungi admin untuk verifikasi</li>
+        </ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>Bagaimana cara tukar shift dengan rekan?</summary>
+      <div>Isi form <b>Tukar Shift</b>:
+        <ul style="padding-left:20px;margin-top:8px">
+          <li>Pilih nama Anda</li>
+          <li>Pilih jenis: <b>Tukar Shift</b></li>
+          <li>Isi tanggal tukar</li>
+          <li>Pilih nama rekan pengganti</li>
+          <li>Sistem akan menampilkan preview pertukaran shift</li>
+          <li>Klik Kirim</li>
+        </ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>Bagaimana cara ganti label kode shift (P, TS, S, M)?</summary>
+      <div>Login sebagai admin → buka <b>Pengaturan</b> (sidebar bawah) → bagian <b>Label Kode Jadwal</b> → ubah teks → <b>Simpan</b>. Label akan berubah di semua tampilan.</div>
+    </details>
+
+    <details>
+      <summary>Bagaimana cara mengatur jam kerja per ruangan?</summary>
+      <div>Login admin → <b>Pengaturan</b> → bagian <b>Jam Kerja per Ruangan</b> → isi jam untuk tiap kode (P/TS/S/M) di masing-masing ruangan → <b>Simpan</b>. Nilai ini diprioritaskan di atas jam global.</div>
+    </details>
+
+    <details>
+      <summary>Grafik tidak rata / tampilan aneh?</summary>
+      <div>Coba:
+        <ul style="padding-left:20px;margin-top:8px">
+          <li><b>Ctrl + F5</b> untuk hard refresh</li>
+          <li>Perbesar jendela browser (minimal 900px lebar)</li>
+          <li>Reset zoom browser (Ctrl + 0)</li>
+          <li>Gunakan browser modern (Chrome/Edge/Firefox terbaru)</li>
+        </ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>Apakah data otomatis tersimpan?</summary>
+      <div>Ya. Semua perubahan (edit jadwal, tambah staff, import, dll) langsung tersimpan ke database Supabase. Tidak ada tombol "Save" terpisah.</div>
+    </details>
+
+    <details>
+      <summary>Bagaimana cara export laporan ke PDF?</summary>
+      <div>Di menu yang menyediakan tombol <b>Cetak PDF</b>:
+        <ul style="padding-left:20px;margin-top:8px">
+          <li>Rekap Jam Kerja — cetak per staff atau semua staff</li>
+          <li>Rekap Kehadiran — cetak per staff atau semua staff</li>
+          <li>Matrix Bulanan — cetak tabel matrix % kehadiran</li>
+          <li>Dashboard — export seluruh dashboard</li>
+        </ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>Siapa yang bisa mengakses menu admin?</summary>
+      <div>Hanya user yang email-nya terdaftar di tabel <b>admin_users</b>. Jika login berhasil tapi menu admin tidak muncul, hubungi pengembang untuk mendaftarkan akun Anda.</div>
+    </details>
+  </section>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <p><b>Sistem Jadwal &amp; Rekap Instalasi Farmasi</b></p>
+    <p style="margin-top:6px">Versi 1.2 · © 2026 · RSUD</p>
+    <p style="margin-top:12px;font-size:11.5px">Panduan ini dibuat untuk membantu penggunaan aplikasi.<br>Jika ada kendala, hubungi admin IT Instalasi Farmasi.</p>
+  </div>
+
+</div>
+
+<!-- Back to top -->
+<button class="to-top" id="toTop" title="Kembali ke atas">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+</button>
+
+<script>
+  // Smooth scroll untuk anchor
+  document.querySelectorAll('a[href^="#"]').forEach(function(a){
+    a.addEventListener('click', function(e){
+      var target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+
+  // Back to top button
+  var toTop = document.getElementById('toTop');
+  window.addEventListener('scroll', function(){
+    toTop.classList.toggle('show', window.scrollY > 400);
+  });
+  toTop.addEventListener('click', function(){
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+</script>
+
+</body>
+</html>
