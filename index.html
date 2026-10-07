@@ -3378,6 +3378,7 @@ function applyJamKerjaFilter(){
       totalHari += Number(md.hariKerja || md.totalHari) || 0;
       if (md.ruangan) Object.keys(md.ruangan).forEach(function(rk){ ruanganCount[rk] = (ruanganCount[rk]||0) + md.ruangan[rk]; });
     });
+    totalJam = Math.round(totalJam * 10) / 10;
     var ruanganUtama = '';
     var maxCount = 0;
     Object.keys(ruanganCount).forEach(function(rk){ if (ruanganCount[rk] > maxCount) { maxCount = ruanganCount[rk]; ruanganUtama = rk; } });
