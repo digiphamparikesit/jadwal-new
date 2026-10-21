@@ -876,6 +876,30 @@
               <div id="dashHeatmap" class="heatmap"></div>
             </div>
           </div>
+
+          <!-- DEMOGRAFI STAFF -->
+          <div class="chart-card full" style="margin-top:10px">
+            <h3>👥 Demografi Staff</h3>
+            <p class="desc">Distribusi staff berdasarkan data Master Data Staff</p>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;margin-top:16px">
+              <div>
+                <div style="font-size:12.5px;font-weight:700;color:var(--ink);margin-bottom:4px">Jenis Kelamin</div>
+                <canvas id="chartStaffGender"></canvas>
+              </div>
+              <div>
+                <div style="font-size:12.5px;font-weight:700;color:var(--ink);margin-bottom:4px">Jabatan</div>
+                <canvas id="chartStaffJabatan"></canvas>
+              </div>
+              <div>
+                <div style="font-size:12.5px;font-weight:700;color:var(--ink);margin-bottom:4px">Kelompok Umur</div>
+                <canvas id="chartStaffUmur"></canvas>
+              </div>
+              <div>
+                <div style="font-size:12.5px;font-weight:700;color:var(--ink);margin-bottom:4px">Masa Kerja</div>
+                <canvas id="chartStaffMasaKerja"></canvas>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -2724,8 +2748,9 @@ function renderDashboard(){
   renderHeatmap(d.heatmap, d.tahun);
   renderChartTopBottomKehadiran(d);
   renderChartMultiskill();
+ renderStaffDemographics(); // 👈 TAMBAHKAN BARIS INI
 }
-
+  
 function renderKpi(stats){
   var items = [
     { label:'Total Staf', value: stats.total_staff, icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M20 8v6M23 11h-6"/></svg>' },
@@ -3143,6 +3168,133 @@ function renderChartMultiskill() {
   });
 }
 
+  /* ⭐ Chart Demografi Staff */
+function renderStaffDemographics() {
+  destroyChart('staffGender');
+  destroyChart('staffJabatan');
+  destroyChart('staffUmur');
+  destroyChart('staffMasaKerja');
+
+  var staff = state.masterStaff.data || [];
+  
+  // Jika data master belum di-load, ambil dulu
+  if (staff.length === 0) {
+    sb.from('staff').select('*').then(function(res){
+      if(res.data && res.data.length > 0){
+        state.masterStaff.data = res.data;
+        renderStaffDemographics();
+      }
+    });
+    return;
+  }
+
+  // 1. Hitung Jenis Kelamin
+  var jkL = 0, jkP = 0;
+  staff.forEach(function(s){
+    if(s.jenis_kelamin === 'L') jkL++;
+    else if(s.jenis_kelamin === 'P') jkP++;
+  });
+
+  // 2. Hitung Jabatan
+  var jabatanCount = {};
+  staff.forEach(function(s){
+    var j = s.jabatan || 'Tidak Diketahui';
+    jabatanCount[j] = (jabatanCount[j] || 0) + 1;
+  });
+
+  // 3. Hitung Kelompok Umur
+  var umurCount = { '< 25 th': 0, '25-34 th': 0, '35-44 th': 0, '45-54 th': 0, '≥ 55 th': 0 };
+  var now = new Date();
+  staff.forEach(function(s){
+    if(!s.tanggal_lahir) return;
+    var b = new Date(s.tanggal_lahir + 'T00:00:00');
+    var umur = now.getFullYear() - b.getFullYear();
+    if (now.getMonth() < b.getMonth() || (now.getMonth() === b.getMonth() && now.getDate() < b.getDate())) umur--;
+    
+    if(umur < 25) umurCount['< 25 th']++;
+    else if(umur <= 34) umurCount['25-34 th']++;
+    else if(umur <= 44) umurCount['35-44 th']++;
+    else if(umur <= 54) umurCount['45-54 th']++;
+    else umurCount['≥ 55 th']++;
+  });
+
+  // 4. Hitung Masa Kerja
+  var masaKerjaCount = { '< 1 th': 0, '1-3 th': 0, '4-10 th': 0, '> 10 th': 0 };
+  staff.forEach(function(s){
+    if(!s.tanggal_masuk) return;
+    var b = new Date(s.tanggal_masuk + 'T00:00:00');
+    var totalBulan = (now.getFullYear() - b.getFullYear()) * 12 + (now.getMonth() - b.getMonth());
+    if (now.getDate() < b.getDate()) totalBulan--;
+    var th = totalBulan / 12;
+
+    if(th < 1) masaKerjaCount['< 1 th']++;
+    else if(th <= 3) masaKerjaCount['1-3 th']++;
+    else if(th <= 10) masaKerjaCount['4-10 th']++;
+    else masaKerjaCount['> 10 th']++;
+  });
+
+  // --- Render Chart ---
+
+  // Chart Jenis Kelamin (Doughnut)
+  dashState.charts.staffGender = new Chart(document.getElementById('chartStaffGender'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Laki-laki', 'Perempuan'],
+      datasets: [{
+        data: [jkL, jkP],
+        backgroundColor: ['#2563EB', '#DB2777'],
+        borderWidth: 2, borderColor: '#fff'
+      }]
+    },
+    options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { legend: { position: 'bottom' } } }
+  });
+
+  // Chart Jabatan (Bar)
+  dashState.charts.staffJabatan = new Chart(document.getElementById('chartStaffJabatan'), {
+    type: 'bar',
+    data: {
+      labels: Object.keys(jabatanCount),
+      datasets: [{
+        label: 'Jumlah',
+        data: Object.values(jabatanCount),
+        backgroundColor: '#0F766E',
+        borderRadius: 4
+      }]
+    },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+  });
+
+  // Chart Kelompok Umur (Bar)
+  dashState.charts.staffUmur = new Chart(document.getElementById('chartStaffUmur'), {
+    type: 'bar',
+    data: {
+      labels: Object.keys(umurCount),
+      datasets: [{
+        label: 'Jumlah',
+        data: Object.values(umurCount),
+        backgroundColor: '#F59E0B',
+        borderRadius: 4
+      }]
+    },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+  });
+
+  // Chart Masa Kerja (Bar)
+  dashState.charts.staffMasaKerja = new Chart(document.getElementById('chartStaffMasaKerja'), {
+    type: 'bar',
+    data: {
+      labels: Object.keys(masaKerjaCount),
+      datasets: [{
+        label: 'Jumlah',
+        data: Object.values(masaKerjaCount),
+        backgroundColor: '#7C3AED',
+        borderRadius: 4
+      }]
+    },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+  });
+}
+  
 function renderChartRuangan(perRuangan){
   if(!perRuangan || perRuangan.length === 0) return;
   destroyChart('ruangan');
