@@ -2140,22 +2140,38 @@ async function autoUpdateJadwalFromPengajuan(jenis, payload) {
       var namaJadwal = st ? (st.nama_jadwal || st.nama) : null;
       if (!namaJadwal) return;
 
-      // Bulk upsert — lebih andal dari loop individual
       var rows = [];
-      var d = new Date(start + 'T00:00:00');
-      var e = new Date(end + 'T00:00:00');
-      while (d <= e) {
+      
+      // ✅ PERBAIKAN: Memakai format YYYY-MM-DD murni tanpa konversi UTC
+      var curr = new Date(start + 'T00:00:00');
+      var stop = new Date(end + 'T00:00:00');
+      
+      while (curr <= stop) {
+        // Ambil tanggal, bulan, dan tahun secara lokal
+        var yyyy = curr.getFullYear();
+        var mm = String(curr.getMonth() + 1).padStart(2, '0');
+        var dd = String(curr.getDate()).padStart(2, '0');
+        
         rows.push({
-          tanggal: d.toISOString().slice(0,10),
+          tanggal: yyyy + '-' + mm + '-' + dd,
           nama: namaJadwal,
           kode: kode
         });
-        d.setDate(d.getDate() + 1);
+        
+        // Tambah 1 hari
+        curr.setDate(curr.getDate() + 1);
       }
 
       if (rows.length === 0) return;
+      
+      // Lakukan upsert ke database
       var r = await sb.from('jadwal').upsert(rows, { onConflict: 'tanggal,nama' });
       if (r.error) throw r.error;
+      
+      // ✅ PERBAIKAN TAMBAHAN: Refresh tabel jadwal di layar agar langsung berubah tanpa reload
+      if (typeof loadDataJadwalBulan === 'function') {
+         loadDataJadwalBulan(state.jadwalTahun, state.jadwalBulan);
+      }
     }
   } catch (err) {
     console.warn('autoUpdateJadwalFromPengajuan error:', err);
