@@ -2075,8 +2075,8 @@ function renderJadwal(){
   if(!state.data || !state.data.dates || state.data.dates.length === 0) return;
   var dates = state.data.dates;
   document.getElementById('tableHeadRow').innerHTML =
-    '<th>Nama</th><th>Ruangan</th><th>Kategori</th>' +
-    dates.map(function(d){ return '<th>'+fmtDayShort(d)+'<br><span style="font-weight:500;opacity:.7">'+fmtDateShort(d)+'</span></th>'; }).join('');
+  '<th>Nama</th><th>' + (state.editMode ? 'Ruangan (Edit)' : 'Ruangan') + '</th><th>Kategori</th>' +
+  dates.map(function(d){ return '<th>'+fmtDayShort(d)+'<br><span style="font-weight:500;opacity:.7">'+fmtDateShort(d)+'</span></th>'; }).join('');
 
   var q = document.getElementById('searchName').value.toLowerCase().trim();
   var fk = document.getElementById('filterKategori').value;
@@ -2101,6 +2101,17 @@ function renderJadwal(){
     var kategori = e.kategori || 'NON_SHIFT';
     var klsKategori = kategori === 'SHIFT' ? 'kategori-shift' : 'kategori-nonshift';
     var kategoriHtml = '<span class="kategori-pill ' + klsKategori + '">' + (kategori === 'SHIFT' ? 'SHIFT' : 'NON-SHIFT') + '</span>';
+    
+    // 1. Cukup buat namaAttr SEKALI di sini
+    var namaAttr = e.name.replace(/"/g,'&quot;');
+
+    // 2. Buat logika untuk kolom Ruangan
+    var ruanganHtml = '';
+    if (state.editMode) {
+      ruanganHtml = '<input type="text" class="edit-input-ruangan" data-nama="'+namaAttr+'" data-old="'+esc(e.ruangan||'')+'" value="'+esc(e.ruangan||'')+'" style="width:100%;min-width:150px;padding:4px 8px;border:1px solid var(--primary);border-radius:6px;font-size:12px;outline:none;">';
+    } else {
+      ruanganHtml = esc(e.ruangan||'');
+    }
 
     var cells = e.codes.map(function(code, i){
       var dateStr = dates[i];
@@ -2113,7 +2124,7 @@ function renderJadwal(){
         if(code && validCodes.indexOf(code) === -1){
           opts.push('<option value="'+esc(code)+'" selected>'+esc(code)+' (?)</option>');
         }
-        var namaAttr = e.name.replace(/"/g,'&quot;');
+        // 3. Di sini TIDAK PERLU ada var namaAttr lagi
         return '<td><select class="edit-select" data-nama="'+namaAttr+'" data-tanggal="'+dateStr+'" data-old="'+esc(code)+'">'+opts.join('')+'</select></td>';
       }
       if(!code) return '<td><span class="code-empty">–</span></td>';
@@ -2121,9 +2132,10 @@ function renderJadwal(){
       if(!m) return '<td><span class="code-pill" style="background:#F1F5F9;color:#64748B">'+esc(code)+'</span></td>';
       return '<td><span class="code-pill" style="background:'+m.bg+';color:'+m.color+'" title="'+esc(m.label)+'">'+esc(code)+'</span></td>';
     }).join('');
-    return '<tr><td>'+esc(e.name)+'</td><td>'+esc(e.ruangan||'')+'</td><td style="text-align:center">'+kategoriHtml+'</td>'+cells+'</tr>';
+    
+    // 4. Tampilkan ruanganHtml (bisa berupa teks biasa atau input teks)
+    return '<tr><td>'+esc(e.name)+'</td><td>'+ruanganHtml+'</td><td style="text-align:center">'+kategoriHtml+'</td>'+cells+'</tr>';
   }).join('');
-}
 
 /* ============================================================
    AUTO-UPDATE JADWAL DARI PENGAJUAN
