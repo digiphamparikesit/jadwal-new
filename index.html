@@ -5341,6 +5341,7 @@ document.getElementById('editModeBtn').addEventListener('click', async function(
 });
 
 document.getElementById('tableBody').addEventListener('change', async function(e){
+  
   var sel = e.target.closest('.edit-select');
   if(!sel) return;
   var nama = sel.dataset.nama, tanggal = sel.dataset.tanggal, kodeLama = sel.dataset.old, kodeBaru = sel.value;
@@ -5353,6 +5354,51 @@ document.getElementById('tableBody').addEventListener('change', async function(e
     sel.disabled = false; sel.dataset.old = kodeBaru; sel.style.background = '#D1FAE5';
     setTimeout(function(){ sel.style.background = ''; }, 700);
   }catch(err){ sel.disabled = false; sel.value = kodeLama; alert('Gagal: ' + (err.message||'Error')); }
+});
+
+  // Event listener saat input Ruangan kehilangan fokus (blur) atau ditekan Enter
+document.getElementById('tableBody').addEventListener('focusout', async function(e) {
+  var inp = e.target.closest('.edit-input-ruangan');
+  if (!inp || !state.editMode) return;
+  
+  var nama = inp.dataset.nama;
+  var ruanganLama = inp.dataset.old;
+  var ruanganBaru = inp.value.trim();
+  
+  if (ruanganBaru === ruanganLama) return;
+  
+  inp.disabled = true;
+  try {
+    var r1 = await sb.from('jadwal').update({ ruangan: ruanganBaru }).eq('nama', nama);
+    if(r1.error) throw r1.error;
+    
+    var st = state.masterStaff.data.find(function(x){ return x.nama === nama; });
+    if (st) {
+        await sb.from('staff').update({ departemen: ruanganBaru }).eq('nip', st.nip);
+    }
+
+    var emp = state.data.employees.find(function(x){ return x.name === nama; });
+    if(emp) emp.ruangan = ruanganBaru;
+    
+    inp.value = ruanganBaru;
+    inp.dataset.old = ruanganBaru;
+    inp.style.background = '#D1FAE5';
+    setTimeout(function(){ inp.style.background = ''; }, 800);
+
+  } catch(err) {
+    alert('Gagal update ruangan: ' + (err.message || 'Error'));
+    inp.value = ruanganLama;
+  } finally {
+    inp.disabled = false;
+  }
+});
+
+// Simpan saat menekan Enter
+document.getElementById('tableBody').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && e.target.classList.contains('edit-input-ruangan')) {
+    e.preventDefault();
+    e.target.blur();
+  }
 });
 
 document.getElementById('pengajuanBody').addEventListener('click', function(e){
@@ -5547,10 +5593,8 @@ sb.auth.onAuthStateChange(function(event, session){
 
 document.addEventListener('keydown', function(e){
   if(e.key === 'Escape'){
-    ['loginModal','settingsModal','detailModal','editPengajuanModal','kehadiranPrintModal','jamKerjaPrintModal','masterFormModal','matrixModal','riwayatFormModal','riwayatListModal','importPenempatanModal','chartFullModal']
+    ['loginModal','settingsModal','detailModal','editPengajuanModal','kehadiranPrintModal','jamKerjaPrintModal','masterFormModal','matrixModal','riwayatFormModal','riwayatListModal','importPenempatanModal','chartFullModal'].forEach(function(id){ closeModal(id); });
     editingPengajuanId = null;
-    state.masterStaff.editingNip = null;
-    state.riwayat.editingId = null;
   }
 });
 
