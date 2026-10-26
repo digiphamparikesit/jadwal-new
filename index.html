@@ -5372,7 +5372,10 @@ document.getElementById('tableBody').addEventListener('focusout', async function
     var r1 = await sb.from('jadwal').update({ ruangan: ruanganBaru }).eq('nama', nama);
     if(r1.error) throw r1.error;
     
-    var st = state.masterStaff.data.find(function(x){ return x.nama === nama; });
+    var st = null;
+    if (state.masterStaff && state.masterStaff.data) {
+      st = state.masterStaff.data.find(function(x){ return x.nama === nama; });
+    }
     if (st) {
         await sb.from('staff').update({ departemen: ruanganBaru }).eq('nip', st.nip);
     }
