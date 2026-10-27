@@ -4799,8 +4799,8 @@ async function loadPengajuan(){
   document.getElementById('pengajuanBody').innerHTML = '<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--ink-muted)">Memuat…</td></tr>';
   try{
     var q = sb.from('pengajuan').select('*, staff(nama)').order('created_at', { ascending: false }).limit(2000);
-    if(start) q = q.gte('created_at', start + 'T00:00:00');
-    if(end) q = q.lte('created_at', end + 'T23:59:59');
+    if(start) q = q.or(`tanggal_mulai.gte.${start},tanggal_absensi.gte.${start}`);
+    if(end) q = q.or(`tanggal_mulai.lte.${end},tanggal_absensi.lte.${end}`);
     if(jenis) q = q.eq('jenis', jenis);
     var r = await q;
     if(r.error) throw r.error;
