@@ -5963,7 +5963,7 @@ async function loadCatatan() {
       
       function makeInput(colKey) {
         var val = rData[colKey] || '';
-        return '<td style="border:1px solid var(--border); padding:0"><input type="text" class="cell-input" data-ruangan="'+esc(ruangan)+'" data-col="'+colKey+'" value="'+esc(val)+'" style="'+inputStyle+'"></td>';
+        return '<td style="border:1px solid var(--border); padding:0"><textarea class="cell-input" data-ruangan="'+esc(ruangan)+'" data-col="'+colKey+'" style="'+inputStyle+'">'+esc(val)+'</textarea></td>';
       }
 
       return '<tr>' +
