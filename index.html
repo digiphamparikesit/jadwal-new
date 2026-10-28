@@ -1039,6 +1039,15 @@
           <option value="L">Laki-laki</option>
           <option value="P">Perempuan</option>
         </select>
+        <select id="masterFilterStatus">
+          <option value="">Semua Status</option>
+          <option value="PNS">PNS</option>
+          <option value="PPPK">PPPK</option>
+          <option value="PPP-PW">PPP-PW</option>
+          <option value="THL">THL</option>
+          <option value="BLUD">BLUD</option>
+          <option value="PT">PT</option>
+        </select>
         <button class="btn btn-secondary" id="masterRefreshBtn" title="Muat ulang">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>
           Muat
@@ -2232,11 +2241,13 @@ function renderMasterStaff() {
   var q = document.getElementById('masterSearch').value.toLowerCase().trim();
   var fj = document.getElementById('masterFilterJabatan').value;
   var fk = document.getElementById('masterFilterJK').value;
+  var fs = document.getElementById('masterFilterStatus').value;
 
   var rows = d.filter(function(s) {
     if (q && (s.nama || '').toLowerCase().indexOf(q) === -1 && (s.nip || '').toLowerCase().indexOf(q) === -1) return false;
     if (fj && (s.jabatan || '') !== fj) return false;
     if (fk && (s.jenis_kelamin || '') !== fk) return false;
+    if (fs && (s.status_kepegawaian || '') !== fs) return false;
     return true;
   });
 
@@ -2244,6 +2255,9 @@ function renderMasterStaff() {
   var totalTTK = d.filter(function(s){ return s.jabatan === 'TTK'; }).length;
   var totalL = d.filter(function(s){ return s.jenis_kelamin === 'L'; }).length;
   var totalP = d.filter(function(s){ return s.jenis_kelamin === 'P'; }).length;
+  var totalPNS = d.filter(function(s){ return s.status_kepegawaian === 'PNS'; }).length;
+  var totalPPPK = d.filter(function(s){ return s.status_kepegawaian === 'PPPK'; }).length;
+  var totalLainnya = d.filter(function(s){ return s.status_kepegawaian && s.status_kepegawaian !== 'PNS' && s.status_kepegawaian !== 'PPPK'; }).length;
 
   document.getElementById('masterKpi').innerHTML = [
     { label: 'Total Staff', value: d.length, color: 'primary',
@@ -2254,6 +2268,10 @@ function renderMasterStaff() {
       icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>' },
     { label: 'Laki-laki / Perempuan', value: totalL + ' / ' + totalP, color: 'amber',
       icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>' }
+    { label: 'Status PNS / PPPK', value: totalPNS + ' / ' + totalPPPK, color: 'primary',
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>' },
+    { label: 'Status Lainnya (THL/BLUD/PT)', value: totalLainnya, color: 'amber',
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>' }
   ].map(function(it) {
     return '<div class="stat-bento" data-accent="' + it.color + '" style="padding:14px 16px">' +
       '<div class="stat-icon" data-color="' + it.color + '" style="width:30px;height:30px;margin-bottom:10px">' + it.icon + '</div>' +
@@ -5532,6 +5550,7 @@ document.getElementById('masterRefreshBtn').addEventListener('click', loadMaster
 document.getElementById('masterSearch').addEventListener('input', renderMasterStaff);
 document.getElementById('masterFilterJabatan').addEventListener('change', renderMasterStaff);
 document.getElementById('masterFilterJK').addEventListener('change', renderMasterStaff);
+document.getElementById('masterFilterStatus').addEventListener('change', renderMasterStaff);
 document.getElementById('masterBody').addEventListener('click', function(e){
   var rb = e.target.closest('[data-riwayat-staff]');
   if (rb) { openRiwayatListForStaff(rb.dataset.riwayatStaff); return; }
