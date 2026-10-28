@@ -6000,10 +6000,12 @@ async function saveCatatan() {
   });
   
   try {
-    var r = await sb.from('catatan_farmasi').update({ 
+    // ✅ PERBAIKAN: Menggunakan upsert agar otomatis insert jika belum ada
+    var r = await sb.from('catatan_farmasi').upsert({ 
+      id: 'default',
       data_json: newData,
       updated_at: new Date().toISOString()
-    }).eq('id', 'default');
+    });
     
     if (r.error) throw r.error;
     
@@ -6021,7 +6023,6 @@ async function saveCatatan() {
     btn.disabled = false;
   }
 }
-
 // Efek visual saat input diklik
 document.getElementById('catatanBody').addEventListener('focusin', function(e) {
   if(e.target.classList.contains('cell-input')) {
