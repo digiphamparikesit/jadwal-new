@@ -2128,18 +2128,14 @@ function renderJadwal(){
     var kategori = e.kategori || 'NON_SHIFT';
     var klsKategori = kategori === 'SHIFT' ? 'kategori-shift' : 'kategori-nonshift';
     var kategoriHtml = '<span class="kategori-pill ' + klsKategori + '">' + (kategori === 'SHIFT' ? 'SHIFT' : 'NON-SHIFT') + '</span>';
-    
-    // 1. Cukup buat namaAttr SEKALI di sini
     var namaAttr = e.name.replace(/"/g,'&quot;');
-
-    // 2. Buat logika untuk kolom Ruangan
     var ruanganHtml = '';
     if (state.editMode) {
       ruanganHtml = '<input type="text" class="edit-input-ruangan" data-nama="'+namaAttr+'" data-old="'+esc(e.ruangan||'')+'" value="'+esc(e.ruangan||'')+'" style="width:100%;min-width:150px;padding:4px 8px;border:1px solid var(--primary);border-radius:6px;font-size:12px;outline:none;">';
     } else {
       ruanganHtml = esc(e.ruangan||'');
     }
-
+    
     var cells = e.codes.map(function(code, i){
       var dateStr = dates[i];
       if(state.editMode){
@@ -2267,7 +2263,7 @@ function renderMasterStaff() {
     { label: 'TTK', value: totalTTK, color: 'violet',
       icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>' },
     { label: 'Laki-laki / Perempuan', value: totalL + ' / ' + totalP, color: 'amber',
-      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>' }
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>' },
     { label: 'Status PNS / PPPK', value: totalPNS + ' / ' + totalPPPK, color: 'primary',
       icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>' },
     { label: 'Status Lainnya (THL/BLUD/PT)', value: totalLainnya, color: 'amber',
