@@ -2253,7 +2253,8 @@ function renderMasterStaff() {
   var totalP = d.filter(function(s){ return s.jenis_kelamin === 'P'; }).length;
   var totalPNS = d.filter(function(s){ return s.status_kepegawaian === 'PNS'; }).length;
   var totalPPPK = d.filter(function(s){ return s.status_kepegawaian === 'PPPK'; }).length;
-  var totalLainnya = d.filter(function(s){ return s.status_kepegawaian && s.status_kepegawaian !== 'PNS' && s.status_kepegawaian !== 'PPPK'; }).length;
+  var totalPPPPW = d.filter(function(s){ return s.status_kepegawaian === 'PPP-PW'; }).length; // 👈 Pisahkan PPP-PW
+  var totalLainnya = d.filter(function(s){ return s.status_kepegawaian && s.status_kepegawaian !== 'PNS' && s.status_kepegawaian !== 'PPPK' && s.status_kepegawaian !== 'PPP-PW'; }).length; // 👈 Lainnya jadi THL/BLUD/PT saja
 
   document.getElementById('masterKpi').innerHTML = [
     { label: 'Total Staff', value: d.length, color: 'primary',
@@ -2266,6 +2267,8 @@ function renderMasterStaff() {
       icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>' },
     { label: 'Status PNS / PPPK', value: totalPNS + ' / ' + totalPPPK, color: 'primary',
       icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>' },
+    { label: 'Status PPP-PW', value: totalPPPPW, color: 'violet',
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>' },
     { label: 'Status Lainnya (THL/BLUD/PT)', value: totalLainnya, color: 'amber',
       icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>' }
   ].map(function(it) {
