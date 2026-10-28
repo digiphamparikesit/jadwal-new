@@ -1049,6 +1049,7 @@
                 <th style="text-align:left;min-width:120px;position:static;box-shadow:none">NIP</th>
                 <th style="text-align:left;min-width:200px;position:static;box-shadow:none">Nama</th>
                 <th style="text-align:left;min-width:150px;position:static;box-shadow:none">Nama Jadwal</th>
+                <th style="position:static;box-shadow:none">Status Kepegawaian</th>
                 <th style="position:static;box-shadow:none">Jabatan</th>
                 <th style="position:static;box-shadow:none">Jenis Kelamin</th>
                 <th style="position:static;box-shadow:none">Tgl Lahir</th>
@@ -1480,6 +1481,18 @@
         <div class="form-group" style="margin-bottom:0">
           <label>Email</label>
           <input type="email" id="mfEmail" placeholder="nama@rs.go.id">
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label>Status Kepegawaian</label>
+          <select id="mfStatusKepegawaian">
+            <option value="">— Pilih status —</option>
+            <option value="PNS">PNS</option>
+            <option value="PPPK">PPPK</option>
+            <option value="PPP-PW">PPP-PW</option>
+            <option value="THL">THL</option>
+            <option value="BLUD">BLUD</option>
+            <option value="PT">PT</option>
+          </select>
         </div>
         <div class="form-group" style="margin-bottom:0">
           <label>Jabatan <span class="req">*</span></label>
@@ -2272,11 +2285,15 @@ function renderMasterStaff() {
         ? '<span class="kategori-pill" style="background:#FCE7F3;color:#BE185D">Perempuan</span>'
         : '<span class="code-empty">—</span>');
 
+    var statusHtml = s.status_kepegawaian 
+      ? '<span class="kategori-pill" style="background:#E0E7FF;color:#4F46E5;border:none">' + esc(s.status_kepegawaian) + '</span>' 
+      : '<span class="code-empty">—</span>';
     var nipAttr = String(s.nip).replace(/"/g, '&quot;');
     return '<tr>' +
       '<td class="mono" style="text-align:left">' + esc(s.nip) + '</td>' +
       '<td style="text-align:left;font-weight:600">' + esc(s.nama) + '</td>' +
       '<td style="text-align:left;color:var(--ink-muted);font-size:11.5px">' + esc(s.nama_jadwal || '—') + '</td>' +
+      '<td>' + statusHtml + '</td>' +
       '<td>' + jabHtml + '</td>' +
       '<td>' + jkHtml + '</td>' +
       '<td class="mono" style="font-size:11.5px">' + (s.tanggal_lahir || '—') + '</td>' +
@@ -2320,6 +2337,7 @@ function openMasterForm(nip) {
     document.getElementById('mfNama').value = s.nama || '';
     document.getElementById('mfNamaJadwal').value = s.nama_jadwal || '';
     document.getElementById('mfEmail').value = s.email || '';
+    document.getElementById('mfStatusKepegawaian').value = s.status_kepegawaian || '';
     document.getElementById('mfJabatan').value = s.jabatan || '';
     document.getElementById('mfDepartemen').value = s.departemen || '';
     document.getElementById('mfJK').value = s.jenis_kelamin || '';
@@ -2333,6 +2351,7 @@ function openMasterForm(nip) {
     document.getElementById('mfNama').value = '';
     document.getElementById('mfNamaJadwal').value = '';
     document.getElementById('mfEmail').value = '';
+    document.getElementById('mfStatusKepegawaian').value = '';
     document.getElementById('mfJabatan').value = '';
     document.getElementById('mfDepartemen').value = '';
     document.getElementById('mfJK').value = '';
@@ -2366,6 +2385,7 @@ async function saveMasterStaff() {
     nama: nama,
     nama_jadwal: document.getElementById('mfNamaJadwal').value.trim() || null,
     email: document.getElementById('mfEmail').value.trim() || null,
+    status_kepegawaian: document.getElementById('mfStatusKepegawaian').value || null,
     jabatan: jabatan,
     departemen: document.getElementById('mfDepartemen').value.trim() || null,
     jenis_kelamin: document.getElementById('mfJK').value || null,
