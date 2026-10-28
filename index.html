@@ -887,6 +887,10 @@
                 <canvas id="chartStaffGender"></canvas>
               </div>
               <div>
+            <div style="font-size:12.5px;font-weight:700;color:var(--ink);margin-bottom:4px">Status Kepegawaian</div>
+            <canvas id="chartStaffStatus"></canvas>
+           </div>
+              <div>
                 <div style="font-size:12.5px;font-weight:700;color:var(--ink);margin-bottom:4px">Jabatan</div>
                 <canvas id="chartStaffJabatan"></canvas>
               </div>
@@ -3224,6 +3228,7 @@ function renderStaffDemographics() {
   destroyChart('staffJabatan');
   destroyChart('staffUmur');
   destroyChart('staffMasaKerja');
+  destroyChart('staffStatus');
 
   var staff = state.masterStaff.data || [];
   
@@ -3283,6 +3288,14 @@ function renderStaffDemographics() {
     else masaKerjaCount['> 10 th']++;
   });
 
+  // 5. Hitung Status Kepegawaian
+  var statusCount = { 'PNS': 0, 'PPPK': 0, 'PPP-PW': 0, 'THL': 0, 'BLUD': 0, 'PT': 0 };
+  staff.forEach(function(s){
+    if(s.status_kepegawaian && statusCount[s.status_kepegawaian] !== undefined) {
+      statusCount[s.status_kepegawaian]++;
+    }
+  });
+  
   // --- Render Chart ---
 
   // Chart Jenis Kelamin (Doughnut)
@@ -3338,6 +3351,20 @@ function renderStaffDemographics() {
         label: 'Jumlah',
         data: Object.values(masaKerjaCount),
         backgroundColor: '#7C3AED',
+        borderRadius: 4
+      }]
+    },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+  });
+   // Chart Status Kepegawaian (Bar)
+  dashState.charts.staffStatus = new Chart(document.getElementById('chartStaffStatus'), {
+    type: 'bar',
+    data: {
+      labels: Object.keys(statusCount),
+      datasets: [{
+        label: 'Jumlah',
+        data: Object.values(statusCount),
+        backgroundColor: '#0891B2', // Warna cyan
         borderRadius: 4
       }]
     },
