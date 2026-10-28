@@ -5959,7 +5959,7 @@ async function loadCatatan() {
     
     var html = listRuanganCatatan.map(function(ruangan) {
       var rData = savedData[ruangan] || {};
-      var inputStyle = 'width:100%; border:none; background:transparent; text-align:center; font-family:inherit; font-size:13px; padding:8px; outline:none; box-sizing:border-box; transition:background .2s;';
+      var inputStyle = 'width:100%; border:none; background:transparent; text-align:center; font-family:inherit; font-size:13px; padding:8px; outline:none; box-sizing:border-box; transition:background .2s; white-space:pre-wrap; word-wrap:break-word; overflow-wrap:break-word; resize:vertical; min-height:60px;';
       
       function makeInput(colKey) {
         var val = rData[colKey] || '';
