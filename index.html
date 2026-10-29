@@ -1189,6 +1189,11 @@
             <option value="absensieror">Absensi Eror</option>
             <option value="tukar_shift">Tukar Shift</option>
           </select>
+          <!-- 👇 TAMBAHKAN DROPDOWN INI 👇 -->
+          <select id="pengajuanFilterRuangan">
+            <option value="">Semua ruangan</option>
+          </select>
+          <!-- 👆 SAMPAI SINI 👆 -->
           <input type="text" id="searchNamePengajuan" placeholder="Cari nama / NIP…" style="min-width:200px">
           <button class="btn btn-primary" id="pengajuanLoadBtn">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>
@@ -4925,10 +4930,33 @@ async function loadPengajuan(){
 
 function renderPengajuan(){
   var d = state.pengajuan.data || [];
+  // 👇 TAMBAHKAN KODE INI UNTUK MENGISI DROPDOWN RUANGAN 👇
+  var ruanganSet = {};
+  d.forEach(function(p) {
+    if (p.staff && p.staff.departemen) ruanganSet[p.staff.departemen] = true;
+  });
+  var selRuangan = document.getElementById('pengajuanFilterRuangan');
+  var currentVal = selRuangan.value; // Simpan pilihan saat ini
+  selRuangan.innerHTML = '<option value="">Semua ruangan</option>' + 
+    Object.keys(ruanganSet).sort().map(function(r) {
+      return '<option value="' + esc(r) + '">' + esc(r) + '</option>';
+    }).join('');
+  selRuangan.value = currentVal;
+  // 👆 SAMPAI SINI 👆
   var q = document.getElementById('searchNamePengajuan').value.toLowerCase().trim();
+  var fr = document.getElementById('pengajuanFilterRuangan').value; // 👈 Ambil nilai filter ruangan
+
   var rows = d.filter(function(p){
-    if(!q) return true;
-    return (p.nip || '').toLowerCase().indexOf(q) !== -1 || ((p.staff && p.staff.nama) || p.nama || '').toLowerCase().indexOf(q) !== -1;
+    var namaTampil = (p.staff && p.staff.nama) || p.nama || '';
+    var ruanganTampil = (p.staff && p.staff.departemen) || '';
+
+    // 1. Filter berdasarkan nama atau NIP
+    if(q && (p.nip || '').toLowerCase().indexOf(q) === -1 && namaTampil.toLowerCase().indexOf(q) === -1) return false;
+    
+    // 2. Filter berdasarkan ruangan
+    if(fr && ruanganTampil !== fr) return false; 
+    
+    return true;
   });
   if(rows.length === 0){ document.getElementById('pengajuanBody').innerHTML = '<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--ink-muted)">Tidak ada pengajuan</td></tr>'; return; }
   var html = rows.map(function(p){
@@ -5416,6 +5444,7 @@ document.getElementById('riwayatListModal').addEventListener('click', function(e
 document.getElementById('kehadiranLoadBtn').addEventListener('click', loadKehadiran);
 document.getElementById('pengajuanLoadBtn').addEventListener('click', loadPengajuan);
 document.getElementById('pengajuanJenis').addEventListener('change', loadPengajuan);
+document.getElementById('pengajuanFilterRuangan').addEventListener('change', renderPengajuan);
 
 /* Matrix bulanan */
 document.getElementById('kehadiranMatrixBtn').addEventListener('click', function(){
