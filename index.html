@@ -2226,7 +2226,11 @@ function renderJadwal(){
       var dateStr = dates[i];
       if(state.editMode){
         var validCodes = URUTAN_KODE.filter(function(k){ return state.legend[k]; });
-        var opts = ['<option value=""' + (!code ? ' selected' : '') + '>– kosong</option>'];
+        // ✅ Tambahan: Opsi "Kosongkan" dan "Hapus Baris"
+        var opts = [
+          '<option value="" ' + (!code ? ' selected' : '') + '>– Kosongkan</option>',
+          '<option value="__DELETE__" style="color:#DC2626;font-weight:bold">🗑️ Hapus Data Ini</option>'
+        ];
         validCodes.forEach(function(k){
           opts.push('<option value="'+k+'"'+(k===code?' selected':'')+'>'+k+' — '+esc(state.legend[k].label)+'</option>');
         });
@@ -2242,11 +2246,34 @@ function renderJadwal(){
       return '<td><span class="code-pill" style="background:'+m.bg+';color:'+m.color+'" title="'+esc(m.label)+'">'+esc(code)+'</span></td>';
     }).join('');
     
-    // 4. Tampilkan ruanganHtml (bisa berupa teks biasa atau input teks)
-     return '<tr><td>'+esc(e.name)+'</td><td>'+ruanganHtml+'</td><td style="text-align:center">'+kategoriHtml+'</td>'+cells+'</tr>';
+     // ✅ Tambahan: Tombol hapus seluruh jadwal staf ini di bulan ini (Hanya muncul di mode edit)
+var deleteRowBtn = '';
+if (state.editMode) {
+    deleteRowBtn = ' <button class="row-action-btn danger" onclick="deleteAllJadwalStaf(\'' + namaAttr + '\')" title="Hapus SEMUA jadwal staf ini di bulan ini" style="width:22px;height:22px;margin-left:6px;padding:0;vertical-align:middle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>';
+}
+
+return '<tr><td>'+esc(e.name)+deleteRowBtn+'</td><td>'+ruanganHtml+'</td><td style="text-align:center">'+kategoriHtml+'</td>'+cells+'</tr>';
   }).join('');
 }
 
+  window.deleteAllJadwalStaf = async function(nama) {
+  if (!confirm('⚠️ PERINGATAN KERAS ⚠️\n\nHapus SEMUA jadwal untuk staf:\n' + nama + '\n\nSeluruh data jadwal staf ini di bulan yang sedang tampil akan dihapus permanen. Lanjutkan?')) return;
+  
+  try {
+    // Tentukan rentang tanggal bulan ini
+    var start = new Date(state.jadwalTahun, state.jadwalBulan - 1, 1).toISOString().slice(0,10);
+    var end = new Date(state.jadwalTahun, state.jadwalBulan, 0).toISOString().slice(0,10);
+    
+    var r = await sb.from('jadwal').delete().eq('nama', nama).gte('tanggal', start).lte('tanggal', end);
+    if (r.error) throw r.error;
+    
+    alert('✅ Data jadwal ' + nama + ' berhasil dihapus semua untuk bulan ini.');
+    loadDataJadwalBulan(state.jadwalTahun, state.jadwalBulan); // Refresh tabel
+  } catch (err) {
+    alert('Gagal menghapus: ' + err.message);
+  }
+};
+  
 /* ============================================================
    AUTO-UPDATE JADWAL DARI PENGAJUAN
    ============================================================ */
@@ -5662,19 +5689,59 @@ document.getElementById('editModeBtn').addEventListener('click', async function(
 });
 
 document.getElementById('tableBody').addEventListener('change', async function(e){
-  
   var sel = e.target.closest('.edit-select');
   if(!sel) return;
+  
   var nama = sel.dataset.nama, tanggal = sel.dataset.tanggal, kodeLama = sel.dataset.old, kodeBaru = sel.value;
   var emp = state.data.employees.find(function(x){ return x.name === nama; });
+  
   sel.disabled = true;
-  try{
-    var r = await sb.from('jadwal').upsert({ nama: nama, tanggal: tanggal, kode: kodeBaru || null, status_kepegawaian: (emp && emp.status) || '', ruangan: (emp && emp.ruangan) || '' }, { onConflict: 'tanggal,nama' });
-    if(r.error) throw r.error;
-    if(emp){ var idx = state.data.dates.indexOf(tanggal); if(idx !== -1) emp.codes[idx] = kodeBaru; }
-    sel.disabled = false; sel.dataset.old = kodeBaru; sel.style.background = '#D1FAE5';
-    setTimeout(function(){ sel.style.background = ''; }, 700);
-  }catch(err){ sel.disabled = false; sel.value = kodeLama; alert('Gagal: ' + (err.message||'Error')); }
+  
+  try {
+    if (kodeBaru === '__DELETE__') {
+      // ✅ Aksi Hapus Baris
+      if (!confirm('Hapus data jadwal ini secara permanen?\n\nNama: ' + nama + '\nTanggal: ' + tanggal)) {
+        sel.value = kodeLama; // Batalkan jika user klik Cancel
+        sel.disabled = false;
+        return;
+      }
+      
+      var r = await sb.from('jadwal').delete().eq('nama', nama).eq('tanggal', tanggal);
+      if(r.error) throw r.error;
+      
+      // Update state lokal agar tabel langsung berubah tanpa reload
+      if(emp){ var idx = state.data.dates.indexOf(tanggal); if(idx !== -1) emp.codes[idx] = ''; }
+      
+      sel.value = ''; // Set ke kosong setelah dihapus
+      sel.style.background = '#FCA5A5'; // Efek visual merah (terhapus)
+      setTimeout(function(){ sel.style.background = ''; }, 700);
+      
+    } else {
+      // ✅ Aksi Simpan/Update Normal (Kode lama Anda)
+      var r = await sb.from('jadwal').upsert({ 
+        nama: nama, 
+        tanggal: tanggal, 
+        kode: kodeBaru || null, 
+        status_kepegawaian: (emp && emp.status) || '', 
+        ruangan: (emp && emp.ruangan) || '' 
+      }, { onConflict: 'tanggal,nama' });
+      
+      if(r.error) throw r.error;
+      
+      if(emp){ var idx = state.data.dates.indexOf(tanggal); if(idx !== -1) emp.codes[idx] = kodeBaru; }
+      sel.style.background = '#D1FAE5'; // Efek visual hijau (sukses)
+      setTimeout(function(){ sel.style.background = ''; }, 700);
+    }
+    
+    // Perbarui nilai old dengan nilai baru
+    sel.dataset.old = kodeBaru === '__DELETE__' ? '' : kodeBaru;
+    
+  } catch(err) { 
+    sel.value = kodeLama; // Kembalikan ke pilihan semula jika gagal
+    alert('Gagal memproses: ' + (err.message||'Error')); 
+  } finally {
+    sel.disabled = false;
+  }
 });
 
   // Event listener saat input Ruangan kehilangan fokus (blur) atau ditekan Enter
