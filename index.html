@@ -2368,7 +2368,11 @@ async function loadMasterStaff() {
 }
 
 function renderMasterStaff() {
-  var d = state.masterStaff.data || [];
+   // ✅ Ambil SEMUA data
+  var allStaff = state.masterStaff.data || [];
+  
+  // ✅ Buat variabel 'd' yang HANYA berisi staf Aktif untuk menghitung KPI
+  var d = allStaff.filter(function(s) { return s.status_aktif !== false; });
   var q = document.getElementById('masterSearch').value.toLowerCase().trim();
   var fj = document.getElementById('masterFilterJabatan').value;
   var fk = document.getElementById('masterFilterJK').value;
@@ -2392,7 +2396,7 @@ function renderMasterStaff() {
   var totalLainnya = d.filter(function(s){ return s.status_kepegawaian && s.status_kepegawaian !== 'PNS' && s.status_kepegawaian !== 'PPPK' && s.status_kepegawaian !== 'PPP-PW'; }).length; // 👈 Lainnya jadi THL/BLUD/PT saja
 
   document.getElementById('masterKpi').innerHTML = [
-    { label: 'Total Staff', value: d.length, color: 'primary',
+    { label: 'Total Staff (Aktif)', value: d.length, color: 'primary',
       icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>' },
     { label: 'Apoteker', value: totalApoteker, color: 'primary',
       icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12h6M12 9v6M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg>' },
@@ -2473,9 +2477,9 @@ function renderMasterStaff() {
   }).join('');
 
   document.getElementById('masterTotal').innerHTML =
-    '<span style="font-weight:700;color:var(--primary)">TOTAL (' + rows.length + ' dari ' + d.length + ' staff):</span> ' +
+    '<span style="font-weight:700;color:var(--primary)">TOTAL (' + rows.length + ' dari ' + allStaff.length + ' staff):</span> ' +
+    'Aktif=' + d.length + ' · Non-Aktif=' + (allStaff.length - d.length) + ' · ' +
     'Apoteker=' + totalApoteker + ' · TTK=' + totalTTK + ' · L/P=' + totalL + '/' + totalP;
-}
 
 function openMasterForm(nip) {
   state.masterStaff.editingNip = nip || null;
