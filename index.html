@@ -441,6 +441,33 @@
     .stat-label{font-size:11px}
     .preview-summary{grid-template-columns:1fr 1fr}
     .jenis-picker{grid-template-columns:repeat(2,1fr)}
+      /* Custom Searchable Dropdown */
+  .custom-dropdown-list {
+    position: absolute;
+    top: 100%; left: 0; right: 0;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    max-height: 250px;
+    overflow-y: auto;
+    z-index: 100;
+    box-shadow: var(--shadow-lg);
+    margin-top: 4px;
+  }
+  .custom-dropdown-item {
+    padding: 10px 14px;
+    cursor: pointer;
+    font-size: 13px;
+    border-bottom: 1px solid var(--border-soft);
+    transition: background 0.15s;
+  }
+  .custom-dropdown-item:hover, .custom-dropdown-item.active {
+    background: var(--primary-tint);
+  }
+  .custom-dropdown-item .nip {
+    color: var(--ink-muted);
+    font-size: 11px;
+    margin-left: 5px;
   }
 </style>
 </head>
@@ -579,12 +606,15 @@
               <div>Isi form ini untuk <b>izin</b>, <b>sakit</b>, <b>cuti</b>, atau <b>tukar shift</b>. Jadwal Anda akan otomatis terupdate.</div>
             </div>
 
-            <div class="form-group">
+            <div class="form-group" style="position:relative;">
               <label>Nama Anda <span class="req">*</span></label>
-              <select id="formNip">
-                <option value="">— Pilih nama —</option>
-              </select>
-              <div class="hint">Pilih nama sesuai data kepegawaian</div>
+              <!-- Input untuk mencari -->
+              <input type="text" id="formNipSearch" placeholder="Ketik nama atau NIP..." autocomplete="off" style="width:100%;padding:11px 14px;border:1px solid var(--border);border-radius:var(--r-md);font-size:13.5px;outline:none;">
+              <!-- Input tersembunyi untuk menyimpan NIP -->
+              <input type="hidden" id="formNip">
+              <!-- Dropdown hasil pencarian -->
+              <div id="formNipDropdown" class="custom-dropdown-list hidden"></div>
+              <div class="hint">Ketik nama staf sesuai data kepegawaian</div>
             </div>
 
             <div class="form-group">
@@ -2006,7 +2036,6 @@ async function loadStaffList(){
     var r = await sb.from('staff').select('nip,nama,nama_jadwal').order('nama');
     if(r.error) throw r.error;
     state.staffList = r.data || [];
-    renderStaffDropdown();
   }catch(e){ console.warn('loadStaffList error:', e); }
 }
 
