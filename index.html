@@ -5179,25 +5179,53 @@ function renderFormFields(){
 }
 
 async function updateSwapPreview(){
-  var nip = document.getElementById('formNip').value;
+  var hiddenNip = document.getElementById('formNip');
+  if(!hiddenNip) return;
+  
+  var nip = hiddenNip.value;
+  var namaA = hiddenNip.dataset.namaJadwal || ''; // ✅ Ambil Nama Jadwal (nama pendek) pengaju
+  
   var namaB = document.getElementById('fNamaPengganti') ? document.getElementById('fNamaPengganti').value : '';
   var tanggal = document.getElementById('fTanggalTukar') ? document.getElementById('fTanggalTukar').value : '';
   var card = document.getElementById('swapPreviewCard');
   if(!card) return;
+  
   if(!nip || !namaB || !tanggal){ card.style.display = 'none'; return; }
+  
   card.style.display = 'block';
   document.getElementById('swapPreviewInner').innerHTML = '<div style="text-align:center;font-size:12px;color:#92400E">Memuat…</div>';
+  
   try{
+    // Panggil RPC dengan parameter yang sesuai
     var r = await sb.rpc('rpc_cek_jadwal_staff', { p_nip: nip, p_tanggal: tanggal, p_nama_b: namaB });
     if(r.error) throw r.error;
     var d = r.data;
+    
     if(!d.kode_a){ card.innerHTML = '<div class="lbl">Setelah Tukar Shift</div><div style="font-size:12px;color:#991B1B;text-align:center">⚠️ Jadwal Anda di tanggal ini tidak ditemukan</div>'; return; }
     if(!d.kode_b){ card.innerHTML = '<div class="lbl">Setelah Tukar Shift</div><div style="font-size:12px;color:#991B1B;text-align:center">⚠️ Jadwal ' + esc(namaB) + ' di tanggal ini tidak ditemukan</div>'; return; }
+    
     var mA = state.legend[d.kode_a] || { color: '#64748B' };
     var mB = state.legend[d.kode_b] || { color: '#64748B' };
-    card.innerHTML = '<div class="lbl">Setelah Tukar Shift</div><div class="preview-swap"><div class="preview-staff"><div class="n">' + esc(d.nama_a) + '</div><div class="k" style="color:' + mA.color + '">' + d.kode_a + '</div><div class="preview-arrow">↓</div><div class="k" style="color:' + mB.color + '">' + d.kode_b + '</div></div><div class="preview-arrow">⇄</div><div class="preview-staff"><div class="n">' + esc(namaB) + '</div><div class="k" style="color:' + mB.color + '">' + d.kode_b + '</div><div class="preview-arrow">↓</div><div class="k" style="color:' + mA.color + '">' + d.kode_a + '</div></div></div>';
+    
+    // Render UI preview (L ⇄ P)
+    card.innerHTML = '<div class="lbl">Setelah Tukar Shift</div>' +
+      '<div class="preview-swap">' +
+        '<div class="preview-staff">' +
+          '<div class="n">' + esc(d.nama_a) + '</div>' +
+          '<div class="k" style="color:' + mA.color + '">' + d.kode_a + '</div>' +
+          '<div class="preview-arrow">↓</div>' +
+          '<div class="k" style="color:' + mB.color + '">' + d.kode_b + '</div>' +
+        '</div>' +
+        '<div class="preview-arrow">⇄</div>' +
+        '<div class="preview-staff">' +
+          '<div class="n">' + esc(namaB) + '</div>' +
+          '<div class="k" style="color:' + mB.color + '">' + d.kode_b + '</div>' +
+          '<div class="preview-arrow">↓</div>' +
+          '<div class="k" style="color:' + mA.color + '">' + d.kode_a + '</div>' +
+        '</div>' +
+      '</div>';
   }catch(err){
-    card.innerHTML = '<div class="lbl">Setelah Tukar Shift</div><div style="font-size:12px;color:#991B1B;text-align:center">⚠️ ' + esc(err.message || 'Gagal') + '</div>';
+    card.innerHTML = '<div class="lbl">Setelah Tukar Shift</div><div style="font-size:12px;color:#991B1B;text-align:center">⚠️ ' + esc(err.message || 'Gagal memuat data') + '</div>';
   }
 }
 
@@ -5275,8 +5303,17 @@ async function submitForm(){
     payload.waktu_absensi = (document.getElementById('fWaktuAbsensi') || {}).value;
     if(!payload.tanggal){ alert('Isi tanggal.'); return; }
   } else if(jenis === 'tukar_shift'){
-    payload.nama_b = (document.getElementById('fNamaPengganti') || {}).value;
+    var namaBSelected = (document.getElementById('fNamaPengganti') || {}).value;
+    payload.nama_b = namaBSelected;
     payload.tanggal_tukar = (document.getElementById('fTanggalTukar') || {}).value;
+    
+    // ✅ PERBAIKAN: Sisipkan nama_jadwal si pengaju (A) agar dicari oleh RPC berdasarkan nama jadwal
+    var hiddenNip = document.getElementById('formNip');
+    if (hiddenNip && hiddenNip.dataset.namaJadwal) {
+       // Kita gunakan nama_jadwal (nama pendek) untuk mencari di database
+       payload.nama_a = hiddenNip.dataset.namaJadwal; 
+    }
+
     if(!payload.nama_b || !payload.tanggal_tukar){ alert('Lengkapi data tukar shift.'); return; }
   }
   var btn = document.getElementById('submitFormBtn');
@@ -5528,7 +5565,13 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!item || !item.dataset.nip) return;
 
     hiddenNip.value = item.dataset.nip;       // Simpan NIP ke input hidden
-    searchInput.value = item.dataset.nama;    // Tampilkan nama di kotak input
+    searchInput.value = item.dataset.nama;    // Tampilkan nama ke input
+    
+    // ✅ Tambahan: Cari nama jadwal di state.staffList dan simpan sebagai atribut di input hidden
+    var staffData = state.staffList.find(function(s){ return s.nip === item.dataset.nip; });
+    if (staffData) {
+      hiddenNip.dataset.namaJadwal = staffData.nama_jadwal || staffData.nama; 
+    }
     dropdownList.classList.add('hidden');     // Sembunyikan daftar
 
     // Trigger update form preview
