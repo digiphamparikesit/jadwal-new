@@ -1987,12 +1987,17 @@ function renderSkeletons(){
    TAB SWITCHING
    ============================================================ */
 function setTab(t){
+  // Update kelas active pada menu sidebar & mobile
   document.querySelectorAll('.nav-item[data-tab]').forEach(function(b){ b.classList.toggle('active', b.dataset.tab===t); });
   document.querySelectorAll('.mobile-nav').forEach(function(b){ b.classList.toggle('active', b.dataset.tab===t); });
+  
+  // Sembunyikan semua tab, lalu tampilkan yang dipilih
   ['rekap','jadwal','jamkerja','kehadiran','pengajuan','import','form','dashboard','master','riwayat','catatan'].forEach(function(name){
-    var el = ('tab-'+name);
+    var el = document.getElementById('tab-'+name); // ✅ PERBAIKAN DI SINI
     if (el) el.classList.toggle('hidden', name!==t);
   });
+
+  // Load data jika tab yang dibuka belum dimuat
   if(t==='jamkerja' && !state.jamKerja.loadedYear) loadJamKerja(state.jamKerja.year);
   if(t==='kehadiran' && !state.kehadiran.loaded) loadKehadiran();
   if(t==='import') updateImportLock();
@@ -2002,6 +2007,8 @@ function setTab(t){
   if(t==='master' && !state.masterStaff.loaded) loadMasterStaff();
   if(t==='riwayat' && !state.riwayat.loaded) loadRiwayat();
   if(t==='catatan') loadCatatan();
+  
+  // Tutup sidebar di mobile
   document.getElementById('sidebar').classList.remove('open');
   document.getElementById('sidebarBackdrop').classList.remove('open');
 }
@@ -5449,57 +5456,68 @@ document.body.addEventListener('click', function(e) {
   }
 });
   /* ============================================================
-   SEARCHABLE DROPDOWN FORM PENGAJUAN
+   SEARCHABLE DROPDOWN FORM PENGAJUAN (REVISI)
    ============================================================ */
-var searchInput = document.getElementById('formNipSearch');
-var dropdownList = document.getElementById('formNipDropdown');
-var hiddenNip = document.getElementById('formNip');
+document.addEventListener('DOMContentLoaded', function() {
+  var searchInput = document.getElementById('formNipSearch');
+  var dropdownList = document.getElementById('formNipDropdown');
+  var hiddenNip = document.getElementById('formNip');
 
-// Saat mengetik
-searchInput.addEventListener('input', function() {
-  var q = this.value.toLowerCase().trim();
-  if (!q) {
-    dropdownList.classList.add('hidden');
-    hiddenNip.value = ''; // Reset NIP jika input kosong
-    return;
-  }
+  if (!searchInput || !dropdownList || !hiddenNip) return; // Cegah error jika elemen tidak ada
 
-  // Filter berdasarkan nama atau NIP
-  var matches = state.staffList.filter(function(s) {
-    return s.nama.toLowerCase().indexOf(q) !== -1 || (s.nip && s.nip.includes(q));
-  }).slice(0, 30); // Batasi 30 hasil agar tidak berat
+  // Saat user mengetik
+  searchInput.addEventListener('input', function() {
+    var q = this.value.toLowerCase().trim();
+    
+    // Jika kosong, sembunyikan dropdown & reset NIP
+    if (!q) {
+      dropdownList.classList.add('hidden');
+      hiddenNip.value = ''; 
+      checkFormReady(); // Update status tombol submit
+      return;
+    }
 
-  if (matches.length === 0) {
-    dropdownList.innerHTML = '<div class="custom-dropdown-item" style="color:var(--ink-muted);cursor:default">Staf tidak ditemukan</div>';
-  } else {
-    dropdownList.innerHTML = matches.map(function(s) {
-      return '<div class="custom-dropdown-item" data-nip="' + esc(s.nip) + '" data-nama="' + esc(s.nama) + '">' +
-        '<b>' + esc(s.nama) + '</b> <span class="nip">(' + esc(s.nip) + ')</span>' +
-        '</div>';
-    }).join('');
-  }
-  dropdownList.classList.remove('hidden');
-});
+    // Cari di state.staffList berdasarkan Nama atau NIP
+    var matches = state.staffList.filter(function(s) {
+      return s.nama.toLowerCase().indexOf(q) !== -1 || (s.nip && s.nip.includes(q));
+    }).slice(0, 30);
 
-// Saat memilih nama dari daftar
-dropdownList.addEventListener('click', function(e) {
-  var item = e.target.closest('.custom-dropdown-item');
-  if (!item || !item.dataset.nip) return;
+    // Render hasil
+    if (matches.length === 0) {
+      dropdownList.innerHTML = '<div class="custom-dropdown-item" style="color:var(--ink-muted);cursor:default">Staf tidak ditemukan</div>';
+    } else {
+      dropdownList.innerHTML = matches.map(function(s) {
+        return '<div class="custom-dropdown-item" data-nip="' + esc(s.nip) + '" data-nama="' + esc(s.nama) + '">' +
+          '<b>' + esc(s.nama) + '</b> <span class="nip">(' + esc(s.nip) + ')</span>' +
+          '</div>';
+      }).join('');
+    }
+    dropdownList.classList.remove('hidden');
+  });
 
-  hiddenNip.value = item.dataset.nip; // Simpan NIP asli ke input hidden
-  searchInput.value = item.dataset.nama; // Tampilkan nama di kotak
-  dropdownList.classList.add('hidden');
+  // Saat user mengklik salah satu nama dari daftar
+  dropdownList.addEventListener('click', function(e) {
+    var item = e.target.closest('.custom-dropdown-item');
+    if (!item || !item.dataset.nip) return;
 
-  // Panggil fungsi preview yang sudah ada
-  updateFormPreview();
-  if(state.formJenis === 'tukar_shift') updateSwapPreview();
-});
+    hiddenNip.value = item.dataset.nip;       // Simpan NIP ke input hidden
+    searchInput.value = item.dataset.nama;    // Tampilkan nama di kotak input
+    dropdownList.classList.add('hidden');     // Sembunyikan daftar
 
-// Menutup dropdown jika klik di luar area
-document.addEventListener('click', function(e) {
-  if (!searchInput.contains(e.target) && !dropdownList.contains(e.target)) {
-    dropdownList.classList.add('hidden');
-  }
+    // Trigger update form preview
+    updateFormPreview();
+    if (typeof updateSwapPreview === 'function' && state.formJenis === 'tukar_shift') {
+      updateSwapPreview();
+    }
+    checkFormReady();
+  });
+
+  // Menutup dropdown jika user klik di luar area
+  document.addEventListener('click', function(e) {
+    if (!searchInput.contains(e.target) && !dropdownList.contains(e.target)) {
+      dropdownList.classList.add('hidden');
+    }
+  });
 });
 
 document.getElementById('prevDay').addEventListener('click', function(){ if(!state.selectedDate) return; var d = new Date(state.selectedDate+'T00:00:00'); d.setDate(d.getDate()-1); state.selectedDate = d.toISOString().slice(0,10); document.getElementById('dateInput').value = state.selectedDate; renderRekap(); });
