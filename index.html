@@ -1980,7 +1980,7 @@ function updateMenuVisibility(){
 
 function renderSkeletons(){
   var skel = '<div class="room-modern"><div style="padding:16px 18px"><div class="skeleton" style="height:32px;width:60%;margin-bottom:12px"></div><div class="skeleton" style="height:14px;width:40%"></div></div></div>';
-  document.getElementById('roomGrid').innerHTML = skel + skel + skel + skel;
+  ('roomGrid').innerHTML = skel + skel + skel + skel;
 }
 
 /* ============================================================
@@ -1990,7 +1990,7 @@ function setTab(t){
   document.querySelectorAll('.nav-item[data-tab]').forEach(function(b){ b.classList.toggle('active', b.dataset.tab===t); });
   document.querySelectorAll('.mobile-nav').forEach(function(b){ b.classList.toggle('active', b.dataset.tab===t); });
   ['rekap','jadwal','jamkerja','kehadiran','pengajuan','import','form','dashboard','master','riwayat','catatan'].forEach(function(name){
-    var el = document.getElementById('tab-'+name);
+    var el = ('tab-'+name);
     if (el) el.classList.toggle('hidden', name!==t);
   });
   if(t==='jamkerja' && !state.jamKerja.loadedYear) loadJamKerja(state.jamKerja.year);
@@ -5129,7 +5129,15 @@ function renderFormFields(){
     el.innerHTML = '<div class="form-group"><label>Tanggal Absensi <span class="req">*</span></label><input type="date" id="fTanggalAbsensi" value="' + today + '"></div><div class="form-group"><label>Waktu <span class="req">*</span></label><select id="fWaktuAbsensi"><option value="masuk">Absen Masuk</option><option value="pulang">Absen Pulang</option></select></div>';
   } else if(jenis === 'tukar_shift'){
     var opts = state.staffList.map(function(s){ return '<option value="' + esc(s.nama_jadwal || s.nama) + '">' + esc(s.nama) + '</option>'; }).join('');
-    el.innerHTML = '<div class="form-group"><label>Tanggal Tukar <span class="req">*</span></label><input type="date" id="fTanggalTukar" value="' + today + '"></div><div class="form-group"><label>Nama Pengganti <span class="req">*</span></label><select id="fNamaPengganti"><option value="">— Pilih rekan kerja —</option>' + opts + '</select><div class="hint">Pilih rekan yang shift-nya akan ditukar dengan Anda</div></div><div class="preview-card" id="swapPreviewCard" style="display:none"><div class="lbl">Setelah Tukar Shift</div><div class="preview-swap" id="swapPreviewInner"></div></div>';
+    el.innerHTML = '<div class="form-group"><label>Tanggal Tukar <span class="req">*</span></label><input type="date" id="fTanggalTukar" value="' + today + '"></div>' +
+      '<div class="form-group" style="position:relative;">' +
+        '<label>Nama Pengganti <span class="req">*</span></label>' +
+        '<input type="text" id="fNamaPenggantiSearch" placeholder="Ketik nama rekan..." autocomplete="off" style="width:100%;padding:11px 14px;border:1px solid var(--border);border-radius:var(--r-md);font-size:13.5px;outline:none;">' +
+        '<input type="hidden" id="fNamaPengganti">' +
+        '<div id="fNamaPenggantiDropdown" class="custom-dropdown-list hidden"></div>' +
+        '<div class="hint">Pilih rekan yang shift-nya akan ditukar dengan Anda</div>' +
+      '</div>' +
+      '<div class="preview-card" id="swapPreviewCard" style="display:none"><div class="lbl">Setelah Tukar Shift</div><div class="preview-swap" id="swapPreviewInner"></div></div>';
   } else {
     el.innerHTML = '<div class="info-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg><div>Pilih jenis pengajuan di atas untuk menampilkan isian.</div></div>';
   }
@@ -5401,6 +5409,98 @@ document.getElementById('formKeterangan').addEventListener('input', updateFormPr
 document.getElementById('formFields').addEventListener('input', function(){ updateFormPreview(); });
 document.getElementById('formFields').addEventListener('change', function(){ updateFormPreview(); if(state.formJenis === 'tukar_shift') updateSwapPreview(); });
 document.getElementById('submitFormBtn').addEventListener('click', submitForm);
+
+  // Event Listener untuk Pencarian Nama Pengganti (Tukar Shift)
+document.body.addEventListener('input', function(e) {
+  if (e.target.id === 'fNamaPenggantiSearch') {
+    var q = e.target.value.toLowerCase().trim();
+    var dropdown = document.getElementById('fNamaPenggantiDropdown');
+    if (!dropdown) return;
+    
+    if (!q) {
+      dropdown.classList.add('hidden');
+      document.getElementById('fNamaPengganti').value = '';
+      return;
+    }
+    
+    // Cari di state.staffList
+    var matches = state.staffList.filter(function(s) {
+      return s.nama.toLowerCase().indexOf(q) !== -1 || (s.nip && s.nip.includes(q));
+    }).slice(0, 30);
+
+    dropdown.innerHTML = matches.length ? matches.map(function(s) {
+      return '<div class="custom-dropdown-item" data-nama="' + esc(s.nama_jadwal || s.nama) + '">' +
+        '<b>' + esc(s.nama) + '</b>' +
+        '</div>';
+    }).join('') : '<div class="custom-dropdown-item" style="color:var(--ink-muted);cursor:default">Tidak ditemukan</div>';
+    
+    dropdown.classList.remove('hidden');
+  }
+});
+
+// Event Listener Klik untuk Pencarian Nama Pengganti
+document.body.addEventListener('click', function(e) {
+  var item = e.target.closest('#fNamaPenggantiDropdown .custom-dropdown-item');
+  if (item && item.dataset.nama) {
+    document.getElementById('fNamaPengganti').value = item.dataset.nama;
+    document.getElementById('fNamaPenggantiSearch').value = item.dataset.nama;
+    document.getElementById('fNamaPenggantiDropdown').classList.add('hidden');
+    updateSwapPreview();
+  }
+});
+  /* ============================================================
+   SEARCHABLE DROPDOWN FORM PENGAJUAN
+   ============================================================ */
+var searchInput = document.getElementById('formNipSearch');
+var dropdownList = document.getElementById('formNipDropdown');
+var hiddenNip = document.getElementById('formNip');
+
+// Saat mengetik
+searchInput.addEventListener('input', function() {
+  var q = this.value.toLowerCase().trim();
+  if (!q) {
+    dropdownList.classList.add('hidden');
+    hiddenNip.value = ''; // Reset NIP jika input kosong
+    return;
+  }
+
+  // Filter berdasarkan nama atau NIP
+  var matches = state.staffList.filter(function(s) {
+    return s.nama.toLowerCase().indexOf(q) !== -1 || (s.nip && s.nip.includes(q));
+  }).slice(0, 30); // Batasi 30 hasil agar tidak berat
+
+  if (matches.length === 0) {
+    dropdownList.innerHTML = '<div class="custom-dropdown-item" style="color:var(--ink-muted);cursor:default">Staf tidak ditemukan</div>';
+  } else {
+    dropdownList.innerHTML = matches.map(function(s) {
+      return '<div class="custom-dropdown-item" data-nip="' + esc(s.nip) + '" data-nama="' + esc(s.nama) + '">' +
+        '<b>' + esc(s.nama) + '</b> <span class="nip">(' + esc(s.nip) + ')</span>' +
+        '</div>';
+    }).join('');
+  }
+  dropdownList.classList.remove('hidden');
+});
+
+// Saat memilih nama dari daftar
+dropdownList.addEventListener('click', function(e) {
+  var item = e.target.closest('.custom-dropdown-item');
+  if (!item || !item.dataset.nip) return;
+
+  hiddenNip.value = item.dataset.nip; // Simpan NIP asli ke input hidden
+  searchInput.value = item.dataset.nama; // Tampilkan nama di kotak
+  dropdownList.classList.add('hidden');
+
+  // Panggil fungsi preview yang sudah ada
+  updateFormPreview();
+  if(state.formJenis === 'tukar_shift') updateSwapPreview();
+});
+
+// Menutup dropdown jika klik di luar area
+document.addEventListener('click', function(e) {
+  if (!searchInput.contains(e.target) && !dropdownList.contains(e.target)) {
+    dropdownList.classList.add('hidden');
+  }
+});
 
 document.getElementById('prevDay').addEventListener('click', function(){ if(!state.selectedDate) return; var d = new Date(state.selectedDate+'T00:00:00'); d.setDate(d.getDate()-1); state.selectedDate = d.toISOString().slice(0,10); document.getElementById('dateInput').value = state.selectedDate; renderRekap(); });
 document.getElementById('nextDay').addEventListener('click', function(){ if(!state.selectedDate) return; var d = new Date(state.selectedDate+'T00:00:00'); d.setDate(d.getDate()+1); state.selectedDate = d.toISOString().slice(0,10); document.getElementById('dateInput').value = state.selectedDate; renderRekap(); });
