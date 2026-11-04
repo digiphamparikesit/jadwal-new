@@ -2480,7 +2480,7 @@ function renderMasterStaff() {
     '<span style="font-weight:700;color:var(--primary)">TOTAL (' + rows.length + ' dari ' + allStaff.length + ' staff):</span> ' +
     'Aktif=' + d.length + ' · Non-Aktif=' + (allStaff.length - d.length) + ' · ' +
     'Apoteker=' + totalApoteker + ' · TTK=' + totalTTK + ' · L/P=' + totalL + '/' + totalP;
-
+ }
 function openMasterForm(nip) {
   state.masterStaff.editingNip = nip || null;
   var title = document.getElementById('masterFormTitle');
