@@ -1104,6 +1104,7 @@
                 <th style="position:static;box-shadow:none">Tgl Masuk</th>
                 <th style="position:static;box-shadow:none">Masa Kerja</th>
                 <th style="text-align:left;min-width:160px;position:static;box-shadow:none">Departemen</th>
+                <th style="position:static;box-shadow:none">Status Kerja</th>
                 <th style="text-align:center;min-width:130px;position:static;box-shadow:none">Aksi</th>
               </tr>
             </thead>
@@ -1619,6 +1620,14 @@
           <input type="date" id="mfTanggalMasuk">
           <div class="hint">Untuk hitung masa kerja otomatis</div>
         </div>
+        <!-- ✅ TAMBAHAN: Status Aktif -->
+        <div class="form-group" style="margin-bottom:0">
+          <label>Status Keaktifan <span class="req">*</span></label>
+          <select id="mfStatusAktif">
+            <option value="true">🟢 Aktif (Masih Bekerja)</option>
+            <option value="false">🔴 Tidak Aktif (Resign/Keluar)</option>
+          </select>
+        </div>
       </div>
       <p class="error-text hidden" id="mfError"></p>
     </div>
@@ -2040,9 +2049,15 @@ async function loadDataJadwalBulan(tahun, bulan){
 
 async function loadStaffList(){
   try{
-    var r = await sb.from('staff').select('nip,nama,nama_jadwal').order('nama');
+    // ✅ Ambil data staff, urutkan nama
+    var r = await sb.from('staff').select('nip,nama,nama_jadwal, status_aktif').order('nama');
     if(r.error) throw r.error;
-    state.staffList = r.data || [];
+    
+    // ✅ Filter: Hanya masukkan yang Aktif (status_aktif = true) ke dalam list form pengajuan
+    // (Namun data lengkapnya tetap tersimpan di state.masterStaff.data untuk laporan)
+    state.staffList = (r.data || []).filter(function(s){
+      return s.status_aktif !== false; 
+    });
   }catch(e){ console.warn('loadStaffList error:', e); }
 }
 
@@ -2442,6 +2457,7 @@ function renderMasterStaff() {
       '<td class="mono" style="font-size:11.5px">' + (s.tanggal_masuk || '—') + '</td>' +
       '<td class="mono" style="font-weight:600;color:var(--primary)">' + hitungMasaKerja(s.tanggal_masuk) + '</td>' +
       '<td style="text-align:left;color:var(--ink-muted);font-size:11.5px">' + esc(s.departemen || '—') + '</td>' +
+      '<td>' + (s.status_aktif === false ? '<span class="kategori-pill" style="background:#FEE2E2;color:#991B1B;border:none">🔴 Non-Aktif</span>' : '<span class="kategori-pill" style="background:#D1FAE5;color:#065F46;border:none">🟢 Aktif</span>') + '</td>' +
       '<td style="text-align:center;white-space:nowrap">' +
         '<button class="row-action-btn" data-riwayat-staff="' + nipAttr + '" title="Lihat Riwayat Penempatan" style="background:#F3E8FF;color:#7C3AED;border-color:#C4B5FD">' +
           '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="10"/></svg>' +
@@ -2485,6 +2501,7 @@ function openMasterForm(nip) {
     document.getElementById('mfTanggalLahir').value = s.tanggal_lahir || '';
     document.getElementById('mfTanggalMasuk').value = s.tanggal_masuk || '';
     delBtn.classList.remove('hidden');
+    document.getElementById('mfStatusAktif').value = (s.status_aktif === false) ? 'false' : 'true';
   } else {
     title.textContent = 'Tambah Staff Baru';
     nipEl.value = '';
@@ -2497,6 +2514,7 @@ function openMasterForm(nip) {
     document.getElementById('mfDepartemen').value = '';
     document.getElementById('mfJK').value = '';
     document.getElementById('mfTanggalLahir').value = '';
+    document.getElementById('mfStatusAktif').value = 'true';
     document.getElementById('mfTanggalMasuk').value = '';
     delBtn.classList.add('hidden');
   }
@@ -2532,6 +2550,7 @@ async function saveMasterStaff() {
     jenis_kelamin: document.getElementById('mfJK').value || null,
     tanggal_lahir: document.getElementById('mfTanggalLahir').value || null,
     tanggal_masuk: document.getElementById('mfTanggalMasuk').value || null
+    status_aktif: document.getElementById('mfStatusAktif').value === 'true'
   };
 
   var btn = document.getElementById('mfSaveBtn');
