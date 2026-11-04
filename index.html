@@ -2257,14 +2257,21 @@ return '<tr><td>'+esc(e.name)+deleteRowBtn+'</td><td>'+ruanganHtml+'</td><td sty
 }
 
   window.deleteAllJadwalStaf = async function(nama) {
-  if (!confirm('⚠️ PERINGATAN KERAS ⚠️\n\nHapus SEMUA jadwal untuk staf:\n' + nama + '\n\nSeluruh data jadwal staf ini di bulan yang sedang tampil akan dihapus permanen. Lanjutkan?')) return;
+  if (!confirm('⚠️ PERINGATAN KERAS ⚠️\n\nHapus SEMUA jadwal (termasuk yang kosong) untuk staf:\n' + nama + '\n\nSeluruh data jadwal staf ini di bulan yang sedang tampil akan dihapus permanen. Lanjutkan?')) return;
   
   try {
     // Tentukan rentang tanggal bulan ini
     var start = new Date(state.jadwalTahun, state.jadwalBulan - 1, 1).toISOString().slice(0,10);
     var end = new Date(state.jadwalTahun, state.jadwalBulan, 0).toISOString().slice(0,10);
     
-    var r = await sb.from('jadwal').delete().eq('nama', nama).gte('tanggal', start).lte('tanggal', end);
+    // ✅ PERBAIKAN: Hapus berdasarkan nama & rentang tanggal. 
+    // Ini akan menyapu bersih baris kosong maupun yang ada isinya.
+    var r = await sb.from('jadwal')
+      .delete()
+      .eq('nama', nama)
+      .gte('tanggal', start)
+      .lte('tanggal', end);
+      
     if (r.error) throw r.error;
     
     alert('✅ Data jadwal ' + nama + ' berhasil dihapus semua untuk bulan ini.');
