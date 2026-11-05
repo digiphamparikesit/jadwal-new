@@ -539,6 +539,11 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h2"/><path d="M14 13h2"/><path d="M8 17h2"/><path d="M14 17h2"/></svg>
         <span>Catatan Admin</span>
       </button>
+      <button class="nav-item" data-role="admin" data-tab="kendaraan">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg>
+        <span>Plat Kendaraan</span>
+        <span class="badge-new">NEW</span>
+      </button>
       
       <div class="nav-label" style="margin-top:12px">Lainnya</div>
       <button class="nav-item" id="refreshSide">
@@ -1376,6 +1381,45 @@
         </table>
       </div>
     </section>
+    
+    <section id="tab-kendaraan" class="hidden">
+      <div class="page-head">
+        <div>
+          <p class="eyebrow">Data Kendaraan Staff</p>
+          <h2>Plat Kendaraan</h2>
+        </div>
+        <div class="date-nav">
+          <button class="btn btn-primary" id="kendaraanAddBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+            Tambah Kendaraan
+          </button>
+        </div>
+      </div>
+
+      <div class="filter-row">
+        <input type="text" id="kendaraanSearch" placeholder="Cari nama staf atau plat nomor…" style="min-width:280px">
+        <button class="btn btn-secondary" id="kendaraanRefreshBtn" title="Muat ulang">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>
+          Muat
+        </button>
+      </div>
+
+      <div class="table-card">
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th style="text-align:left;min-width:200px;position:static;box-shadow:none">Nama Staff</th>
+                <th style="position:static;box-shadow:none">Kendaraan 1</th>
+                <th style="position:static;box-shadow:none">Kendaraan 2</th>
+                <th style="text-align:center;min-width:100px;position:static;box-shadow:none">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="kendaraanBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
   </main>
 </div>
 
@@ -1797,6 +1841,57 @@
     </div>
   </div>
 </div>
+
+  <!-- MODAL KENDARAAN -->
+<div class="modal-bg" id="kendaraanModal">
+  <div class="modal-m wide" style="max-width:600px">
+    <div class="modal-head">
+      <h3 id="kendaraanModalTitle">Tambah Data Kendaraan</h3>
+      <button class="modal-close" id="closeKendaraanModal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group" style="position:relative;">
+        <label>Nama Staff <span class="req">*</span></label>
+        <input type="text" id="kendaraanStaffSearch" placeholder="Ketik nama staf..." autocomplete="off" style="width:100%;padding:11px 14px;border:1px solid var(--border);border-radius:var(--r-md);font-size:13.5px;outline:none;">
+        <input type="hidden" id="kendaraanNip">
+        <div id="kendaraanStaffDropdown" class="custom-dropdown-list hidden"></div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px">
+        <div class="form-group" style="margin-bottom:0">
+          <label>Kendaraan 1</label>
+          <div style="display:flex;gap:8px">
+            <select id="kendaraan1Jenis" style="width:40%;padding:11px 14px;border:1px solid var(--border);border-radius:var(--r-md);font-size:13.5px;outline:none;">
+              <option value="">Pilih</option>
+              <option value="Motor">Motor</option>
+              <option value="Mobil">Mobil</option>
+            </select>
+            <input type="text" id="kendaraan1Plat" placeholder="Plat (cth: B 1234 CD)" style="width:60%;padding:11px 14px;border:1px solid var(--border);border-radius:var(--r-md);font-size:13.5px;outline:none;text-transform:uppercase">
+          </div>
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label>Kendaraan 2</label>
+          <div style="display:flex;gap:8px">
+            <select id="kendaraan2Jenis" style="width:40%;padding:11px 14px;border:1px solid var(--border);border-radius:var(--r-md);font-size:13.5px;outline:none;">
+              <option value="">Pilih</option>
+              <option value="Motor">Motor</option>
+              <option value="Mobil">Mobil</option>
+            </select>
+            <input type="text" id="kendaraan2Plat" placeholder="Plat (cth: B 1234 CD)" style="width:60%;padding:11px 14px;border:1px solid var(--border);border-radius:var(--r-md);font-size:13.5px;outline:none;text-transform:uppercase">
+          </div>
+        </div>
+      </div>
+      <p class="error-text hidden" id="kendaraanError" style="margin-top:14px"></p>
+    </div>
+    <div class="modal-foot space">
+      <button class="btn btn-danger hidden" id="kendaraanDeleteBtn">Hapus</button>
+      <div style="display:flex;gap:10px;margin-left:auto">
+        <button class="btn btn-secondary" id="kendaraanCancelBtn">Batal</button>
+        <button class="btn btn-primary" id="kendaraanSaveBtn">Simpan</button>
+      </div>
+    </div>
+  </div>
+</div>
   
   <!-- MODAL IMPORT PENEMPATAN (Diletakkan di paling bawah agar mudah dicari) -->
 <div class="modal-bg" id="importPenempatanModal">
@@ -2015,7 +2110,7 @@ function setTab(t){
   document.querySelectorAll('.mobile-nav').forEach(function(b){ b.classList.toggle('active', b.dataset.tab===t); });
   
   // Sembunyikan semua tab, lalu tampilkan yang dipilih
-  ['rekap','jadwal','jamkerja','kehadiran','pengajuan','import','form','dashboard','master','riwayat','catatan'].forEach(function(name){
+  ['rekap','jadwal','jamkerja','kehadiran','pengajuan','import','form','dashboard','master','riwayat','catatan','kendaraan'].forEach(function(name){
     var el = document.getElementById('tab-'+name); // ✅ PERBAIKAN DI SINI
     if (el) el.classList.toggle('hidden', name!==t);
   });
@@ -2030,6 +2125,7 @@ function setTab(t){
   if(t==='master' && !state.masterStaff.loaded) loadMasterStaff();
   if(t==='riwayat' && !state.riwayat.loaded) loadRiwayat();
   if(t==='catatan') loadCatatan();
+  if(t==='kendaraan') loadKendaraan();
   
   // Tutup sidebar di mobile
   document.getElementById('sidebar').classList.remove('open');
@@ -6429,6 +6525,186 @@ document.getElementById('catatanBody').addEventListener('focusout', function(e) 
 });
 
 document.getElementById('saveCatatanBtn').addEventListener('click', saveCatatan);
+  
+  /* ============================================================
+   PLAT KENDARAAN
+   ============================================================ */
+var stateKendaraan = { data: [], editingNip: null };
+
+async function loadKendaraan() {
+  var tbody = document.getElementById('kendaraanBody');
+  tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:32px;color:var(--ink-muted)">Memuat…</td></tr>';
+  
+  try {
+    // Ambil data staff digabung dengan plat kendaraan
+    var r = await sb.from('staff').select('nip, nama, plat_kendaraan(kendaraan_1_jenis, kendaraan_1_plat, kendaraan_2_jenis, kendaraan_2_plat)').order('nama');
+    if(r.error) throw r.error;
+    
+    stateKendaraan.data = r.data || [];
+    renderKendaraan();
+  } catch (err) {
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:32px;color:var(--ink-muted)">Gagal memuat: ' + esc(err.message) + '</td></tr>';
+  }
+}
+
+function renderKendaraan() {
+  var q = document.getElementById('kendaraanSearch').value.toLowerCase().trim();
+  var rows = stateKendaraan.data.filter(function(s) {
+    if (!q) return true;
+    var k = (s.plat_kendaraan && s.plat_kendaraan[0]) ? s.plat_kendaraan[0] : {};
+    var plat1 = (k.kendaraan_1_plat || '').toLowerCase();
+    var plat2 = (k.kendaraan_2_plat || '').toLowerCase();
+    var nama = (s.nama || '').toLowerCase();
+    return nama.indexOf(q) !== -1 || plat1.indexOf(q) !== -1 || plat2.indexOf(q) !== -1;
+  });
+
+  var body = document.getElementById('kendaraanBody');
+  if (rows.length === 0) {
+    body.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:32px;color:var(--ink-muted)">Tidak ada data cocok</td></tr>';
+    return;
+  }
+
+  body.innerHTML = rows.map(function(s) {
+    var k = (s.plat_kendaraan && s.plat_kendaraan[0]) ? s.plat_kendaraan[0] : null;
+    
+    var k1Html = k && k.kendaraan_1_plat ? '<span class="kategori-pill" style="background:#E0F2FE;color:#0369A1">' + esc(k.kendaraan_1_jenis || '-') + '</span> <span class="mono">' + esc(k.kendaraan_1_plat) + '</span>' : '<span class="code-empty">—</span>';
+    var k2Html = k && k.kendaraan_2_plat ? '<span class="kategori-pill" style="background:#E0F2FE;color:#0369A1">' + esc(k.kendaraan_2_jenis || '-') + '</span> <span class="mono">' + esc(k.kendaraan_2_plat) + '</span>' : '<span class="code-empty">—</span>';
+    var nipAttr = String(s.nip).replace(/"/g, '&quot;');
+
+    return '<tr>' +
+      '<td style="text-align:left;font-weight:600">' + esc(s.nama) + '<div style="font-size:11px;color:var(--ink-muted)">' + esc(s.nip) + '</div></td>' +
+      '<td>' + k1Html + '</td>' +
+      '<td>' + k2Html + '</td>' +
+      '<td style="text-align:center">' +
+        '<button class="row-action-btn" data-edit-kendaraan="' + nipAttr + '" title="Edit">' +
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>' +
+        '</button>' +
+      '</td>' +
+    '</tr>';
+  }).join('');
+}
+
+// Fitur Searchable Dropdown di dalam Modal
+var kSearchInput = document.getElementById('kendaraanStaffSearch');
+var kDropdownList = document.getElementById('kendaraanStaffDropdown');
+
+kSearchInput.addEventListener('input', function() {
+  var q = this.value.toLowerCase().trim();
+  if (!q) { kDropdownList.classList.add('hidden'); return; }
+  
+  var matches = state.staffList.filter(function(s) { return s.nama.toLowerCase().indexOf(q) !== -1; }).slice(0, 10);
+  if (matches.length === 0) {
+    kDropdownList.innerHTML = '<div class="custom-dropdown-item" style="color:var(--ink-muted)">Staf tidak ditemukan</div>';
+  } else {
+    kDropdownList.innerHTML = matches.map(function(s) {
+      return '<div class="custom-dropdown-item" data-nip="' + esc(s.nip) + '" data-nama="' + esc(s.nama) + '"><b>' + esc(s.nama) + '</b></div>';
+    }).join('');
+  }
+  kDropdownList.classList.remove('hidden');
+});
+
+kDropdownList.addEventListener('click', function(e) {
+  var item = e.target.closest('.custom-dropdown-item');
+  if (!item || !item.dataset.nip) return;
+  document.getElementById('kendaraanNip').value = item.dataset.nip;
+  kSearchInput.value = item.dataset.nama;
+  kDropdownList.classList.add('hidden');
+});
+
+// Event listener form modal
+function openKendaraanModal(nip) {
+  stateKendaraan.editingNip = nip || null;
+  document.getElementById('kendaraanError').classList.add('hidden');
+  document.getElementById('kendaraanDeleteBtn').classList.add('hidden');
+
+  if (nip) {
+    // Mode Edit
+    var s = stateKendaraan.data.find(function(x) { return x.nip === nip; });
+    var k = (s && s.plat_kendaraan && s.plat_kendaraan[0]) ? s.plat_kendaraan[0] : {};
+    
+    document.getElementById('kendaraanModalTitle').textContent = 'Edit Kendaraan';
+    document.getElementById('kendaraanNip').value = s.nip;
+    kSearchInput.value = s.nama;
+    kSearchInput.disabled = true;
+    
+    document.getElementById('kendaraan1Jenis').value = k.kendaraan_1_jenis || '';
+    document.getElementById('kendaraan1Plat').value = k.kendaraan_1_plat || '';
+    document.getElementById('kendaraan2Jenis').value = k.kendaraan_2_jenis || '';
+    document.getElementById('kendaraan2Plat').value = k.kendaraan_2_plat || '';
+    document.getElementById('kendaraanDeleteBtn').classList.remove('hidden');
+  } else {
+    // Mode Tambah
+    document.getElementById('kendaraanModalTitle').textContent = 'Tambah Data Kendaraan';
+    document.getElementById('kendaraanNip').value = '';
+    kSearchInput.value = '';
+    kSearchInput.disabled = false;
+    document.getElementById('kendaraan1Jenis').value = '';
+    document.getElementById('kendaraan1Plat').value = '';
+    document.getElementById('kendaraan2Jenis').value = '';
+    document.getElementById('kendaraan2Plat').value = '';
+  }
+  openModal('kendaraanModal');
+}
+
+async function saveKendaraan() {
+  var nip = document.getElementById('kendaraanNip').value;
+  var errEl = document.getElementById('kendaraanError');
+  errEl.classList.add('hidden');
+
+  if (!nip) {
+    errEl.textContent = 'Pilih nama staff terlebih dahulu.';
+    errEl.classList.remove('hidden');
+    return;
+  }
+
+  var payload = {
+    nip: nip,
+    kendaraan_1_jenis: document.getElementById('kendaraan1Jenis').value || null,
+    kendaraan_1_plat: document.getElementById('kendaraan1Plat').value.trim().toUpperCase() || null,
+    kendaraan_2_jenis: document.getElementById('kendaraan2Jenis').value || null,
+    kendaraan_2_plat: document.getElementById('kendaraan2Plat').value.trim().toUpperCase() || null
+  };
+
+  var btn = document.getElementById('kendaraanSaveBtn');
+  btn.disabled = true; btn.textContent = 'Menyimpan…';
+
+  try {
+    // Gunakan upsert karena nip bersifat UNIQUE
+    var r = await sb.from('plat_kendaraan').upsert(payload, { onConflict: 'nip' });
+    if (r.error) throw r.error;
+    
+    closeModal('kendaraanModal');
+    await loadKendaraan();
+  } catch (err) {
+    errEl.textContent = err.message || 'Gagal menyimpan.';
+    errEl.classList.remove('hidden');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Simpan';
+  }
+}
+
+// Hubungkan ke Event Listener
+document.getElementById('kendaraanAddBtn').addEventListener('click', function() { openKendaraanModal(null); });
+document.getElementById('kendaraanRefreshBtn').addEventListener('click', loadKendaraan);
+document.getElementById('kendaraanSearch').addEventListener('input', renderKendaraan);
+document.getElementById('kendaraanBody').addEventListener('click', function(e) {
+  var ed = e.target.closest('[data-edit-kendaraan]');
+  if (ed) openKendaraanModal(ed.dataset.editKendaraan);
+});
+document.getElementById('closeKendaraanModal').addEventListener('click', function() { closeModal('kendaraanModal'); });
+document.getElementById('kendaraanCancelBtn').addEventListener('click', function() { closeModal('kendaraanModal'); });
+
+// (Opsional) Fitur Hapus Data Kendaraan
+document.getElementById('kendaraanDeleteBtn').addEventListener('click', async function() {
+  if (!stateKendaraan.editingNip) return;
+  if (!confirm('Hapus data kendaraan staff ini?')) return;
+  try {
+    var r = await sb.from('plat_kendaraan').delete().eq('nip', stateKendaraan.editingNip);
+    if (r.error) throw r.error;
+    closeModal('kendaraanModal');
+    await loadKendaraan();
+  } catch(err) { alert('Gagal menghapus: ' + err.message); }
+});
 </script>  
 </body>
 </html>
