@@ -6764,14 +6764,14 @@ document.getElementById('kendaraanDeleteBtn').addEventListener('click', async fu
 });
 
   /* ============================================================
-   CEK TUKAR SHIFT (NON-ADMIN) - BERDASARKAN NAMA JADWAL
+   CEK TUKAR SHIFT (NON-ADMIN) - FINAL FIX
    ============================================================ */
 var stateCekShift = { nama: null, data: null };
 
 function renderCekShiftDropdown() {
   var searchInput = document.getElementById('cekShiftSearch');
   var dropdown = document.getElementById('cekShiftDropdown');
-  var hiddenNama = document.getElementById('cekShiftNama'); // Menyimpan nama_jadwal
+  var hiddenNama = document.getElementById('cekShiftNama'); // Menyimpan NAMA LENGKAP (seperti di tabel pengajuan)
   var btn = document.getElementById('cekShiftBtn');
   if (!searchInput || !dropdown) return;
 
@@ -6784,18 +6784,19 @@ function renderCekShiftDropdown() {
       return;
     }
     
-    // Cari di state.staffList berdasarkan NAMA JADWAL
     var matches = (state.staffList || []).filter(function(s) {
-      var namaJadwal = (s.nama_jadwal || s.nama || '').toLowerCase();
-      return namaJadwal.indexOf(q) !== -1 || (s.nip && s.nip.includes(q));
+      var nJadwal = (s.nama_jadwal || s.nama || '').toLowerCase();
+      var nLengkap = (s.nama || '').toLowerCase();
+      return nJadwal.indexOf(q) !== -1 || nLengkap.indexOf(q) !== -1 || (s.nip && s.nip.includes(q));
     }).slice(0, 30);
     
     if (matches.length === 0) {
       dropdown.innerHTML = '<div class="custom-dropdown-item" style="color:var(--ink-muted);cursor:default">Staf tidak ditemukan</div>';
     } else {
       dropdown.innerHTML = matches.map(function(s) {
+        // Tampilkan nama jadwal, tapi simpan nama LENGKAP untuk query
         var tampilNama = s.nama_jadwal || s.nama;
-        return '<div class="custom-dropdown-item" data-nama-jadwal="' + esc(tampilNama) + '">' +
+        return '<div class="custom-dropdown-item" data-nama-lengkap="' + esc(s.nama) + '">' +
           '<b>' + esc(tampilNama) + '</b> <span class="nip">(' + esc(s.nip) + ')</span>' +
         '</div>';
       }).join('');
@@ -6805,11 +6806,10 @@ function renderCekShiftDropdown() {
 
   dropdown.addEventListener('click', function(e) {
     var item = e.target.closest('.custom-dropdown-item');
-    if (!item || !item.dataset.namaJadwal) return;
+    if (!item || !item.dataset.namaLengkap) return;
     
-    // Simpan NAMA JADWAL ke input hidden
-    hiddenNama.value = item.dataset.namaJadwal; 
-    searchInput.value = item.dataset.namaJadwal; // Tampilkan di input
+    hiddenNama.value = item.dataset.namaLengkap; // Simpan NAMA LENGKAP
+    searchInput.value = item.innerText.split(' (')[0]; // Tampilkan Nama Jadwal ke input
     dropdown.classList.add('hidden');
     if (btn) btn.disabled = false;
   });
@@ -6824,8 +6824,8 @@ function renderCekShiftDropdown() {
 }
 
 async function loadCekShift() {
-  var namaJadwal = document.getElementById('cekShiftNama').value;
-  if (!namaJadwal) { alert('Pilih nama terlebih dahulu.'); return; }
+  var namaLengkap = document.getElementById('cekShiftNama').value;
+  if (!namaLengkap) { alert('Pilih nama terlebih dahulu.'); return; }
 
   var panel = document.getElementById('cekShiftResultPanel');
   var body = document.getElementById('cekShiftResultBody');
@@ -6838,18 +6838,24 @@ async function loadCekShift() {
   btn.disabled = true; var originalHTML = btn.innerHTML; btn.innerHTML = 'Memuat…';
 
   try {
-    // Query ke tabel pengajuan menggunakan NAMA JADWAL
+    // Tentukan rentang tanggal bulan berjalan
+    var now = new Date();
+    var startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0,10);
+    var endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().slice(0,10);
+
+    // Query berdasarkan NAMA LENGKAP + BULAN BERJALAN
     var r = await sb.from('pengajuan')
       .select('*')
-      .eq('nama', namaJadwal) // Menggunakan kolom 'nama' (sesuai struktur tabel pengajuan)
+      .eq('nama', namaLengkap)
       .eq('jenis', 'tukar_shift')
-      .order('created_at', { ascending: false })
-      .limit(200);
+      .gte('tanggal_mulai', startOfMonth)
+      .lte('tanggal_mulai', endOfMonth)
+      .order('tanggal_mulai', { ascending: false });
       
     if (r.error) throw r.error;
 
     stateCekShift.data = r.data || [];
-    renderCekShiftResult(r.data || []);
+    renderCekShiftResult(r.data || [], namaLengkap);
   } catch (err) {
     body.innerHTML = '<div class="alert-box error"><div><b>Gagal memuat:</b><br>' + esc(err.message) + '</div></div>';
     badge.textContent = '—';
@@ -6858,7 +6864,7 @@ async function loadCekShift() {
   }
 }
 
-function renderCekShiftResult(rows) {
+function renderCekShiftResult(rows, namaLengkap) {
   var body = document.getElementById('cekShiftResultBody');
   var badge = document.getElementById('cekShiftResultBadge');
 
@@ -6866,8 +6872,8 @@ function renderCekShiftResult(rows) {
     badge.textContent = '0 data';
     body.innerHTML = '<div style="text-align:center;padding:40px 20px">' +
       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:44px;height:44px;margin:0 auto 12px;display:block;opacity:.4"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>' +
-      '<b style="display:block;font-size:13.5px;color:var(--ink-2);margin-bottom:4px">Belum ada riwayat tukar shift</b>' +
-      '<span style="font-size:12px;color:var(--ink-muted)">Anda belum pernah mengajukan tukar shift.</span>' +
+      '<b style="display:block;font-size:13.5px;color:var(--ink-2);margin-bottom:4px">Belum ada riwayat tukar shift bulan ini</b>' +
+      '<span style="font-size:12px;color:var(--ink-muted)">Tidak ada data tukar shift untuk <b>' + esc(namaLengkap) + '</b> di bulan berjalan.</span>' +
     '</div>';
     return;
   }
@@ -6877,9 +6883,9 @@ function renderCekShiftResult(rows) {
   var html = '<div style="display:flex;flex-direction:column;gap:10px">';
   rows.forEach(function(p) {
     var tglTukar = p.tanggal_mulai || '—';
-    var submittedTampil = p.created_at ? new Date(p.created_at).toLocaleString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—';
+    var tglTampil = new Date(tglTukar + 'T00:00:00').toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
     
-    // Ekstrak info shift dari teks keterangan
+    // Parse teks keterangan: [TUKAR SHIFT] Nama A (S) ↔ Nama B (L) - Alasan
     var ket = p.keterangan || '';
     var detailShift = ket.replace('[TUKAR SHIFT] ', '').split(' - ')[0]; 
 
@@ -6887,9 +6893,8 @@ function renderCekShiftResult(rows) {
       '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:10px;flex-wrap:wrap">' +
         '<div>' +
           '<span class="kategori-pill" style="background:#0F766E;color:#fff;border:none;font-size:10.5px">Tukar Shift Berhasil</span>' +
-          ' <span style="font-family:\'JetBrains Mono\',monospace;font-size:12px;font-weight:700;color:var(--primary);margin-left:6px">📅 ' + esc(tglTukar) + '</span>' +
+          ' <span style="font-family:\'JetBrains Mono\',monospace;font-size:12px;font-weight:700;color:var(--primary);margin-left:6px">📅 ' + esc(tglTampil) + '</span>' +
         '</div>' +
-        '<div style="font-size:10.5px;color:var(--ink-faint);font-family:\'JetBrains Mono\',monospace">Diajukan: ' + esc(submittedTampil) + '</div>' +
       '</div>' +
       '<div style="padding:10px 12px;background:var(--bg-soft);border-radius:8px;font-size:12.5px;font-weight:600;color:var(--ink-2);text-align:center">' +
         esc(detailShift).replace(/\((.*?)\)/g, '<span style="color:var(--primary);font-family:\'JetBrains Mono\',monospace">($1)</span>') +
