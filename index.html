@@ -6593,14 +6593,31 @@ async function loadKendaraan() {
   tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:32px;color:var(--ink-muted)">Memuat…</td></tr>';
   
   try {
-    // Ambil data staff digabung dengan plat kendaraan
-    var r = await sb.from('staff').select('nip, nama, plat_kendaraan(kendaraan_1_jenis, kendaraan_1_plat, kendaraan_2_jenis, kendaraan_2_plat)').order('nama');
-    if(r.error) throw r.error;
-    
-    stateKendaraan.data = r.data || [];
+    // 1. Ambil data staff
+    var rStaff = await sb.from('staff').select('nip, nama').order('nama');
+    if (rStaff.error) throw rStaff.error;
+
+    // 2. Ambil data plat kendaraan
+    var rPlat = await sb.from('plat_kendaraan').select('*');
+    if (rPlat.error) throw rPlat.error;
+
+    // 3. Gabungkan data (mapping)
+    var platMap = {};
+    (rPlat.data || []).forEach(function(k) {
+      platMap[k.nip] = k;
+    });
+
+    stateKendaraan.data = (rStaff.data || []).map(function(s) {
+      return {
+        nip: s.nip,
+        nama: s.nama,
+        plat_kendaraan: platMap[s.nip] ? [platMap[s.nip]] : []
+      };
+    });
+
     renderKendaraan();
   } catch (err) {
-    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:32px;color:var(--ink-muted)">Gagal memuat: ' + esc(err.message) + '</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:32px;color:#991B1B">Gagal memuat: ' + esc(err.message) + '</td></tr>';
   }
 }
 
@@ -6723,24 +6740,30 @@ async function saveKendaraan() {
   };
 
   var btn = document.getElementById('kendaraanSaveBtn');
-  if (btn) {
-    btn.disabled = true; 
-    btn.textContent = 'Menyimpan…';
-  }
+  if (btn) { btn.disabled = true; btn.textContent = 'Menyimpan…'; }
 
   try {
-    // Gunakan upsert karena nip bersifat UNIQUE
-    var r = await sb.from('plat_kendaraan').upsert(payload, { onConflict: 'nip' });
+    // 1. Cek apakah data untuk NIP ini sudah ada di database
+    var cek = await sb.from('plat_kendaraan').select('id').eq('nip', nip).maybeSingle();
+    
+    var r;
+    if (cek.data) {
+      // Jika sudah ada, lakukan UPDATE berdasarkan NIP
+      r = await sb.from('plat_kendaraan').update(payload).eq('nip', nip);
+    } else {
+      // Jika belum ada, lakukan INSERT data baru
+      r = await sb.from('plat_kendaraan').insert(payload);
+    }
+
     if (r.error) throw r.error;
     
+    // Tutup modal dan refresh tabel
     closeModal('kendaraanModal');
     await loadKendaraan();
     
-    // Kembalikan tombol seperti semula
-    if (btn) { btn.disabled = false; btn.textContent = 'Simpan'; }
-    
   } catch (err) {
     alert('Gagal menyimpan: ' + err.message);
+  } finally {
     if (btn) { btn.disabled = false; btn.textContent = 'Simpan'; }
   }
 }
