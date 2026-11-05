@@ -1944,7 +1944,7 @@
       <button class="btn btn-danger hidden" id="kendaraanDeleteBtn">Hapus</button>
       <div style="display:flex;gap:10px;margin-left:auto">
         <button class="btn btn-secondary" id="kendaraanCancelBtn">Batal</button>
-        <button class="btn btn-primary" id="kendaraanSaveBtn">Simpan</button>
+        <button class="btn btn-primary" id="kendaraanSaveBtn" type="button" onclick="saveKendaraan()">Simpan</button>
       </div>
     </div>
   </div>
@@ -6706,11 +6706,11 @@ function openKendaraanModal(nip) {
 async function saveKendaraan() {
   var nip = document.getElementById('kendaraanNip').value;
   var errEl = document.getElementById('kendaraanError');
-  errEl.classList.add('hidden');
+  
+  if (errEl) errEl.classList.add('hidden');
 
   if (!nip) {
-    errEl.textContent = 'Pilih nama staff terlebih dahulu.';
-    errEl.classList.remove('hidden');
+    alert('Pilih nama staff terlebih dahulu.');
     return;
   }
 
@@ -6723,7 +6723,10 @@ async function saveKendaraan() {
   };
 
   var btn = document.getElementById('kendaraanSaveBtn');
-  btn.disabled = true; btn.textContent = 'Menyimpan…';
+  if (btn) {
+    btn.disabled = true; 
+    btn.textContent = 'Menyimpan…';
+  }
 
   try {
     // Gunakan upsert karena nip bersifat UNIQUE
@@ -6732,11 +6735,13 @@ async function saveKendaraan() {
     
     closeModal('kendaraanModal');
     await loadKendaraan();
+    
+    // Kembalikan tombol seperti semula
+    if (btn) { btn.disabled = false; btn.textContent = 'Simpan'; }
+    
   } catch (err) {
-    errEl.textContent = err.message || 'Gagal menyimpan.';
-    errEl.classList.remove('hidden');
-  } finally {
-    btn.disabled = false; btn.textContent = 'Simpan';
+    alert('Gagal menyimpan: ' + err.message);
+    if (btn) { btn.disabled = false; btn.textContent = 'Simpan'; }
   }
 }
 
@@ -6916,6 +6921,12 @@ function renderCekShiftResult(rows, namaLengkap) {
     tries++;
   }, 250);
 })();
+
+  // Hubungkan tombol simpan kendaraan
+var btnSaveKendaraan = document.getElementById('kendaraanSaveBtn');
+if (btnSaveKendaraan) {
+  btnSaveKendaraan.addEventListener('click', saveKendaraan);
+}
 </script>  
 </body>
 </html>
