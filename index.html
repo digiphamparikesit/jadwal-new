@@ -6649,6 +6649,7 @@ function openKendaraanModal(nip) {
 async function saveKendaraan() {
   var nip = document.getElementById('kendaraanNip').value;
   var errEl = document.getElementById('kendaraanError');
+  var btn = document.getElementById('kendaraanSaveBtn');
   errEl.classList.add('hidden');
 
   if (!nip) {
