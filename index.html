@@ -6764,14 +6764,14 @@ document.getElementById('kendaraanDeleteBtn').addEventListener('click', async fu
 });
 
   /* ============================================================
-   CEK TUKAR SHIFT (NON-ADMIN)
+   CEK TUKAR SHIFT (NON-ADMIN) - BERDASARKAN NAMA JADWAL
    ============================================================ */
 var stateCekShift = { nama: null, data: null };
 
 function renderCekShiftDropdown() {
   var searchInput = document.getElementById('cekShiftSearch');
   var dropdown = document.getElementById('cekShiftDropdown');
-  var hiddenNama = document.getElementById('cekShiftNama');
+  var hiddenNama = document.getElementById('cekShiftNama'); // Menyimpan nama_jadwal
   var btn = document.getElementById('cekShiftBtn');
   if (!searchInput || !dropdown) return;
 
@@ -6783,15 +6783,20 @@ function renderCekShiftDropdown() {
       if (btn) btn.disabled = true;
       return;
     }
+    
+    // Cari di state.staffList berdasarkan NAMA JADWAL
     var matches = (state.staffList || []).filter(function(s) {
-      return (s.nama || '').toLowerCase().indexOf(q) !== -1 || (s.nip && s.nip.includes(q));
+      var namaJadwal = (s.nama_jadwal || s.nama || '').toLowerCase();
+      return namaJadwal.indexOf(q) !== -1 || (s.nip && s.nip.includes(q));
     }).slice(0, 30);
+    
     if (matches.length === 0) {
       dropdown.innerHTML = '<div class="custom-dropdown-item" style="color:var(--ink-muted);cursor:default">Staf tidak ditemukan</div>';
     } else {
       dropdown.innerHTML = matches.map(function(s) {
-        return '<div class="custom-dropdown-item" data-nama-jadwal="' + esc(s.nama_jadwal || s.nama) + '" data-nama-lengkap="' + esc(s.nama) + '">' +
-          '<b>' + esc(s.nama) + '</b> <span class="nip">(' + esc(s.nip) + ')</span>' +
+        var tampilNama = s.nama_jadwal || s.nama;
+        return '<div class="custom-dropdown-item" data-nama-jadwal="' + esc(tampilNama) + '">' +
+          '<b>' + esc(tampilNama) + '</b> <span class="nip">(' + esc(s.nip) + ')</span>' +
         '</div>';
       }).join('');
     }
@@ -6801,8 +6806,10 @@ function renderCekShiftDropdown() {
   dropdown.addEventListener('click', function(e) {
     var item = e.target.closest('.custom-dropdown-item');
     if (!item || !item.dataset.namaJadwal) return;
-    hiddenNama.value = item.dataset.namaJadwal; // simpan nama_jadwal (sesuai isi tukar_shift)
-    searchInput.value = item.dataset.namaLengkap;
+    
+    // Simpan NAMA JADWAL ke input hidden
+    hiddenNama.value = item.dataset.namaJadwal; 
+    searchInput.value = item.dataset.namaJadwal; // Tampilkan di input
     dropdown.classList.add('hidden');
     if (btn) btn.disabled = false;
   });
@@ -6831,16 +6838,18 @@ async function loadCekShift() {
   btn.disabled = true; var originalHTML = btn.innerHTML; btn.innerHTML = 'Memuat…';
 
   try {
-    // Cari riwayat di mana user adalah pengaju (nama_staff) ATAU pengganti (nama_pengganti)
-    var r = await sb.from('tukar_shift')
+    // Query ke tabel pengajuan menggunakan NAMA JADWAL
+    var r = await sb.from('pengajuan')
       .select('*')
-      .or('nama_staff.eq.' + namaJadwal + ',nama_pengganti.eq.' + namaJadwal)
-      .order('tanggal_ganti', { ascending: false })
+      .eq('nama', namaJadwal) // Menggunakan kolom 'nama' (sesuai struktur tabel pengajuan)
+      .eq('jenis', 'tukar_shift')
+      .order('created_at', { ascending: false })
       .limit(200);
+      
     if (r.error) throw r.error;
 
     stateCekShift.data = r.data || [];
-    renderCekShiftResult(namaJadwal, r.data || []);
+    renderCekShiftResult(r.data || []);
   } catch (err) {
     body.innerHTML = '<div class="alert-box error"><div><b>Gagal memuat:</b><br>' + esc(err.message) + '</div></div>';
     badge.textContent = '—';
@@ -6849,7 +6858,7 @@ async function loadCekShift() {
   }
 }
 
-function renderCekShiftResult(namaJadwal, rows) {
+function renderCekShiftResult(rows) {
   var body = document.getElementById('cekShiftResultBody');
   var badge = document.getElementById('cekShiftResultBadge');
 
@@ -6858,7 +6867,7 @@ function renderCekShiftResult(namaJadwal, rows) {
     body.innerHTML = '<div style="text-align:center;padding:40px 20px">' +
       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:44px;height:44px;margin:0 auto 12px;display:block;opacity:.4"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>' +
       '<b style="display:block;font-size:13.5px;color:var(--ink-2);margin-bottom:4px">Belum ada riwayat tukar shift</b>' +
-      '<span style="font-size:12px;color:var(--ink-muted)">Nama <b>' + esc(namaJadwal) + '</b> belum pernah mengajukan / menerima tukar shift.</span>' +
+      '<span style="font-size:12px;color:var(--ink-muted)">Anda belum pernah mengajukan tukar shift.</span>' +
     '</div>';
     return;
   }
@@ -6866,31 +6875,25 @@ function renderCekShiftResult(namaJadwal, rows) {
   badge.textContent = rows.length + ' data';
 
   var html = '<div style="display:flex;flex-direction:column;gap:10px">';
-  rows.forEach(function(x) {
-    var isPengaju = (x.nama_staff === namaJadwal);
-    var peranLabel = isPengaju ? 'Anda sebagai Pengaju' : 'Anda sebagai Pengganti';
-    var peranBg = isPengaju ? '#0F766E' : '#7C3AED';
+  rows.forEach(function(p) {
+    var tglTukar = p.tanggal_mulai || '—';
+    var submittedTampil = p.created_at ? new Date(p.created_at).toLocaleString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—';
+    
+    // Ekstrak info shift dari teks keterangan
+    var ket = p.keterangan || '';
+    var detailShift = ket.replace('[TUKAR SHIFT] ', '').split(' - ')[0]; 
 
-    var sisiA = '<b>' + esc(x.nama_staff || '—') + '</b>: ' + esc(x.shift_lama || '—') + ' → ' + esc(x.shift_baru || '—');
-    var sisiB = '<b>' + esc(x.nama_pengganti || '—') + '</b>: ' + esc(x.shift_lama_p || '—') + ' → ' + esc(x.shift_baru_p || '—');
-
-    var tanggalTampil = x.tanggal_ganti || '—';
-    var submittedTampil = x.submitted_at ? new Date(x.submitted_at).toLocaleString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—';
-
-    html += '<div style="padding:14px 16px;background:#fff;border-radius:10px;border:1px solid var(--border);border-left:4px solid ' + peranBg + '">' +
+    html += '<div style="padding:14px 16px;background:#fff;border-radius:10px;border:1px solid var(--border);border-left:4px solid #0F766E">' +
       '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:10px;flex-wrap:wrap">' +
         '<div>' +
-          '<span class="kategori-pill" style="background:' + peranBg + ';color:#fff;border:none;font-size:10.5px">' + peranLabel + '</span>' +
-          ' <span style="font-family:\'JetBrains Mono\',monospace;font-size:12px;font-weight:700;color:var(--primary);margin-left:6px">📅 ' + esc(tanggalTampil) + '</span>' +
+          '<span class="kategori-pill" style="background:#0F766E;color:#fff;border:none;font-size:10.5px">Tukar Shift Berhasil</span>' +
+          ' <span style="font-family:\'JetBrains Mono\',monospace;font-size:12px;font-weight:700;color:var(--primary);margin-left:6px">📅 ' + esc(tglTukar) + '</span>' +
         '</div>' +
         '<div style="font-size:10.5px;color:var(--ink-faint);font-family:\'JetBrains Mono\',monospace">Diajukan: ' + esc(submittedTampil) + '</div>' +
       '</div>' +
-      '<div style="display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;margin-bottom:8px">' +
-        '<div style="padding:8px 10px;background:var(--bg-soft);border-radius:8px;font-size:12px">' + sisiA + '</div>' +
-        '<div style="font-size:16px;color:var(--primary);font-weight:700;text-align:center">⇄</div>' +
-        '<div style="padding:8px 10px;background:var(--bg-soft);border-radius:8px;font-size:12px">' + sisiB + '</div>' +
+      '<div style="padding:10px 12px;background:var(--bg-soft);border-radius:8px;font-size:12.5px;font-weight:600;color:var(--ink-2);text-align:center">' +
+        esc(detailShift).replace(/\((.*?)\)/g, '<span style="color:var(--primary);font-family:\'JetBrains Mono\',monospace">($1)</span>') +
       '</div>' +
-      (x.depo ? '<div style="font-size:11px;color:var(--ink-muted);font-family:\'JetBrains Mono\',monospace">📍 ' + esc(x.depo) + '</div>' : '') +
     '</div>';
   });
   html += '</div>';
@@ -6899,7 +6902,6 @@ function renderCekShiftResult(namaJadwal, rows) {
 
 // Init: render dropdown cek shift setelah staffList dimuat
 (function initCekShift() {
-  // Tunggu sampai state.staffList terisi (dipanggil dari init utama)
   var tries = 0;
   var t = setInterval(function() {
     if ((state.staffList && state.staffList.length > 0) || tries > 40) {
