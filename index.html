@@ -7162,37 +7162,40 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
   /* ============================================================
-   FIX NAVIGASI TAB PRESENSI (MUNCULKAN HALAMAN)
+   FIX NAVIGASI TAB (GLOBAL)
    ============================================================ */
-// Kode ini akan mendeteksi klik pada menu "Presensi Harian"
+// Fungsi ini akan menangani SEMUA klik menu di sidebar secara otomatis
 document.addEventListener('click', function(e) {
-  // Cek apakah yang diklik adalah menu presensi
-  var btnPresensi = e.target.closest('[data-tab="presensi"]');
+  // Cari tombol menu yang diklik (harus memiliki atribut data-tab)
+  var btnMenu = e.target.closest('.nav-item[data-tab]');
+  if (!btnMenu) return; // Jika yang diklik bukan menu, abaikan
+
+  var tabId = btnMenu.dataset.tab;
+
+  // 1. Sembunyikan semua halaman (section)
+  document.querySelectorAll('main > section').forEach(function(sec) {
+    sec.classList.add('hidden');
+  });
   
-  if (btnPresensi) {
-    // 1. Sembunyikan semua halaman (section)
-    document.querySelectorAll('main > section').forEach(function(sec) {
-      sec.classList.add('hidden');
-    });
-    
-    // 2. Hilangkan status 'active' dari semua menu
-    document.querySelectorAll('.nav-item').forEach(function(nav) {
-      nav.classList.remove('active');
-    });
-    
-    // 3. Tampilkan halaman presensi
-    var targetSec = document.getElementById('tab-presensi');
-    if (targetSec) {
-      targetSec.classList.remove('hidden');
-    }
-    
-    // 4. Beri warna hijau (active) pada menu yang diklik
-    btnPresensi.classList.add('active');
-    
-    // 5. (Opsional) Tutup sidebar jika di mobile
-    document.getElementById('sidebar').classList.remove('open');
-    document.getElementById('sidebarBackdrop').classList.remove('open');
+  // 2. Hilangkan status 'active' (warna hijau) dari semua menu
+  document.querySelectorAll('.nav-item').forEach(function(nav) {
+    nav.classList.remove('active');
+  });
+  
+  // 3. Tampilkan halaman sesuai menu yang diklik
+  var targetSec = document.getElementById('tab-' + tabId);
+  if (targetSec) {
+    targetSec.classList.remove('hidden');
   }
+  
+  // 4. Beri warna hijau (active) pada menu yang diklik
+  btnMenu.classList.add('active');
+  
+  // 5. Tutup sidebar otomatis jika diakses lewat HP (mobile)
+  var sidebar = document.getElementById('sidebar');
+  var backdrop = document.getElementById('sidebarBackdrop');
+  if (sidebar) sidebar.classList.remove('open');
+  if (backdrop) backdrop.classList.remove('open');
 });
 </script>  
 </body>
