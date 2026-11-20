@@ -505,7 +505,14 @@
   <span>Presensi Harian</span>
   <span class="badge-new">NEW</span>
 </button>
-
+      
+<!-- ===== MENU REKAP PRESENSI (ADMIN) ===== -->
+<button class="nav-item" data-role="admin" data-tab="presensi-admin">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+  <span>Rekap Presensi</span>
+  <span class="badge-new">NEW</span>
+</button>
+      
 <div class="nav-label" style="margin-top:12px">Utama</div>
       <button class="nav-item active" data-tab="rekap">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
@@ -792,6 +799,52 @@
         </div>
       </div>
     </div>
+  </div>
+</section>
+    <!-- ===== SECTION REKAP PRESENSI (ADMIN) ===== -->
+<section id="tab-presensi-admin" class="hidden">
+  <div class="page-head">
+    <div>
+      <p class="eyebrow">Data kehadiran real-time · Hanya Admin</p>
+      <h2>Rekap Presensi Staff</h2>
+    </div>
+  </div>
+
+  <div class="form-panel" style="margin-bottom:20px">
+    <div class="form-panel-body" style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end">
+      <div class="form-group" style="margin:0;flex:1;min-width:200px">
+        <label>Tanggal Awal</label>
+        <input type="date" id="presensiAdmStart" style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:var(--r-md);outline:none">
+      </div>
+      <div class="form-group" style="margin:0;flex:1;min-width:200px">
+        <label>Tanggal Akhir</label>
+        <input type="date" id="presensiAdmEnd" style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:var(--r-md);outline:none">
+      </div>
+      <button class="btn btn-primary" id="btnLoadPresensiAdmin" style="padding:11px 20px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>
+        Muat Data
+      </button>
+    </div>
+  </div>
+
+  <div class="table-card">
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th style="text-align:left;min-width:180px;position:static;box-shadow:none">Nama Staff</th>
+            <th style="position:static;box-shadow:none">Tanggal</th>
+            <th style="position:static;box-shadow:none">Jam Masuk</th>
+            <th style="position:static;box-shadow:none">Jam Pulang</th>
+            <th style="position:static;box-shadow:none">Status</th>
+          </tr>
+        </thead>
+        <tbody id="presensiAdminBody">
+          <tr><td colspan="5" style="text-align:center;padding:32px;color:var(--ink-muted)">Pilih tanggal lalu klik Muat Data</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="total-bar" id="presensiAdminTotal">—</div>
   </div>
 </section>
     <section id="tab-rekap">
@@ -7196,6 +7249,83 @@ document.addEventListener('click', function(e) {
   var backdrop = document.getElementById('sidebarBackdrop');
   if (sidebar) sidebar.classList.remove('open');
   if (backdrop) backdrop.classList.remove('open');
+});
+
+  /* ============================================================
+   LOGIKA REKAP PRESENSI (ADMIN)
+   ============================================================ */
+// Set tanggal default (bulan berjalan) saat halaman dimuat
+document.addEventListener('DOMContentLoaded', function() {
+  var now = new Date();
+  var firstDay = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0,10);
+  var lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().slice(0,10);
+  
+  var startEl = document.getElementById('presensiAdmStart');
+  var endEl = document.getElementById('presensiAdmEnd');
+  if (startEl) startEl.value = firstDay;
+  if (endEl) endEl.value = lastDay;
+});
+
+// Tombol Muat Data
+document.getElementById('btnLoadPresensiAdmin')?.addEventListener('click', async function() {
+  var start = document.getElementById('presensiAdmStart').value;
+  var end = document.getElementById('presensiAdmEnd').value;
+  var tbody = document.getElementById('presensiAdminBody');
+  var totalBar = document.getElementById('presensiAdminTotal');
+
+  if (!start || !end) { alert('Pilih tanggal awal dan akhir.'); return; }
+  if (start > end) { alert('Tanggal awal harus sebelum tanggal akhir.'); return; }
+
+  this.disabled = true;
+  this.innerHTML = 'Memuat...';
+  tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:32px;color:var(--ink-muted)">Mengambil data...</td></tr>';
+
+  try {
+    // Ambil data presensi + join dengan tabel staff untuk dapat nama
+    var r = await sb.from('presensi')
+      .select(`*, staff (nama)`)
+      .gte('tanggal', start)
+      .lte('tanggal', end)
+      .order('tanggal', { ascending: false })
+      .order('jam_masuk', { ascending: false });
+
+    if (r.error) throw r.error;
+    var data = r.data || [];
+
+    if (data.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:32px;color:var(--ink-muted)">Tidak ada data presensi untuk periode ini.</td></tr>';
+      totalBar.textContent = 'Total: 0 data';
+      return;
+    }
+
+    var html = data.map(function(d) {
+      var nama = d.staff ? d.staff.nama : d.nip;
+      
+      var jMasuk = d.jam_masuk ? new Date(d.jam_masuk).toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'}) : '—';
+      var jPulang = d.jam_pulang ? new Date(d.jam_pulang).toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'}) : '—';
+      
+      var statusHtml = d.jam_pulang 
+        ? '<span class="kategori-pill" style="background:#D1FAE5;color:#065F46">✅ Selesai</span>'
+        : '<span class="kategori-pill" style="background:#FEF3C7;color:#B45309">🟡 Bertugas</span>';
+
+      return '<tr>' +
+        '<td style="text-align:left;font-weight:600">' + esc(nama) + '<div style="font-size:11px;color:var(--ink-muted)">' + esc(d.nip) + '</div></td>' +
+        '<td class="mono">' + d.tanggal + '</td>' +
+        '<td class="mono" style="color:#059669;font-weight:700">' + jMasuk + '</td>' +
+        '<td class="mono" style="color:#DC2626;font-weight:700">' + jPulang + '</td>' +
+        '<td>' + statusHtml + '</td>' +
+      '</tr>';
+    }).join('');
+
+    tbody.innerHTML = html;
+    totalBar.innerHTML = '<b>Total:</b> ' + data.length + ' data presensi ditemukan.';
+
+  } catch (err) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:32px;color:#DC2626">Gagal memuat: ' + esc(err.message) + '</td></tr>';
+  } finally {
+    this.disabled = false;
+    this.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg> Muat Data';
+  }
 });
 </script>  
 </body>
