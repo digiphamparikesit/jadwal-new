@@ -7485,9 +7485,11 @@ document.getElementById('btnDownloadExcelPresensi')?.addEventListener('click', f
     var cols = row.querySelectorAll('td');
     
     if (cols.length === 6) { 
-      var namaNip = cols[0].innerText.split('\n');
-      var nama = namaNip[0] ? namaNip[0].trim() : '';
-      var nip = namaNip[1] ? namaNip[1].trim() : '';
+     var namaNip = cols[0].innerText.split('\n');
+      // Ambil baris terakhir sebagai NIP (karena biasanya NIP ada di dalam div kecil di bawah nama)
+      var nip = namaNip[namaNip.length - 1].trim(); 
+      // Ambil sisa teks sebagai Nama (gabungkan jika nama lebih dari 1 baris)
+      var nama = namaNip.slice(0, namaNip.length - 1).join(' ').trim();
       var tanggal = cols[1].innerText.trim();
       var jamMasuk = cols[2].innerText.trim();
       var jamPulang = cols[3].innerText.trim();
