@@ -735,7 +735,58 @@
     </div>
   </div>
 </section>
-    
+    <!-- ===== SECTION PRESENSI STAFF ===== -->
+<section id="tab-presensi" class="hidden">
+  <div class="page-head">
+    <div>
+      <p class="eyebrow">Absensi harian · Staff</p>
+      <h2>Form Presensi</h2>
+    </div>
+  </div>
+
+  <div class="form-grid" style="grid-template-columns:1fr;max-width:600px">
+    <div class="form-panel">
+      <div class="form-panel-head">
+        <h3>Presensi Masuk / Pulang</h3>
+        <span class="step-badge">HARI INI</span>
+      </div>
+      <div class="form-panel-body">
+        <div class="info-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+          <div>Pilih nama Anda, lalu klik <b>Presensi Masuk</b> saat datang dan <b>Presensi Pulang</b> saat selesai shift.</div>
+        </div>
+
+        <div class="form-group" style="position:relative;">
+          <label>Nama Anda <span class="req">*</span></label>
+          <input type="text" id="presensiSearch" placeholder="Ketik nama atau NIP..." autocomplete="off" style="width:100%;padding:11px 14px;border:1px solid var(--border);border-radius:var(--r-md);font-size:13.5px;outline:none;">
+          <input type="hidden" id="presensiNip">
+          <div id="presensiDropdown" class="custom-dropdown-list hidden"></div>
+        </div>
+
+        <div class="form-group">
+          <label>Tanggal</label>
+          <input type="date" id="presensiTanggal" readonly style="background:var(--bg-soft);color:var(--ink-muted)">
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px">
+          <button class="btn btn-primary" id="btnMasuk" disabled style="justify-content:center;padding:14px">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="m10 17 5-5-5-5"/><path d="M15 12H3"/></svg>
+            Presensi Masuk
+          </button>
+          <button class="btn btn-secondary" id="btnPulang" disabled style="justify-content:center;padding:14px">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg>
+            Presensi Pulang
+          </button>
+        </div>
+
+        <div style="margin-top:20px;padding-top:16px;border-top:1px dashed var(--border)">
+          <div style="font-size:11.5px;font-weight:600;color:var(--ink-muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:.04em">Status Anda Hari Ini</div>
+          <div id="statusPresensiBox" style="font-size:13px;color:var(--ink-2);font-style:italic">Belum ada data presensi untuk hari ini.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
     <section id="tab-rekap">
       <div class="page-head">
         <div>
