@@ -7002,6 +7002,41 @@ var btnSaveKendaraan = document.getElementById('kendaraanSaveBtn');
 if (btnSaveKendaraan) {
   btnSaveKendaraan.addEventListener('click', saveKendaraan);
 }
+
+  /* ============================================================
+   FIX NAVIGASI TAB PRESENSI (MUNCULKAN HALAMAN)
+   ============================================================ */
+// Kode ini akan mendeteksi klik pada menu "Presensi Harian"
+document.addEventListener('click', function(e) {
+  // Cek apakah yang diklik adalah menu presensi
+  var btnPresensi = e.target.closest('[data-tab="presensi"]');
+  
+  if (btnPresensi) {
+    // 1. Sembunyikan semua halaman (section)
+    document.querySelectorAll('main > section').forEach(function(sec) {
+      sec.classList.add('hidden');
+    });
+    
+    // 2. Hilangkan status 'active' dari semua menu
+    document.querySelectorAll('.nav-item').forEach(function(nav) {
+      nav.classList.remove('active');
+    });
+    
+    // 3. Tampilkan halaman presensi
+    var targetSec = document.getElementById('tab-presensi');
+    if (targetSec) {
+      targetSec.classList.remove('hidden');
+    }
+    
+    // 4. Beri warna hijau (active) pada menu yang diklik
+    btnPresensi.classList.add('active');
+    
+    // 5. (Opsional) Tutup sidebar jika di mobile
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebarBackdrop').classList.remove('open');
+  }
+});
+  
 </script>  
 </body>
 </html>
