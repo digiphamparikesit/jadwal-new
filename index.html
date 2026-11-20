@@ -7252,9 +7252,8 @@ document.addEventListener('click', function(e) {
 });
 
   /* ============================================================
-   LOGIKA REKAP PRESENSI (ADMIN)
+   LOGIKA REKAP PRESENSI (ADMIN) - FIX RELASI
    ============================================================ */
-// Set tanggal default (bulan berjalan) saat halaman dimuat
 document.addEventListener('DOMContentLoaded', function() {
   var now = new Date();
   var firstDay = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0,10);
@@ -7266,7 +7265,6 @@ document.addEventListener('DOMContentLoaded', function() {
   if (endEl) endEl.value = lastDay;
 });
 
-// Tombol Muat Data
 document.getElementById('btnLoadPresensiAdmin')?.addEventListener('click', async function() {
   var start = document.getElementById('presensiAdmStart').value;
   var end = document.getElementById('presensiAdmEnd').value;
@@ -7281,9 +7279,9 @@ document.getElementById('btnLoadPresensiAdmin')?.addEventListener('click', async
   tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:32px;color:var(--ink-muted)">Mengambil data...</td></tr>';
 
   try {
-    // Ambil data presensi + join dengan tabel staff untuk dapat nama
+    // 1. Ambil data presensi saja (tanpa join)
     var r = await sb.from('presensi')
-      .select(`*, staff (nama)`)
+      .select('*')
       .gte('tanggal', start)
       .lte('tanggal', end)
       .order('tanggal', { ascending: false })
@@ -7299,7 +7297,9 @@ document.getElementById('btnLoadPresensiAdmin')?.addEventListener('click', async
     }
 
     var html = data.map(function(d) {
-      var nama = d.staff ? d.staff.nama : d.nip;
+      // 2. Cari nama secara manual dari state.staffList
+      var staffData = (state.staffList || []).find(function(s){ return s.nip === d.nip; });
+      var nama = staffData ? staffData.nama : d.nip;
       
       var jMasuk = d.jam_masuk ? new Date(d.jam_masuk).toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'}) : '—';
       var jPulang = d.jam_pulang ? new Date(d.jam_pulang).toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'}) : '—';
