@@ -7167,46 +7167,143 @@ async function cekStatusPresensi() {
   }
 }
 
-// 5. Aksi Tombol Presensi
+  // 5. Aksi Tombol Presensi dengan Validasi GPS
+var RSUD_LAT = -0.43878597165074346;
+var RSUD_LNG = 117.01352098373526;
+var RADIUS_MAKSIMAL_METER = 100; // Toleransi radius (100 meter)
+
+// Fungsi untuk menghitung jarak (Rumus Haversine)
+function hitungJarak(lat1, lon1, lat2, lon2) {
+  var R = 6371e3; // Radius bumi dalam meter
+  var φ1 = lat1 * Math.PI/180;
+  var φ2 = lat2 * Math.PI/180;
+  var Δφ = (lat2-lat1) * Math.PI/180;
+  var Δλ = (lon2-lon1) * Math.PI/180;
+
+  var a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+          Math.cos(φ1) * Math.cos(φ2) *
+          Math.sin(Δλ/2) * Math.sin(Δλ/2);
+  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+  return R * c; // Hasil dalam meter
+}
+
+// Fungsi Ambil GPS Staff
+function ambilLokasi() {
+  return new Promise(function(resolve, reject) {
+    if (!navigator.geolocation) {
+      reject(new Error('Browser Anda tidak mendukung GPS.'));
+    } else {
+      navigator.geolocation.getCurrentPosition(
+        function(pos) {
+          resolve({
+            lat: pos.coords.latitude,
+            lng: pos.coords.longitude,
+            accuracy: pos.coords.accuracy
+          });
+        },
+        function(err) {
+          reject(new Error('Gagal mengambil lokasi. Pastikan izin GPS aktif.'));
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+      );
+    }
+  });
+}
+
+// Tombol Presensi Masuk
 document.getElementById('btnMasuk')?.addEventListener('click', async function() {
   var nip = document.getElementById('presensiNip').value;
   var tgl = document.getElementById('presensiTanggal').value;
   if(!nip || !tgl) return;
   
-  this.disabled = true; this.innerHTML = 'Memproses...';
-  var now = new Date().toISOString();
+  var btn = this;
+  btn.disabled = true; btn.innerHTML = 'Mencari Lokasi GPS...';
   
   try {
-    var r = await sb.from('presensi').insert({ nip: nip, tanggal: tgl, jam_masuk: now, status: 'hadir' });
+    // 1. Ambil koordinat asli staff
+    var lokasi = await ambilLokasi();
+    
+    // 2. Hitung jarak ke RSUD
+    var jarak = hitungJarak(RSUD_LAT, RSUD_LNG, lokasi.lat, lokasi.lng);
+    var jarakBulat = Math.round(jarak);
+    
+    // 3. Validasi radius
+    if (jarak > RADIUS_MAKSIMAL_METER) {
+      alert('❌ Gagal Absen!\n\nAnda berada di luar radius RSUD AM Parikesit.\nJarak Anda: ' + jarakBulat + ' meter dari RSUD.\nMaksimal: ' + RADIUS_MAKSIMAL_METER + ' meter.');
+      btn.disabled = false; 
+      btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="m10 17 5-5-5-5"/><path d="M15 12H3"/></svg> Presensi Masuk';
+      return;
+    }
+    
+    // 4. Simpan ke Database dengan koordinat
+    btn.innerHTML = 'Menyimpan...';
+    var now = new Date().toISOString();
+    
+    var r = await sb.from('presensi').insert({ 
+      nip: nip, 
+      tanggal: tgl, 
+      jam_masuk: now, 
+      status: 'hadir',
+      latitude: lokasi.lat,
+      longitude: lokasi.lng,
+      jarak_meter: jarakBulat
+    });
+    
     if (r.error) throw r.error;
-    alert('Presensi Masuk Berhasil!');
+    
+    alert('✅ Presensi Masuk Berhasil!\nJarak dari RSUD: ' + jarakBulat + ' meter.');
     cekStatusPresensi();
   } catch (err) {
     alert('Gagal absen masuk: ' + err.message);
-    this.disabled = false;
+    btn.disabled = false;
   } finally {
-    this.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="m10 17 5-5-5-5"/><path d="M15 12H3"/></svg> Presensi Masuk';
+    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="m10 17 5-5-5-5"/><path d="M15 12H3"/></svg> Presensi Masuk';
   }
 });
 
+// Tombol Presensi Pulang
 document.getElementById('btnPulang')?.addEventListener('click', async function() {
   var nip = document.getElementById('presensiNip').value;
   var tgl = document.getElementById('presensiTanggal').value;
   if(!nip || !tgl) return;
   
-  this.disabled = true; this.innerHTML = 'Memproses...';
-  var now = new Date().toISOString();
+  var btn = this;
+  btn.disabled = true; btn.innerHTML = 'Mencari Lokasi GPS...';
   
   try {
-    var r = await sb.from('presensi').update({ jam_pulang: now }).eq('nip', nip).eq('tanggal', tgl);
+    // 1. Ambil koordinat asli staff
+    var lokasi = await ambilLokasi();
+    var jarak = hitungJarak(RSUD_LAT, RSUD_LNG, lokasi.lat, lokasi.lng);
+    var jarakBulat = Math.round(jarak);
+    
+    // 2. Validasi radius
+    if (jarak > RADIUS_MAKSIMAL_METER) {
+      alert('❌ Gagal Absen Pulang!\n\nAnda berada di luar radius RSUD AM Parikesit.\nJarak Anda: ' + jarakBulat + ' meter.');
+      btn.disabled = false;
+      btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg> Presensi Pulang';
+      return;
+    }
+
+    btn.innerHTML = 'Menyimpan...';
+    var now = new Date().toISOString();
+    
+    var r = await sb.from('presensi').update({ 
+      jam_pulang: now,
+      latitude: lokasi.lat,
+      longitude: lokasi.lng,
+      jarak_meter: jarakBulat
+    }).eq('nip', nip).eq('tanggal', tgl);
+    
     if (r.error) throw r.error;
-    alert('Presensi Pulang Berhasil!');
+    
+    alert('✅ Presensi Pulang Berhasil!\nJarak dari RSUD: ' + jarakBulat + ' meter.');
     cekStatusPresensi();
   } catch (err) {
     alert('Gagal absen pulang: ' + err.message);
-    this.disabled = false;
+    btn.disabled = false;
   } finally {
-    this.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg> Presensi Pulang';
+    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg> Presensi Pulang';
   }
 });
 
