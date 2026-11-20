@@ -7455,7 +7455,7 @@ document.getElementById('btnLoadPresensiAdmin')?.addEventListener('click', async
 });
   
   /* ============================================================
-   FITUR DOWNLOAD EXCEL (CSV) REKAP PRESENSI
+   FITUR DOWNLOAD EXCEL (XLSX) REKAP PRESENSI
    ============================================================ */
 document.getElementById('btnDownloadExcelPresensi')?.addEventListener('click', function() {
   var start = document.getElementById('presensiAdmStart').value;
@@ -7474,16 +7474,16 @@ document.getElementById('btnDownloadExcelPresensi')?.addEventListener('click', f
     return;
   }
 
-  // 1. Buat Header CSV
-  var csvContent = 'Nama Staff,NIP,Tanggal,Jam Masuk,Jam Pulang,Selisih Jam,Status\n';
+  // 1. Siapkan Array of Arrays (Data untuk Excel)
+  var excelData = [
+    ['Nama Staff', 'NIP', 'Tanggal', 'Jam Masuk', 'Jam Pulang', 'Selisih Jam', 'Status'] // Header
+  ];
 
   // 2. Ambil data dari tabel HTML
   rows.forEach(function(row) {
     var cols = row.querySelectorAll('td');
     
-    // ✅ PERBAIKAN: Ubah menjadi 6 karena ada kolom Selisih Jam
     if (cols.length === 6) { 
-      // Ambil teks dan bersihkan dari enter/spasi berlebih
       var namaNip = cols[0].innerText.split('\n');
       var nama = namaNip[0] ? namaNip[0].trim() : '';
       var nip = namaNip[1] ? namaNip[1].trim() : '';
@@ -7493,21 +7493,38 @@ document.getElementById('btnDownloadExcelPresensi')?.addEventListener('click', f
       var selisih = cols[4].innerText.trim(); 
       var status = cols[5] ? cols[5].innerText.replace(/[✅🟡]/g, '').trim() : 'Hadir';
 
-      // Bungkus teks dalam tanda kutip agar aman jika ada koma
-      csvContent += '"' + nama + '","' + nip + '","' + tanggal + '","' + jamMasuk + '","' + jamPulang + '","' + selisih + '","' + status + '"\n';
+      // Masukkan ke dalam array
+      excelData.push([nama, nip, tanggal, jamMasuk, jamPulang, selisih, status]);
     }
   });
 
-  // 3. Proses Download
-  var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-  var url = URL.createObjectURL(blob);
-  var link = document.createElement('a');
-  link.setAttribute('href', url);
-  link.setAttribute('download', 'Rekap_Presensi_' + start + '_sd_' + end + '.csv');
-  link.style.visibility = 'hidden';
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
+  // 3. Proses Cetak ke Excel (XLSX)
+  try {
+    // Buat worksheet dari data
+    var ws = XLSX.utils.aoa_to_sheet(excelData);
+    
+    // Atur lebar kolom agar rapi
+    ws['!cols'] = [
+      { wch: 25 }, // Nama
+      { wch: 20 }, // NIP
+      { wch: 15 }, // Tanggal
+      { wch: 12 }, // Jam Masuk
+      { wch: 12 }, // Jam Pulang
+      { wch: 15 }, // Selisih
+      { wch: 15 }  // Status
+    ];
+
+    // Buat workbook dan masukkan worksheet
+    var wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Rekap Presensi");
+
+    // Simpan sebagai file .xlsx
+    var namaFile = 'Rekap_Presensi_' + start + '_sd_' + end + '.xlsx';
+    XLSX.writeFile(wb, namaFile);
+
+  } catch (err) {
+    alert('Gagal mendownload Excel: ' + err.message);
+  }
 });
 </script>  
 </body>
